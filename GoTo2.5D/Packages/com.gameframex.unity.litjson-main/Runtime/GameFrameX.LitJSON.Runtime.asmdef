@@ -1,0 +1,14 @@
+{
+    "name": "GameFrameX.LitJSON.Runtime",
+    "rootNamespace": "GameFrameX.LitJSON.Runtime",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

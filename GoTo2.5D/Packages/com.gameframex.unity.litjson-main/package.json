@@ -1,0 +1,31 @@
+{
+  "name": "com.gameframex.unity.litjson",
+  "displayName": "Game Frame X LitJSON",
+  "version": "1.2.2",
+  "unity": "2019.4",
+  "description": "An improved LitJson library for Unity, repackaged from XINCGer/LitJson4Unity. Supports float type, Unity built-in types, JsonIgnore Attribute, and formatted JSON output.\nAll-in-One Solution for Indie Game Development · Empowering Indie Developers' Dreams\n\n适用于 Unity 的改进型 LitJson 库，基于 XINCGer/LitJson4Unity 二次包装。支持 float 类型、Unity 内建类型、JsonIgnore Attribute 和 Json 内容格式化。\n独立游戏前后端一体化解决方案 · 独立游戏开发者的圆梦大使\n\nDocs: https://gameframex.doc.alianblank.com",
+  "author": {
+    "name": "Blank",
+    "email": "alianblank@outlook.com",
+    "url": "https://gameframex.doc.alianblank.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gameframex/com.gameframex.unity.litjson.git",
+    "name": "com.gameframex.unity.litjson"
+  },
+  "relatedPackages": {},
+  "dependencies": {},
+  "devDependencies": {
+    "semantic-release": "^24.2.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://npm.cnb.cool/GameFrameX/npm/-/packages/"
+  },
+  "documentationUrl": "https://gameframex.doc.alianblank.com",
+  "changelogUrl": "https://github.com/gameframex/com.gameframex.unity.litjson/blob/main/CHANGELOG.md",
+  "licensesUrl": "https://github.com/gameframex/com.gameframex.unity.litjson/blob/main/LICENSE.md"
+}
