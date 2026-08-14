@@ -1,5 +1,6 @@
 新增物品持久化系统（PersistentItem + PersistentItemManager）
 
-- 新增 PersistentItem 基类（itemId + OnSaveState/OnLoadState，移除逻辑由物品自处理）
-- 新增 PersistentItemManager 单例：收集/分发每房间物品状态
+- 新增 PersistentItem 基类：直接持有 VariableBundle，itemId 自动生成 GUID
+- 移除 OnSaveState/OnLoadState，保留 OnBeforeSave/OnAfterLoad 可选钩子
+- PersistentItemManager 单例：收集/分发每房间物品状态
 - SaveSystem 房间存档接入物品数据（CaptureRoom/ApplyRoomSaveNow）
