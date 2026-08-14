@@ -75,6 +75,22 @@ public abstract class PersistentVariableManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 从存档数据导入变量（存档加载时调用）
+    /// </summary>
+    public void Import(VariableBundleData data)
+    {
+        VariableObject.ImportFrom(data);
+    }
+
+    /// <summary>
+    /// 导出当前变量到存档数据（存档保存时调用）
+    /// </summary>
+    public VariableBundleData Export()
+    {
+        return VariableObject.Export();
+    }
+
+    /// <summary>
     /// 切换当前使用的变量对象（房间按场景切换时调用）
     /// </summary>
     protected void SetVariableObject(VariableBundleObject obj)

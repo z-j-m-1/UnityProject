@@ -13,29 +13,25 @@ public class VariableContainer<T>
 
     [NonSerialized] private Dictionary<string, T> runtimeDict;
 
-#if UNITY_EDITOR
     /// <summary>
-    /// 编辑器模式下直接从列表构建字典（每次重新构建）
+    /// 获取运行字典
+    /// 运行时：懒加载并缓存（存档导入与运行时修改都保存在 dict 中）
+    /// 编辑模式：每次从列表重建，保证读到列表（设计默认值）的最新数据
     /// </summary>
     private Dictionary<string, T> GetRuntimeDict()
     {
-        // 编辑器模式下每次都重新构建，确保读取最新的列表数据
+        if (Application.isPlaying)
+        {
+            if (runtimeDict == null)
+            {
+                BuildRuntimeDict();
+            }
+            return runtimeDict;
+        }
+
         BuildRuntimeDict();
         return runtimeDict;
     }
-#else
-    /// <summary>
-    /// 运行时使用缓存字典（懒加载）
-    /// </summary>
-    private Dictionary<string, T> GetRuntimeDict()
-    {
-        if (runtimeDict == null)
-        {
-            BuildRuntimeDict();
-        }
-        return runtimeDict;
-    }
-#endif
 
     /// <summary>
     /// 从列表构建字典
@@ -114,18 +110,38 @@ public class VariableContainer<T>
             dict.Add(key, value);
         }
 
-        var existing = variableList.Find(v => v.Name == key);
-        if (existing != null)
+        // 编辑模式（非运行）下同步写列表，作为设计默认值；运行时只写运行字典
+        if (!Application.isPlaying)
         {
-            existing.Value = value;
+            var existing = variableList.Find(v => v.Name == key);
+            if (existing != null)
+            {
+                existing.Value = value;
+            }
+            else
+            {
+                Variable<T> newVar = new Variable<T>();
+                newVar.Name = key;
+                newVar.Value = value;
+                variableList.Add(newVar);
+            }
         }
-        else
-        {
-            Variable<T> newVar = new Variable<T>();
-            newVar.Name = key;
-            newVar.Value = value;
-            variableList.Add(newVar);
-        }
+    }
+
+    /// <summary>
+    /// 从外部数据导入运行值（存档加载时调用，替换运行字典）
+    /// </summary>
+    public void ImportFrom(Dictionary<string, T> values)
+    {
+        runtimeDict = values == null ? new Dictionary<string, T>() : new Dictionary<string, T>(values);
+    }
+
+    /// <summary>
+    /// 导出当前运行值（存档保存时调用）
+    /// </summary>
+    public Dictionary<string, T> Export()
+    {
+        return new Dictionary<string, T>(GetRuntimeDict());
     }
 
     /// <summary>

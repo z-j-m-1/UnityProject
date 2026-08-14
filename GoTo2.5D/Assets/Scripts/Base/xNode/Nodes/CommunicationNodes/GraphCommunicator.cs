@@ -57,6 +57,9 @@ public class GraphCommunicator : MonoBehaviour
         ComGetVariableEvent<bool>.Subscribe(OnComGetVariable<bool>);
         ComGetVariableEvent<int>.Subscribe(OnComGetVariable<int>);
 
+        // 启动时加载存档（场景变量与图执行器就绪后）
+        SaveSystem.Load();
+
     }
 
     void OnDestroy()
@@ -117,6 +120,12 @@ public class GraphCommunicator : MonoBehaviour
     {
         if (string.IsNullOrEmpty(objectName)) return false;
         return graphExecutors.ContainsKey(objectName);
+    }
+
+    // 获取所有已注册的 GraphExecutor（供存档系统等读取）
+    public Dictionary<string, GraphExecutor> GetAllExecutors()
+    {
+        return graphExecutors;
     }
 
     // 清空所有执行器

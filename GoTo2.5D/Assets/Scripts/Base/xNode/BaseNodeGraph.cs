@@ -54,6 +54,22 @@ public class BaseNodeGraph : NodeGraph
         return variables.Has<T>(key);
     }
 
+    /// <summary>
+    /// 从存档导入图变量
+    /// </summary>
+    public void ImportVariables(VariableBundleData data)
+    {
+        variables.ImportFrom(data);
+    }
+
+    /// <summary>
+    /// 导出图变量到存档
+    /// </summary>
+    public VariableBundleData ExportVariables()
+    {
+        return variables.Export();
+    }
+
     // ============ 节点图生命周期方法 ============
 
     public void SetAttachedObject(GameObject obj)

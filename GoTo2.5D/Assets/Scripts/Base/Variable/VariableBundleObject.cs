@@ -41,4 +41,20 @@ public class VariableBundleObject : ScriptableObject
     {
         variables.Rebuild();
     }
+
+    /// <summary>
+    /// 从存档数据导入运行值
+    /// </summary>
+    public void ImportFrom(VariableBundleData data)
+    {
+        variables.ImportFrom(data);
+    }
+
+    /// <summary>
+    /// 导出当前运行值到存档数据
+    /// </summary>
+    public VariableBundleData Export()
+    {
+        return variables.Export();
+    }
 }
