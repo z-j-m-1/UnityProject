@@ -75,7 +75,7 @@ MonoBehaviour:
       _typeConstraint: 0
       _dynamic: 0
   varName: TextMeshPro
-  Value: "\u54C8\u54C8\u54C8"
+  Value: "\u6CA1\u95E8"
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -98,9 +98,9 @@ MonoBehaviour:
   stringContainer:
     variableList:
     - _name: TextMeshPro
-      _value: "\u54C8\u54C8\u54C8"
+      _value: "\u6CA1\u95E8"
     - _name: Test
-      _value: eeee
+      _value: wcnm
   boolContainer:
     variableList: []
   intContainer:

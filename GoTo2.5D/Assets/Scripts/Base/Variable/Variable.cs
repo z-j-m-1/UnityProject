@@ -1,14 +1,12 @@
 using System;
 using UnityEngine;
 
-/// <summary>
-/// 变量基类（非抽象）
-/// </summary>
 [Serializable]
-public class Variable<T>
+public class Variable<T> : ISerializationCallbackReceiver
 {
     [SerializeField] private string _name;
     [SerializeField] private T _value;
+    [SerializeField] private string _guid;
 
     public string Name
     {
@@ -22,14 +20,48 @@ public class Variable<T>
         set { _value = value; }
     }
 
-    public Variable() { }
+    public string Guid
+    {
+        get
+        {
+            EnsureGuid();
+            return _guid;
+        }
+    }
+
+    private void EnsureGuid()
+    {
+        if (string.IsNullOrEmpty(_guid))
+        {
+            _guid = System.Guid.NewGuid().ToString(); // 使用完全限定名
+            // 或者 _guid = Guid.NewGuid().ToString(); // 如果 using System; 存在
+        }
+    }
+
+    public void OnBeforeSerialize()
+    {
+        EnsureGuid();
+    }
+
+    public void OnAfterDeserialize()
+    {
+        EnsureGuid();
+    }
+
+    public Variable()
+    {
+        EnsureGuid();
+    }
 
     public Variable(string name, T value)
     {
         _name = name;
         _value = value;
+        EnsureGuid();
+    }
+
+    public void RegenerateGuid()
+    {
+        _guid = System.Guid.NewGuid().ToString();
     }
 }
-
-// 不需要子类了！
-// StringVariable, BoolVariable, IntVariable 都不需要了
