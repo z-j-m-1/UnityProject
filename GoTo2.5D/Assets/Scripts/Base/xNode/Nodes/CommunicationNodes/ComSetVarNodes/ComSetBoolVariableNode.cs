@@ -7,7 +7,7 @@ public class ComSetBoolVariableNode : ComSetVariableNode<bool>
 {
     protected override void TriggerEvent(string graphName, string varName, bool varValue)
     {
-        ComSetBoolVariableEvent.Trigger(evt =>
+        ComSetVariableEvent<bool>.Trigger(evt =>
         {
             evt.targetGraphName = graphName;
             evt.variableName = varName;

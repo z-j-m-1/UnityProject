@@ -646,7 +646,7 @@ MonoBehaviour:
       _typeConstraint: 0
       _dynamic: 0
   uiObjectName: ShowNameText
-  outputValue: O
+  outputValue: 
   defaultValue: Firsk
 --- !u!114 &3203922234242088222
 MonoBehaviour:
@@ -842,6 +842,6 @@ MonoBehaviour:
       _typeConstraint: 0
       _dynamic: 0
   targetGraphName: What?
-  variableName: TextMeshPro
+  variableName: Test
   defaultValue: 111
-  outputValue: 
+  outputValue: "\u54C8\u54C8\u54C8"

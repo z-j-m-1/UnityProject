@@ -4,51 +4,17 @@ using ZGameFramework.Core;
 /// <summary>
 /// 通讯-设置字符串变量事件
 /// </summary>
-public class ComSetStringVariableEvent : ParameterizedEvent<ComSetStringVariableEvent>
+public class ComSetVariableEvent<T> : ParameterizedEvent<ComSetVariableEvent<T>>
 {
     public string targetGraphName;
     public string variableName;
-    public string variableValue;
+    public T variableValue;
 
     public override void OnRecycled()
     {
         targetGraphName = null;
         variableName = null;
-        variableValue = null;
-    }
-}
-
-/// <summary>
-/// 通讯-设置布尔变量事件
-/// </summary>
-public class ComSetBoolVariableEvent : ParameterizedEvent<ComSetBoolVariableEvent>
-{
-    public string targetGraphName;
-    public string variableName;
-    public bool variableValue;
-
-    public override void OnRecycled()
-    {
-        targetGraphName = null;
-        variableName = null;
-        variableValue = false;
-    }
-}
-
-/// <summary>
-/// 通讯-设置整数变量事件
-/// </summary>
-public class ComSetIntVariableEvent : ParameterizedEvent<ComSetIntVariableEvent>
-{
-    public string targetGraphName;
-    public string variableName;
-    public int variableValue;
-
-    public override void OnRecycled()
-    {
-        targetGraphName = null;
-        variableName = null;
-        variableValue = 0;
+        variableValue = default;
     }
 }
 

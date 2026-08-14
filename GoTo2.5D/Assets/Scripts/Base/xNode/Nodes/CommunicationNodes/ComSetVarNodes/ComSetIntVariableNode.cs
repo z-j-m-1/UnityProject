@@ -7,7 +7,7 @@ public class ComSetIntVariableNode : ComSetVariableNode<int>
 {
     protected override void TriggerEvent(string graphName, string varName, int varValue)
     {
-        ComSetIntVariableEvent.Trigger(evt =>
+        ComSetVariableEvent<int>.Trigger(evt =>
         {
             evt.targetGraphName = graphName;
             evt.variableName = varName;

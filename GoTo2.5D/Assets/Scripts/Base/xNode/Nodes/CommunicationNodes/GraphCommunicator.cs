@@ -47,9 +47,10 @@ public class GraphCommunicator : MonoBehaviour
         ComExecutionGraphEvent.Subscribe(OnComExecutionGraph);
 
         // 订阅通讯设置变量事件
-        ComSetStringVariableEvent.Subscribe(OnComSetStringVariable);
-        ComSetBoolVariableEvent.Subscribe(OnComSetBoolVariable);
-        ComSetIntVariableEvent.Subscribe(OnComSetIntVariable);
+        ComSetVariableEvent<string>.Subscribe(OnComSetVariable<string>);
+        ComSetVariableEvent<bool>.Subscribe(OnComSetVariable<bool>);
+        ComSetVariableEvent<int>.Subscribe(OnComSetVariable<int>);
+
 
         // 订阅通讯获取变量事件
         ComGetVariableEvent<string>.Subscribe(OnComGetVariable<string>);
@@ -70,9 +71,9 @@ public class GraphCommunicator : MonoBehaviour
 
         // 取消订阅所有通讯事件
         ComExecutionGraphEvent.Unsubscribe(OnComExecutionGraph);
-        ComSetStringVariableEvent.Unsubscribe(OnComSetStringVariable);
-        ComSetBoolVariableEvent.Unsubscribe(OnComSetBoolVariable);
-        ComSetIntVariableEvent.Unsubscribe(OnComSetIntVariable);
+        ComSetVariableEvent<string>.Unsubscribe(OnComSetVariable<string>);
+        ComSetVariableEvent<bool>.Unsubscribe(OnComSetVariable<bool>);
+        ComSetVariableEvent<int>.Unsubscribe(OnComSetVariable<int>);
         ComGetVariableEvent<string>.Unsubscribe(OnComGetVariable<string>);
         ComGetVariableEvent<bool>.Unsubscribe(OnComGetVariable<bool>);
         ComGetVariableEvent<int>.Unsubscribe(OnComGetVariable<int>);
@@ -145,20 +146,11 @@ public class GraphCommunicator : MonoBehaviour
 
     // ============ 通讯设置变量事件处理 ============
 
-    private void OnComSetStringVariable(ComSetStringVariableEvent evt)
+    private void OnComSetVariable<T>(ComSetVariableEvent<T> evt)
     {
-        SetVariableInternal<string>(evt.targetGraphName, evt.variableName, evt.variableValue);
+        SetVariableInternal<T>(evt.targetGraphName, evt.variableName, evt.variableValue);
     }
 
-    private void OnComSetBoolVariable(ComSetBoolVariableEvent evt)
-    {
-        SetVariableInternal<bool>(evt.targetGraphName, evt.variableName, evt.variableValue);
-    }
-
-    private void OnComSetIntVariable(ComSetIntVariableEvent evt)
-    {
-        SetVariableInternal<int>(evt.targetGraphName, evt.variableName, evt.variableValue);
-    }
 
     /// <summary>
     /// 内部设置变量方法
