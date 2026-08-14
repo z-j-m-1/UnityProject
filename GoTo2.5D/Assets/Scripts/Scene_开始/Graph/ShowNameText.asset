@@ -429,7 +429,7 @@ MonoBehaviour:
   - {fileID: -4203757131989217659}
   - {fileID: -1354629484465639233}
   - {fileID: 4108115954011908904}
-  - {fileID: 2633678880093005202}
+  - {fileID: 6109814517013022985}
   startNode: {fileID: -8730860881669193726}
   stringContainer:
     variableList:
@@ -648,56 +648,6 @@ MonoBehaviour:
   uiObjectName: ShowNameText
   outputValue: O
   defaultValue: Firsk
---- !u!114 &2633678880093005202
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a2e6a2107138a2408b96fd478d9a908, type: 3}
-  m_Name: Com Execution Graph
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: -536, y: -168}
-  ports:
-    keys:
-    - graphName
-    - input
-    - next
-    values:
-    - _fieldName: graphName
-      _node: {fileID: 2633678880093005202}
-      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
-        PublicKeyToken=b77a5c561934e089
-      connections: []
-      _direction: 0
-      _connectionType: 1
-      _typeConstraint: 0
-      _dynamic: 0
-    - _fieldName: input
-      _node: {fileID: 2633678880093005202}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections: []
-      _direction: 0
-      _connectionType: 0
-      _typeConstraint: 0
-      _dynamic: 0
-    - _fieldName: next
-      _node: {fileID: 2633678880093005202}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections: []
-      _direction: 1
-      _connectionType: 1
-      _typeConstraint: 0
-      _dynamic: 0
-  input: {fileID: 0}
-  next: {fileID: 0}
-  graphName: 
 --- !u!114 &3203922234242088222
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -844,3 +794,54 @@ MonoBehaviour:
   input: {fileID: 0}
   next: {fileID: 0}
   graphName: 
+--- !u!114 &6109814517013022985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e96b0230720df346a40408c8dbf4921, type: 3}
+  m_Name: Com Get String Variable
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -1000, y: -248}
+  ports:
+    keys:
+    - targetGraphName
+    - variableName
+    - outputValue
+    values:
+    - _fieldName: targetGraphName
+      _node: {fileID: 6109814517013022985}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: variableName
+      _node: {fileID: 6109814517013022985}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: outputValue
+      _node: {fileID: 6109814517013022985}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  targetGraphName: What?
+  variableName: TextMeshPro
+  defaultValue: 111
+  outputValue: 

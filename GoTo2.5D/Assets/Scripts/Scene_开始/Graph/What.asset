@@ -98,7 +98,7 @@ MonoBehaviour:
   stringContainer:
     variableList:
     - _name: TextMeshPro
-      _value: 
+      _value: 3333333333
   boolContainer:
     variableList: []
   intContainer:

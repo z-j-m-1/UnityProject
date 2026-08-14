@@ -9,6 +9,7 @@ public class ComGetBoolVariableNode : ComGetVariableNode<bool>
     {
         ComGetBoolVariableEvent.Trigger(evt =>
         {
+            Debug.Log(evt);
             evt.targetGraphName = graphName;
             evt.variableName = varName;
             evt.defaultValue = defaultValue;

@@ -6,14 +6,14 @@ using ZGameFramework.Core;
 /// 通讯-获取变量节点的泛型基类
 /// </summary>
 /// <typeparam name="T">变量类型</typeparam>
-public abstract class ComGetVariableNode<T> : FlowNode
+public abstract class ComGetVariableNode<T> : DataNode
 {
     [Header("目标图名称")]
-    [Input(ShowBackingValue.Never, ConnectionType.Override)]
+    [Input(ShowBackingValue.Unconnected, ConnectionType.Override)]
     public string targetGraphName;
 
     [Header("变量名")]
-    [Input(ShowBackingValue.Never, ConnectionType.Override)]
+    [Input(ShowBackingValue.Unconnected, ConnectionType.Override)]
     public string variableName;
 
     [Header("默认值")]
@@ -21,28 +21,6 @@ public abstract class ComGetVariableNode<T> : FlowNode
 
     [Output]
     public T outputValue;
-
-    public override void Execute()
-    {
-        string graphName = GetInputValue<string>("targetGraphName", this.targetGraphName);
-        string varName = GetInputValue<string>("variableName", this.variableName);
-
-        if (string.IsNullOrEmpty(graphName) || string.IsNullOrEmpty(varName))
-        {
-            Debug.LogError($"{GetType().Name}: 参数不能为空");
-            outputValue = defaultValue;
-            base.Execute();
-            return;
-        }
-
-        // 触发获取变量事件（由子类实现）
-        RequestVariable(graphName, varName, (value) =>
-        {
-            outputValue = value;
-            Debug.Log($"{GetType().Name}: 通讯获取到变量 '{varName}' = '{value}'");
-            base.Execute();
-        });
-    }
 
     /// <summary>
     /// 子类实现请求具体的事件
@@ -56,7 +34,23 @@ public abstract class ComGetVariableNode<T> : FlowNode
         if (port.fieldName == nameof(variableName))
             return GetInputValue<string>("variableName", variableName);
         if (port.fieldName == nameof(outputValue))
+        {
+            // 触发获取变量事件（由子类实现）
+            RequestVariable(
+            GetInputValue<string>("targetGraphName", targetGraphName),
+            GetInputValue<string>("variableName", variableName),
+            (value) =>
+            {
+                outputValue = value;
+                Debug.Log($"{GetType().Name}: 通讯获取到变量 '{GetInputValue<string>("targetGraphName", targetGraphName)}' = '{value}'");
+            });
+
+
             return outputValue;
+
+        }
+            
+            
         return null;
     }
 }
