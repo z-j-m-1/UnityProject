@@ -176,7 +176,12 @@ public class SaveSystem : MonoBehaviour
 
         roomManager.Import(roomData.localVariables);
         roomManager.ImportRoomGraphs(sceneName, roomData.graphs);
-        // items 物品状态：第三步 PersistentItemManager 接入
+
+        // 物品状态还原
+        if (PersistentItemManager.IsInitialized && roomData.items != null)
+        {
+            PersistentItemManager.Instance.ApplyCurrent(roomData.items);
+        }
     }
 
     /// <summary>
@@ -190,7 +195,7 @@ public class SaveSystem : MonoBehaviour
             sceneName = sceneName,
             localVariables = RoomVariableManager.Instance.Export(),
             graphs = RoomVariableManager.Instance.ExportRoomGraphs(sceneName),
-            items = null
+            items = PersistentItemManager.IsInitialized ? PersistentItemManager.Instance.ExportCurrent() : null
         };
     }
 

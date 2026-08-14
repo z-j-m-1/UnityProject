@@ -1,1 +1,5 @@
-三套 get/set 节点新增浮点变体（本图/跨图/持久变量）
+新增物品持久化系统（PersistentItem + PersistentItemManager）
+
+- 新增 PersistentItem 基类（itemId + OnSaveState/OnLoadState，移除逻辑由物品自处理）
+- 新增 PersistentItemManager 单例：收集/分发每房间物品状态
+- SaveSystem 房间存档接入物品数据（CaptureRoom/ApplyRoomSaveNow）
