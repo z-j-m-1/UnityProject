@@ -10,7 +10,7 @@ public class ComGetIntVariableNode : ComGetVariableNode<int>
 {
     protected override void RequestVariable(string graphName, string varName, System.Action<int> callback)
     {
-        ComGetIntVariableEvent.Trigger(evt =>
+        ComGetVariableEvent<int>.Trigger(evt =>
         {
             evt.targetGraphName = graphName;
             evt.variableName = varName;
