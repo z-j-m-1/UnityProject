@@ -52,9 +52,10 @@ public class GraphCommunicator : MonoBehaviour
         ComSetIntVariableEvent.Subscribe(OnComSetIntVariable);
 
         // 订阅通讯获取变量事件
-        ComGetStringVariableEvent.Subscribe(OnComGetStringVariable);
-        ComGetBoolVariableEvent.Subscribe(OnComGetBoolVariable);
-        ComGetIntVariableEvent.Subscribe(OnComGetIntVariable);
+        ComGetVariableEvent<string>.Subscribe(OnComGetVariable<string>);
+        ComGetVariableEvent<bool>.Subscribe(OnComGetVariable<bool>);
+        ComGetVariableEvent<int>.Subscribe(OnComGetVariable<int>);
+
     }
 
     void OnDestroy()
@@ -72,9 +73,10 @@ public class GraphCommunicator : MonoBehaviour
         ComSetStringVariableEvent.Unsubscribe(OnComSetStringVariable);
         ComSetBoolVariableEvent.Unsubscribe(OnComSetBoolVariable);
         ComSetIntVariableEvent.Unsubscribe(OnComSetIntVariable);
-        ComGetStringVariableEvent.Unsubscribe(OnComGetStringVariable);
-        ComGetBoolVariableEvent.Unsubscribe(OnComGetBoolVariable);
-        ComGetIntVariableEvent.Unsubscribe(OnComGetIntVariable);
+        ComGetVariableEvent<string>.Unsubscribe(OnComGetVariable<string>);
+        ComGetVariableEvent<bool>.Unsubscribe(OnComGetVariable<bool>);
+        ComGetVariableEvent<int>.Unsubscribe(OnComGetVariable<int>);
+
     }
 
     // 场景卸载时清空字典
@@ -185,19 +187,9 @@ public class GraphCommunicator : MonoBehaviour
 
     // ============ 通讯获取变量事件处理 ============
 
-    private void OnComGetStringVariable(ComGetStringVariableEvent evt)
+    private void OnComGetVariable<T>(ComGetVariableEvent<T> evt)
     {
-        GetVariableInternal<string>(evt.targetGraphName, evt.variableName, evt.defaultValue, evt.callback);
-    }
-
-    private void OnComGetBoolVariable(ComGetBoolVariableEvent evt)
-    {
-        GetVariableInternal<bool>(evt.targetGraphName, evt.variableName, evt.defaultValue, evt.callback);
-    }
-
-    private void OnComGetIntVariable(ComGetIntVariableEvent evt)
-    {
-        GetVariableInternal<int>(evt.targetGraphName, evt.variableName, evt.defaultValue, evt.callback);
+        GetVariableInternal<T>(evt.targetGraphName, evt.variableName, evt.defaultValue, evt.callback);
     }
 
     /// <summary>

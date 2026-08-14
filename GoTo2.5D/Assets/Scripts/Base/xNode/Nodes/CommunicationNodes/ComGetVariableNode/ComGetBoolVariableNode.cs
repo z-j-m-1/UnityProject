@@ -7,7 +7,7 @@ public class ComGetBoolVariableNode : ComGetVariableNode<bool>
 {
     protected override void RequestVariable(string graphName, string varName, System.Action<bool> callback)
     {
-        ComGetBoolVariableEvent.Trigger(evt =>
+        ComGetVariableEvent<bool>.Trigger(evt =>
         {
             Debug.Log(evt);
             evt.targetGraphName = graphName;
