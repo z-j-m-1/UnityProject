@@ -118,10 +118,12 @@ public abstract class PersistentVariableManager : MonoBehaviour
         PersistentSetVariableEvent<string>.Subscribe(OnSetVariable<string>);
         PersistentSetVariableEvent<bool>.Subscribe(OnSetVariable<bool>);
         PersistentSetVariableEvent<int>.Subscribe(OnSetVariable<int>);
+        PersistentSetVariableEvent<float>.Subscribe(OnSetVariable<float>);
 
         PersistentGetVariableEvent<string>.Subscribe(OnGetVariable<string>);
         PersistentGetVariableEvent<bool>.Subscribe(OnGetVariable<bool>);
         PersistentGetVariableEvent<int>.Subscribe(OnGetVariable<int>);
+        PersistentGetVariableEvent<float>.Subscribe(OnGetVariable<float>);
     }
 
     protected virtual void OnDisable()
@@ -129,10 +131,12 @@ public abstract class PersistentVariableManager : MonoBehaviour
         PersistentSetVariableEvent<string>.Unsubscribe(OnSetVariable<string>);
         PersistentSetVariableEvent<bool>.Unsubscribe(OnSetVariable<bool>);
         PersistentSetVariableEvent<int>.Unsubscribe(OnSetVariable<int>);
+        PersistentSetVariableEvent<float>.Unsubscribe(OnSetVariable<float>);
 
         PersistentGetVariableEvent<string>.Unsubscribe(OnGetVariable<string>);
         PersistentGetVariableEvent<bool>.Unsubscribe(OnGetVariable<bool>);
         PersistentGetVariableEvent<int>.Unsubscribe(OnGetVariable<int>);
+        PersistentGetVariableEvent<float>.Unsubscribe(OnGetVariable<float>);
     }
 
     private void OnSetVariable<T>(PersistentSetVariableEvent<T> evt)

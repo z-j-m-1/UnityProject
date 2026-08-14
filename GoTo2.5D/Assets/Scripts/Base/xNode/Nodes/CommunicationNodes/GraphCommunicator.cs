@@ -50,12 +50,14 @@ public class GraphCommunicator : MonoBehaviour
         ComSetVariableEvent<string>.Subscribe(OnComSetVariable<string>);
         ComSetVariableEvent<bool>.Subscribe(OnComSetVariable<bool>);
         ComSetVariableEvent<int>.Subscribe(OnComSetVariable<int>);
+        ComSetVariableEvent<float>.Subscribe(OnComSetVariable<float>);
 
 
         // 订阅通讯获取变量事件
         ComGetVariableEvent<string>.Subscribe(OnComGetVariable<string>);
         ComGetVariableEvent<bool>.Subscribe(OnComGetVariable<bool>);
         ComGetVariableEvent<int>.Subscribe(OnComGetVariable<int>);
+        ComGetVariableEvent<float>.Subscribe(OnComGetVariable<float>);
 
         // 启动时加载存档（场景变量与图执行器就绪后）
         SaveSystem.Load();
@@ -77,9 +79,11 @@ public class GraphCommunicator : MonoBehaviour
         ComSetVariableEvent<string>.Unsubscribe(OnComSetVariable<string>);
         ComSetVariableEvent<bool>.Unsubscribe(OnComSetVariable<bool>);
         ComSetVariableEvent<int>.Unsubscribe(OnComSetVariable<int>);
+        ComSetVariableEvent<float>.Unsubscribe(OnComSetVariable<float>);
         ComGetVariableEvent<string>.Unsubscribe(OnComGetVariable<string>);
         ComGetVariableEvent<bool>.Unsubscribe(OnComGetVariable<bool>);
         ComGetVariableEvent<int>.Unsubscribe(OnComGetVariable<int>);
+        ComGetVariableEvent<float>.Unsubscribe(OnComGetVariable<float>);
 
     }
 

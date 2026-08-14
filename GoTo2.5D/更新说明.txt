@@ -1,4 +1,1 @@
-变量支持float类型，节点图增加GUID标识
-
-- VariableBundle 增加 float 容器与类型分发，VariableBundleData 增加 floats
-- BaseNodeGraph 实现 ISerializationCallbackReceiver，增加自动生成的稳定 GUID
+三套 get/set 节点新增浮点变体（本图/跨图/持久变量）
