@@ -14,23 +14,36 @@ public class VariableBundleData
 }
 
 /// <summary>
-/// 存档数据 - 存储需要持久化的三类变量：节点图变量 / 房间变量（按场景分槽）/ 全局变量
+/// 房间存档数据 - 每个房间一个文件（staging 预备 / archive 存档 各一份）
+/// 包含该房间的局部变量、该房间各节点图变量（按图GUID）、物品状态（后续扩展）
 /// </summary>
 [Serializable]
-public class SaveData
+public class RoomSaveData
 {
-    /// <summary>存档版本号</summary>
     public int version = 1;
-
-    /// <summary>存档时的场景名，读档后用于定位房间变量槽</summary>
     public string sceneName;
+    public VariableBundleData localVariables;
+    public Dictionary<string, VariableBundleData> graphs;   // 图GUID → 图变量
+    public Dictionary<string, VariableBundleData> items;    // itemId → 物品状态（预留）
+}
 
-    /// <summary>节点图变量：图资产名 → 变量数据</summary>
-    public Dictionary<string, VariableBundleData> graphs;
-
-    /// <summary>房间变量：场景名 → 变量数据（按场景分槽）</summary>
-    public Dictionary<string, VariableBundleData> roomByScene;
-
-    /// <summary>全局变量</summary>
+/// <summary>
+/// 全局存档数据 - 全局变量（不属于任何房间）
+/// </summary>
+[Serializable]
+public class GlobalSaveData
+{
+    public int version = 1;
     public VariableBundleData global;
+}
+
+/// <summary>
+/// 存档索引/元数据 - 记录存档场景与时间
+/// </summary>
+[Serializable]
+public class SaveIndex
+{
+    public int version = 1;
+    public string lastScene;
+    public string saveTime;
 }

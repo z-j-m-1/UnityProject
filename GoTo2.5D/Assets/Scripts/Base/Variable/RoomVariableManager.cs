@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -32,6 +33,65 @@ public class RoomVariableManager : PersistentVariableManager
 
     public override PersistentVariableScope Scope => PersistentVariableScope.Room;
 
+    /// <summary>是否已初始化（供存档系统判断是否需要采集）</summary>
+    public static bool IsInitialized => _instance != null;
+
+    /// <summary>各场景登记的节点图：场景名 → 图列表</summary>
+    private readonly Dictionary<string, List<BaseNodeGraph>> roomGraphs = new Dictionary<string, List<BaseNodeGraph>>();
+
+    /// <summary>当前场景登记的节点图</summary>
+    private List<BaseNodeGraph> currentRoomGraphs = new List<BaseNodeGraph>();
+
+    /// <summary>
+    /// 登记当前场景的所有节点图（离开房间时按图GUID导出）
+    /// </summary>
+    public void RegisterCurrentRoomGraphs(string sceneName)
+    {
+        currentRoomGraphs = new List<BaseNodeGraph>();
+        foreach (var kvp in GraphCommunicator.Instance.GetAllExecutors())
+        {
+            BaseNodeGraph graph = kvp.Value != null ? kvp.Value.GetNodeGraph() as BaseNodeGraph : null;
+            if (graph != null)
+            {
+                currentRoomGraphs.Add(graph);
+            }
+        }
+        roomGraphs[sceneName] = currentRoomGraphs;
+    }
+
+    /// <summary>
+    /// 导出指定房间的图变量（图GUID → 图变量数据）
+    /// </summary>
+    public Dictionary<string, VariableBundleData> ExportRoomGraphs(string sceneName)
+    {
+        Dictionary<string, VariableBundleData> result = new Dictionary<string, VariableBundleData>();
+        if (roomGraphs.TryGetValue(sceneName, out List<BaseNodeGraph> graphs))
+        {
+            foreach (BaseNodeGraph graph in graphs)
+            {
+                if (graph == null) continue;
+                result[graph.Guid] = graph.ExportVariables();
+            }
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// 导入指定房间的图变量（存档加载时按图GUID分发）
+    /// </summary>
+    public void ImportRoomGraphs(string sceneName, Dictionary<string, VariableBundleData> graphData)
+    {
+        if (graphData == null || !roomGraphs.TryGetValue(sceneName, out List<BaseNodeGraph> graphs)) return;
+        foreach (BaseNodeGraph graph in graphs)
+        {
+            if (graph == null) continue;
+            if (graphData.TryGetValue(graph.Guid, out VariableBundleData data))
+            {
+                graph.ImportVariables(data);
+            }
+        }
+    }
+
     void Awake()
     {
         if (_instance != null && _instance != this)
@@ -49,6 +109,13 @@ public class RoomVariableManager : PersistentVariableManager
         SceneManager.sceneLoaded += OnSceneLoaded;
         // 初始场景不会触发 sceneLoaded，需要手动加载一次当前场景
         LoadRoomVariableObject(SceneManager.GetActiveScene());
+        RegisterCurrentRoomGraphs(SceneManager.GetActiveScene().name);
+    }
+
+    void Start()
+    {
+        // Awake 阶段执行器可能还没注册完，Start 阶段确保当前房间的图已登记
+        RegisterCurrentRoomGraphs(SceneManager.GetActiveScene().name);
     }
 
     protected override void OnDisable()
@@ -60,6 +127,9 @@ public class RoomVariableManager : PersistentVariableManager
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         LoadRoomVariableObject(scene);
+        RegisterCurrentRoomGraphs(scene.name);
+        // 进入房间后应用该房间的存档（只读 archive）
+        SaveSystem.ApplyRoomSave(scene.name);
     }
 
     /// <summary>
