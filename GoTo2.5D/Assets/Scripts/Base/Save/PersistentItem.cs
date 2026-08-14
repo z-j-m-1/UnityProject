@@ -2,14 +2,54 @@ using UnityEngine;
 
 /// <summary>
 /// 持久化物品基类 - 挂在需要存档还原状态的物品/机关上
-/// 物品自己决定保存什么、如何还原（移除逻辑也由物品自己处理）
+/// 物品状态直接存放在变量包 Variables 中，管理器直接导入导出；
+/// 移除逻辑由物品自己处理（在 OnAfterLoad 里读自己的移除变量）
 /// </summary>
-public class PersistentItem : MonoBehaviour
+public class PersistentItem : MonoBehaviour, ISerializationCallbackReceiver
 {
     [SerializeField] private string itemId;
+    [SerializeField] private VariableBundle variables = new VariableBundle();
 
-    /// <summary>物品唯一标识（场景内唯一，稳定不变）</summary>
-    public string ItemId => itemId;
+    /// <summary>物品唯一标识（场景内唯一，稳定不变；无则自动生成）</summary>
+    public string ItemId
+    {
+        get
+        {
+            EnsureGuid();
+            return itemId;
+        }
+    }
+
+    /// <summary>物品状态变量包（直接读写：Get/Set/Has）</summary>
+    public VariableBundle Variables => variables;
+
+    private void EnsureGuid()
+    {
+        if (string.IsNullOrEmpty(itemId))
+        {
+            itemId = System.Guid.NewGuid().ToString();
+        }
+    }
+
+    public void OnBeforeSerialize()
+    {
+        EnsureGuid();
+    }
+
+    public void OnAfterDeserialize()
+    {
+        EnsureGuid();
+    }
+
+    /// <summary>
+    /// 重新生成 GUID（仅当你确实需要更换标识时使用；会破坏已有存档中的对应关系）
+    /// </summary>
+    [ContextMenu("重新生成GUID")]
+    public void RegenerateGuid()
+    {
+        itemId = System.Guid.NewGuid().ToString();
+        Debug.Log($"PersistentItem '{name}' 已重新生成 GUID: {itemId}");
+    }
 
     protected virtual void OnEnable()
     {
@@ -27,13 +67,14 @@ public class PersistentItem : MonoBehaviour
     }
 
     /// <summary>
-    /// 物品把当前状态写入存档数据（离开房间/保存时调用）
+    /// 保存前钩子（可选）：把外部状态（如 Transform 位置）同步进 Variables
     /// </summary>
-    public virtual void OnSaveState(VariableBundleData data) { }
+    public virtual void OnBeforeSave() { }
 
     /// <summary>
-    /// 物品根据存档数据还原自己（进入房间/读档时调用）
-    /// 示例：if (data.bools != null && data.bools.TryGetValue("removed", out bool removed) && removed) gameObject.SetActive(false);
+    /// 读档后钩子（可选）：根据 Variables 调整外部状态（如 removed 则隐藏）
+    /// 示例：if (Variables.Get&lt;bool&gt;("removed", false)) gameObject.SetActive(false);
     /// </summary>
-    public virtual void OnLoadState(VariableBundleData data) { }
+    public virtual void OnAfterLoad() { }
 }
+

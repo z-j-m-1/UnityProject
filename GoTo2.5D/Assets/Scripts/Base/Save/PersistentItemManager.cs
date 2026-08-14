@@ -76,9 +76,8 @@ public class PersistentItemManager : MonoBehaviour
     public void CaptureItem(PersistentItem item)
     {
         if (item == null) return;
-        VariableBundleData data = new VariableBundleData();
-        item.OnSaveState(data);
-        pendingData[item.ItemId] = data;
+        item.OnBeforeSave();
+        pendingData[item.ItemId] = item.Variables.Export();
     }
 
     /// <summary>导出当前房间的所有物品状态（活跃物品 + 待存缓存），并清空待存缓存</summary>
@@ -89,9 +88,8 @@ public class PersistentItemManager : MonoBehaviour
         foreach (PersistentItem item in activeItems)
         {
             if (item == null) continue;
-            VariableBundleData data = new VariableBundleData();
-            item.OnSaveState(data);
-            result[item.ItemId] = data;
+            item.OnBeforeSave();
+            result[item.ItemId] = item.Variables.Export();
         }
 
         foreach (KeyValuePair<string, VariableBundleData> kvp in pendingData)
@@ -112,7 +110,8 @@ public class PersistentItemManager : MonoBehaviour
             if (item == null) continue;
             if (itemData.TryGetValue(item.ItemId, out VariableBundleData data))
             {
-                item.OnLoadState(data);
+                item.Variables.ImportFrom(data);
+                item.OnAfterLoad();
             }
         }
     }
