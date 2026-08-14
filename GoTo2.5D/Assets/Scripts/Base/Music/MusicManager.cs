@@ -2,19 +2,37 @@ using UnityEngine;
 
 public class MusicManager : MonoBehaviour
 {
-    public static MusicManager Instance { get; private set; }
+    private static MusicManager _instance;
+
+    public static MusicManager Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindObjectOfType<MusicManager>();
+                if (_instance == null)
+                {
+                    GameObject go = new GameObject(typeof(MusicManager).Name);
+                    _instance = go.AddComponent<MusicManager>();
+                    DontDestroyOnLoad(go);
+                }
+            }
+            return _instance;
+        }
+    }
 
     private AudioSource musicSource;
     private AudioSource sfxSource;
 
     void Awake()
     {
-        if (Instance != null && Instance != this)
+        if (_instance != null && _instance != this)
         {
             Destroy(gameObject);
             return;
         }
-        Instance = this;
+        _instance = this;
         DontDestroyOnLoad(gameObject);
 
         // 自动创建两个音源

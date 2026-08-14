@@ -31,6 +31,47 @@ MonoBehaviour:
       _typeConstraint: 0
       _dynamic: 0
   next: {fileID: 0}
+--- !u!114 &-7946194604512856672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5589035c1a310834b8c4b6e518342bc4, type: 3}
+  m_Name: Com Get Scope Bool Variable
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 147.5, y: -170}
+  ports:
+    keys:
+    - variableName
+    - outputValue
+    values:
+    - _fieldName: variableName
+      _node: {fileID: -7946194604512856672}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: outputValue
+      _node: {fileID: -7946194604512856672}
+      _typeQualifiedName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  scope: 0
+  variableName: 
+  defaultValue: 0
+  outputValue: 0
 --- !u!114 &-7608811158749182104
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -429,25 +470,15 @@ MonoBehaviour:
   - {fileID: -4203757131989217659}
   - {fileID: -1354629484465639233}
   - {fileID: 6109814517013022985}
+  - {fileID: -7946194604512856672}
   startNode: {fileID: -8730860881669193726}
-  stringContainer:
-    variableList: []
-  boolContainer:
-    variableList:
-    - _name: 
-      _value: 0
-      _guid: 23a449f7-30ec-4bb5-91ce-93dc0206f32f
-    - _name: 
-      _value: 0
-      _guid: 2f47ad35-87b2-43be-b5f8-50d67c010735
-    - _name: 
-      _value: 0
-      _guid: 2f47ad35-87b2-43be-b5f8-50d67c010735
-  intContainer:
-    variableList:
-    - _name: 
-      _value: 0
-      _guid: 22fd2881-7b13-4cc1-8778-41a867756898
+  variables:
+    stringContainer:
+      variableList: []
+    boolContainer:
+      variableList: []
+    intContainer:
+      variableList: []
 --- !u!114 &300210317528360684
 MonoBehaviour:
   m_ObjectHideFlags: 0
