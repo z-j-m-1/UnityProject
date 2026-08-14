@@ -95,20 +95,6 @@ public abstract class PersistentVariableManager : MonoBehaviour
     /// </summary>
     protected bool HasAssignedVariableObject => variableObject != null;
 
-    /// <summary>
-    /// 从 Resources 加载变量对象，找不到时使用运行时实例兜底
-    /// </summary>
-    protected VariableBundleObject LoadVariableObject(string path)
-    {
-        VariableBundleObject obj = Resources.Load<VariableBundleObject>(path);
-        if (obj == null)
-        {
-            Debug.LogWarning($"持久变量：Resources 中未找到变量对象（路径: {path}），使用运行时实例");
-            obj = CreateVariableObject();
-        }
-        return obj;
-    }
-
     // ============ 订阅持久变量事件（供节点使用） ============
 
     protected virtual void OnEnable()
