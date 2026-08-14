@@ -1,7 +1,4 @@
-新增变量存档系统与存档点节点
+变量支持float类型，节点图增加GUID标识
 
-- VariableContainer 运行时缓存 dict、编辑模式从列表重建；运行时 Set 只写 dict
-- 变量相关类支持存档导入导出（ImportFrom/Export）
-- 新增 SaveData/VariableBundleData 与 SaveSystem（场景单例 + 右键菜单调试）
-- 图变量按"场景/图"分槽；启动自动读档
-- 新增 ComSaveGameNode 存档点节点
+- VariableBundle 增加 float 容器与类型分发，VariableBundleData 增加 floats
+- BaseNodeGraph 实现 ISerializationCallbackReceiver，增加自动生成的稳定 GUID

@@ -10,6 +10,7 @@ public class VariableBundleData
     public Dictionary<string, string> strings;
     public Dictionary<string, bool> bools;
     public Dictionary<string, int> ints;
+    public Dictionary<string, float> floats;
 }
 
 /// <summary>

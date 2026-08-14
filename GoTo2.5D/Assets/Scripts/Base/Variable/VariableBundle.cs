@@ -11,6 +11,7 @@ public class VariableBundle
     [SerializeField] private VariableContainer<string> stringContainer = new VariableContainer<string>();
     [SerializeField] private VariableContainer<bool> boolContainer = new VariableContainer<bool>();
     [SerializeField] private VariableContainer<int> intContainer = new VariableContainer<int>();
+    [SerializeField] private VariableContainer<float> floatContainer = new VariableContainer<float>();
 
     /// <summary>
     /// 获取变量值
@@ -36,6 +37,10 @@ public class VariableBundle
         if (type == typeof(int))
         {
             return (T)(object)intContainer.Get(key, (int)(object)defaultValue);
+        }
+        if (type == typeof(float))
+        {
+            return (T)(object)floatContainer.Get(key, (float)(object)defaultValue);
         }
 
         throw new NotSupportedException($"不支持的类型: {type}");
@@ -69,6 +74,11 @@ public class VariableBundle
             intContainer.Set(key, (int)(object)value);
             return;
         }
+        if (type == typeof(float))
+        {
+            floatContainer.Set(key, (float)(object)value);
+            return;
+        }
 
         throw new NotSupportedException($"不支持的类型: {type}");
     }
@@ -94,6 +104,10 @@ public class VariableBundle
         {
             return intContainer.Has(key);
         }
+        if (type == typeof(float))
+        {
+            return floatContainer.Has(key);
+        }
 
         throw new NotSupportedException($"不支持的类型: {type}");
     }
@@ -106,6 +120,7 @@ public class VariableBundle
         stringContainer.Rebuild();
         boolContainer.Rebuild();
         intContainer.Rebuild();
+        floatContainer.Rebuild();
     }
 
     /// <summary>
@@ -117,6 +132,7 @@ public class VariableBundle
         stringContainer.ImportFrom(data.strings);
         boolContainer.ImportFrom(data.bools);
         intContainer.ImportFrom(data.ints);
+        floatContainer.ImportFrom(data.floats);
     }
 
     /// <summary>
@@ -128,7 +144,8 @@ public class VariableBundle
         {
             strings = stringContainer.Export(),
             bools = boolContainer.Export(),
-            ints = intContainer.Export()
+            ints = intContainer.Export(),
+            floats = floatContainer.Export()
         };
     }
 }

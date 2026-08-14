@@ -4,7 +4,7 @@ using UnityEngine;
 using XNode;
 
 [CreateAssetMenu(menuName = "节点图/通用", fileName = "通用节点图")]
-public class BaseNodeGraph : NodeGraph
+public class BaseNodeGraph : NodeGraph, ISerializationCallbackReceiver
 {
     // 节点图依附的对象
     [NonSerialized]
@@ -15,6 +15,50 @@ public class BaseNodeGraph : NodeGraph
 
     [NonSerialized]
     private BaseNode _currentNode;
+
+    // ============ 节点图唯一标识（存档用） ============
+
+    [SerializeField] private string _guid;
+
+    /// <summary>
+    /// 节点图的稳定唯一标识（无则自动生成）
+    /// </summary>
+    public string Guid
+    {
+        get
+        {
+            EnsureGuid();
+            return _guid;
+        }
+    }
+
+    private void EnsureGuid()
+    {
+        if (string.IsNullOrEmpty(_guid))
+        {
+            _guid = System.Guid.NewGuid().ToString();
+        }
+    }
+
+    public void OnBeforeSerialize()
+    {
+        EnsureGuid();
+    }
+
+    public void OnAfterDeserialize()
+    {
+        EnsureGuid();
+    }
+
+    /// <summary>
+    /// 重新生成 GUID（仅当你确实需要更换标识时使用）
+    /// </summary>
+    [ContextMenu("重新生成GUID")]
+    public void RegenerateGuid()
+    {
+        _guid = System.Guid.NewGuid().ToString();
+        Debug.Log($"节点图 '{name}' 已重新生成 GUID: {_guid}");
+    }
 
     // ============ 变量容器 ============
 
