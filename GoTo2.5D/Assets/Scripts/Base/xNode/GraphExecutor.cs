@@ -14,7 +14,7 @@ public class GraphExecutor : MonoBehaviour
     private Coroutine executeCoroutine;
     private int currentExecuteCount = 0;
 
-    void Start()
+    void Awake()
     {
         if (nodeGraph == null)
         {
@@ -23,13 +23,21 @@ public class GraphExecutor : MonoBehaviour
         }
 
         nodeGraph.SetAttachedObject(gameObject);
+        GraphCommunicator.Instance.RegisterGraphExecutor(this.gameObject);
+    }
+    void Start()
+    {
+        if (nodeGraph == null)
+        {
+            Debug.LogWarning("节点图为空");
+            return;
+        }
 
         if (autoExecute)
         {
             Execute();
         }
 
-        GraphCommunicator.Instance.RegisterGraphExecutor(this.gameObject);
     }
 
     void OnDestroy()

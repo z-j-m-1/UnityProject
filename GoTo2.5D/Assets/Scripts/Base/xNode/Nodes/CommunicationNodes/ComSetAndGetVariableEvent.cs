@@ -6,13 +6,13 @@ using ZGameFramework.Core;
 /// </summary>
 public class ComSetVariableEvent<T> : ParameterizedEvent<ComSetVariableEvent<T>>
 {
-    public string targetGraphName;
+    public string targetName;
     public string variableName;
     public T variableValue;
 
     public override void OnRecycled()
     {
-        targetGraphName = null;
+        targetName = null;
         variableName = null;
         variableValue = default;
     }
@@ -23,14 +23,14 @@ public class ComSetVariableEvent<T> : ParameterizedEvent<ComSetVariableEvent<T>>
 /// </summary>
 public class ComGetVariableEvent<T> : ParameterizedEvent<ComGetVariableEvent<T>>
 {
-    public string targetGraphName;
+    public string targetName;
     public string variableName;
     public T defaultValue;
     public System.Action<T> callback;
 
     public override void OnRecycled()
     {
-        targetGraphName = null;
+        targetName = null;
         variableName = null;
         defaultValue = default;
         callback = null;

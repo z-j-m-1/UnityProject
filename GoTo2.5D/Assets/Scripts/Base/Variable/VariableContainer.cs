@@ -85,9 +85,10 @@ public class VariableContainer<T>
         var dict = GetRuntimeDict();
         if (dict.TryGetValue(key, out T value))
         {
+            Debug.Log($"获取变量: {key} = {value}");
             return value;
         }
-
+        Debug.LogWarning($"变量名 '{key}' 不存在，返回默认值");
         return defaultValue;
     }
 

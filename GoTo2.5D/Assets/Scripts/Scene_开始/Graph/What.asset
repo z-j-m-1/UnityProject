@@ -99,8 +99,10 @@ MonoBehaviour:
     variableList:
     - _name: TextMeshPro
       _value: "\u6CA1\u95E8"
+      _guid: cab6cb71-2c77-43d1-9a7d-83f19a3e5dcf
     - _name: Test
       _value: wcnm
+      _guid: d0a654a7-a65e-4462-9b80-279f814fd396
   boolContainer:
     variableList: []
   intContainer:
@@ -263,5 +265,5 @@ MonoBehaviour:
       _dynamic: 0
   input: {fileID: 0}
   next: {fileID: 0}
-  uiObjectName: What?
+  uiObjectName: What
   textValue: 

@@ -10,7 +10,7 @@ public abstract class ComGetVariableNode<T> : DataNode
 {
     [Header("目标图名称")]
     [Input(ShowBackingValue.Unconnected, ConnectionType.Override)]
-    public string targetGraphName;
+    public string targetName;
 
     [Header("变量名")]
     [Input(ShowBackingValue.Unconnected, ConnectionType.Override)]
@@ -23,34 +23,39 @@ public abstract class ComGetVariableNode<T> : DataNode
     public T outputValue;
 
     /// <summary>
-    /// 子类实现请求具体的事件
+    /// 触发通讯获取变量事件（泛型实现，请求目标图上的变量）
     /// </summary>
-    protected abstract void RequestVariable(string graphName, string varName, System.Action<T> callback);
+    protected void RequestVariable(string graphName, string varName, System.Action<T> callback)
+    {
+        ComGetVariableEvent<T>.Trigger(evt =>
+        {
+            evt.targetName = graphName;
+            evt.variableName = varName;
+            evt.defaultValue = defaultValue;
+            evt.callback = callback;
+        });
+    }
 
     public override object GetValue(NodePort port)
     {
-        if (port.fieldName == nameof(targetGraphName))
-            return GetInputValue<string>("targetGraphName", targetGraphName);
+        if (port.fieldName == nameof(targetName))
+            return GetInputValue<string>(nameof(targetName), targetName);
         if (port.fieldName == nameof(variableName))
-            return GetInputValue<string>("variableName", variableName);
+            return GetInputValue<string>(nameof(variableName), variableName);
         if (port.fieldName == nameof(outputValue))
         {
-            // 触发获取变量事件（由子类实现）
-            RequestVariable(
-            GetInputValue<string>("targetGraphName", targetGraphName),
-            GetInputValue<string>("variableName", variableName),
-            (value) =>
+            string graphName = GetInputValue<string>(nameof(targetName), targetName);
+            string varName = GetInputValue<string>(nameof(variableName), variableName);
+
+            RequestVariable(graphName, varName, value =>
             {
                 outputValue = value;
-                Debug.Log($"{GetType().Name}: 通讯获取到变量 '{GetInputValue<string>("targetGraphName", targetGraphName)}' = '{value}'");
+                Debug.Log($"{GetType().Name}: 通讯获取到变量 '{graphName}.{varName}' = '{value}'");
             });
 
-
             return outputValue;
-
         }
-            
-            
+
         return null;
     }
 }

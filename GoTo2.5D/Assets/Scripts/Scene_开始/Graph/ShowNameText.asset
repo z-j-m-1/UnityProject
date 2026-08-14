@@ -47,13 +47,13 @@ MonoBehaviour:
   position: {x: -248, y: 296}
   ports:
     keys:
-    - targetGraphName
+    - targetName
     - variableName
     - variableValue
     - input
     - next
     values:
-    - _fieldName: targetGraphName
+    - _fieldName: targetName
       _node: {fileID: -7608811158749182104}
       _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
@@ -106,7 +106,7 @@ MonoBehaviour:
       _dynamic: 0
   input: {fileID: 0}
   next: {fileID: 0}
-  targetGraphName: What?
+  targetName: What
   variableName: TextMeshPro
   variableValue: "\u7528\u5200\u5427"
 --- !u!114 &-5774657243801648385
@@ -262,13 +262,13 @@ MonoBehaviour:
   position: {x: -248, y: 536}
   ports:
     keys:
-    - targetGraphName
+    - targetName
     - variableName
     - variableValue
     - input
     - next
     values:
-    - _fieldName: targetGraphName
+    - _fieldName: targetName
       _node: {fileID: -4203757131989217659}
       _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
@@ -324,7 +324,7 @@ MonoBehaviour:
       _dynamic: 0
   input: {fileID: 0}
   next: {fileID: 0}
-  targetGraphName: What?
+  targetName: What
   variableName: TextMeshPro
   variableValue: "\u6C42\u4F60\u4E86"
 --- !u!114 &-1354629484465639233
@@ -343,13 +343,13 @@ MonoBehaviour:
   position: {x: -232, y: -216}
   ports:
     keys:
-    - targetGraphName
+    - targetName
     - variableName
     - variableValue
     - input
     - next
     values:
-    - _fieldName: targetGraphName
+    - _fieldName: targetName
       _node: {fileID: -1354629484465639233}
       _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
@@ -402,7 +402,7 @@ MonoBehaviour:
       _dynamic: 0
   input: {fileID: 0}
   next: {fileID: 0}
-  targetGraphName: What?
+  targetName: What
   variableName: TextMeshPro
   variableValue: "\u54C8\u54C8\u54C8"
 --- !u!114 &11400000
@@ -428,23 +428,26 @@ MonoBehaviour:
   - {fileID: 3203922234242088222}
   - {fileID: -4203757131989217659}
   - {fileID: -1354629484465639233}
-  - {fileID: 4108115954011908904}
   - {fileID: 6109814517013022985}
   startNode: {fileID: -8730860881669193726}
   stringContainer:
-    variableList:
-    - _name: 
-      _value: 
-    - _name: 
-      _value: 
+    variableList: []
   boolContainer:
     variableList:
     - _name: 
       _value: 0
+      _guid: 23a449f7-30ec-4bb5-91ce-93dc0206f32f
+    - _name: 
+      _value: 0
+      _guid: 2f47ad35-87b2-43be-b5f8-50d67c010735
+    - _name: 
+      _value: 0
+      _guid: 2f47ad35-87b2-43be-b5f8-50d67c010735
   intContainer:
     variableList:
     - _name: 
       _value: 0
+      _guid: 22fd2881-7b13-4cc1-8778-41a867756898
 --- !u!114 &300210317528360684
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -543,13 +546,13 @@ MonoBehaviour:
   position: {x: -232, y: 56}
   ports:
     keys:
-    - targetGraphName
+    - targetName
     - variableName
     - variableValue
     - input
     - next
     values:
-    - _fieldName: targetGraphName
+    - _fieldName: targetName
       _node: {fileID: 1204366123725643841}
       _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
@@ -602,7 +605,7 @@ MonoBehaviour:
       _dynamic: 0
   input: {fileID: 0}
   next: {fileID: 0}
-  targetGraphName: What?
+  targetName: What
   variableName: TextMeshPro
   variableValue: "\u6CA1\u95E8"
 --- !u!114 &2383920604566946643
@@ -712,7 +715,7 @@ MonoBehaviour:
       _dynamic: 0
   input: {fileID: 0}
   next: {fileID: 0}
-  graphName: What?
+  graphName: What
 --- !u!114 &3601808471867347868
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -744,56 +747,6 @@ MonoBehaviour:
       _typeConstraint: 0
       _dynamic: 0
   Node: {fileID: 0}
---- !u!114 &4108115954011908904
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a2e6a2107138a2408b96fd478d9a908, type: 3}
-  m_Name: Com Execution Graph
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: 104, y: -216}
-  ports:
-    keys:
-    - graphName
-    - input
-    - next
-    values:
-    - _fieldName: graphName
-      _node: {fileID: 4108115954011908904}
-      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
-        PublicKeyToken=b77a5c561934e089
-      connections: []
-      _direction: 0
-      _connectionType: 1
-      _typeConstraint: 0
-      _dynamic: 0
-    - _fieldName: input
-      _node: {fileID: 4108115954011908904}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections: []
-      _direction: 0
-      _connectionType: 0
-      _typeConstraint: 0
-      _dynamic: 0
-    - _fieldName: next
-      _node: {fileID: 4108115954011908904}
-      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      connections: []
-      _direction: 1
-      _connectionType: 1
-      _typeConstraint: 0
-      _dynamic: 0
-  input: {fileID: 0}
-  next: {fileID: 0}
-  graphName: 
 --- !u!114 &6109814517013022985
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -810,11 +763,11 @@ MonoBehaviour:
   position: {x: -1000, y: -248}
   ports:
     keys:
-    - targetGraphName
+    - targetName
     - variableName
     - outputValue
     values:
-    - _fieldName: targetGraphName
+    - _fieldName: targetName
       _node: {fileID: 6109814517013022985}
       _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
@@ -841,7 +794,7 @@ MonoBehaviour:
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
-  targetGraphName: What?
+  targetName: What
   variableName: Test
   defaultValue: 111
-  outputValue: "\u54C8\u54C8\u54C8"
+  outputValue: wcnm

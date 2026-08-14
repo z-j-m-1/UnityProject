@@ -148,7 +148,7 @@ public class GraphCommunicator : MonoBehaviour
 
     private void OnComSetVariable<T>(ComSetVariableEvent<T> evt)
     {
-        SetVariableInternal<T>(evt.targetGraphName, evt.variableName, evt.variableValue);
+        SetVariableInternal<T>(evt.targetName, evt.variableName, evt.variableValue);
     }
 
 
@@ -181,7 +181,7 @@ public class GraphCommunicator : MonoBehaviour
 
     private void OnComGetVariable<T>(ComGetVariableEvent<T> evt)
     {
-        GetVariableInternal<T>(evt.targetGraphName, evt.variableName, evt.defaultValue, evt.callback);
+        GetVariableInternal<T>(evt.targetName, evt.variableName, evt.defaultValue, evt.callback);
     }
 
     /// <summary>

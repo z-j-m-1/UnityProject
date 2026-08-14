@@ -10,7 +10,7 @@ public abstract class ComSetVariableNode<T> : FlowNode
 {
     [Header("目标图名称")]
     [Input(ShowBackingValue.Unconnected, ConnectionType.Override)]
-    public string targetGraphName;
+    public string targetName;
 
     [Header("变量名")]
     [Input(ShowBackingValue.Unconnected, ConnectionType.Override)]
@@ -23,9 +23,9 @@ public abstract class ComSetVariableNode<T> : FlowNode
     public override void Execute()
     {
         // 获取输入值
-        string graphName = GetInputValue<string>("targetGraphName", this.targetGraphName);
-        string varName = GetInputValue<string>("variableName", this.variableName);
-        T varValue = GetInputValue<T>("variableValue", this.variableValue);
+        string graphName = GetInputValue<string>(nameof(targetName), this.targetName);
+        string varName = GetInputValue<string>(nameof(variableName), this.variableName);
+        T varValue = GetInputValue<T>(nameof(variableValue), this.variableValue);
 
         // 验证参数
         if (string.IsNullOrEmpty(graphName))
@@ -40,7 +40,7 @@ public abstract class ComSetVariableNode<T> : FlowNode
             return;
         }
 
-        // 触发具体的事件（由子类实现）
+        // 触发通讯设置变量事件（泛型实现）
         TriggerEvent(graphName, varName, varValue);
 
         Debug.Log($"{GetType().Name}: 触发通讯设置变量事件 - 图:'{graphName}', 变量:'{varName}', 值:'{varValue}'");
@@ -50,18 +50,26 @@ public abstract class ComSetVariableNode<T> : FlowNode
     }
 
     /// <summary>
-    /// 子类实现触发具体的事件
+    /// 触发通讯设置变量事件（泛型实现，向目标图设置变量）
     /// </summary>
-    protected abstract void TriggerEvent(string graphName, string varName, T varValue);
+    protected void TriggerEvent(string graphName, string varName, T varValue)
+    {
+        ComSetVariableEvent<T>.Trigger(evt =>
+        {
+            evt.targetName = graphName;
+            evt.variableName = varName;
+            evt.variableValue = varValue;
+        });
+    }
 
     public override object GetValue(NodePort port)
     {
-        if (port.fieldName == nameof(targetGraphName))
-            return GetInputValue<string>("targetGraphName", targetGraphName);
+        if (port.fieldName == nameof(targetName))
+            return GetInputValue<string>(nameof(targetName), targetName);
         if (port.fieldName == nameof(variableName))
-            return GetInputValue<string>("variableName", variableName);
+            return GetInputValue<string>(nameof(variableName), variableName);
         if (port.fieldName == nameof(variableValue))
-            return GetInputValue<T>("variableValue", variableValue);
+            return GetInputValue<T>(nameof(variableValue), variableValue);
         return null;
     }
 }
