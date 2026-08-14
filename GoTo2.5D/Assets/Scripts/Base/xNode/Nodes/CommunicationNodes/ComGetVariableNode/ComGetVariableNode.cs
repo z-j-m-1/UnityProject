@@ -47,6 +47,9 @@ public abstract class ComGetVariableNode<T> : DataNode
             string graphName = GetInputValue<string>(nameof(targetName), targetName);
             string varName = GetInputValue<string>(nameof(variableName), variableName);
 
+            // 先重置输出，避免显示/返回上一次运行的残留值
+            outputValue = defaultValue;
+
             RequestVariable(graphName, varName, value =>
             {
                 outputValue = value;

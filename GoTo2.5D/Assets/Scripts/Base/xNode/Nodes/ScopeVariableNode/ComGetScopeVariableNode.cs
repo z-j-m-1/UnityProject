@@ -28,6 +28,9 @@ public abstract class ComGetScopeVariableNode<T> : DataNode
         {
             string varName = GetInputValue<string>(nameof(variableName), variableName);
 
+            // 先重置输出，避免显示/返回上一次运行的残留值
+            outputValue = defaultValue;
+
             // 确保管理器已创建并完成事件订阅
             PersistentVariableManager.GetManager(scope);
 

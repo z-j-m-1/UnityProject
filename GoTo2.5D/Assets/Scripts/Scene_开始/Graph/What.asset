@@ -75,7 +75,7 @@ MonoBehaviour:
       _typeConstraint: 0
       _dynamic: 0
   varName: TextMeshPro
-  Value: "\u6CA1\u95E8"
+  Value: "\u54C8\u54C8\u54C8"
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95,18 +95,19 @@ MonoBehaviour:
   - {fileID: -7012894240623525218}
   - {fileID: 4148860605776898055}
   startNode: {fileID: 1621500344516663772}
-  stringContainer:
-    variableList:
-    - _name: TextMeshPro
-      _value: "\u6CA1\u95E8"
-      _guid: cab6cb71-2c77-43d1-9a7d-83f19a3e5dcf
-    - _name: Test
-      _value: wcnm
-      _guid: d0a654a7-a65e-4462-9b80-279f814fd396
-  boolContainer:
-    variableList: []
-  intContainer:
-    variableList: []
+  variables:
+    stringContainer:
+      variableList:
+      - _name: TextMeshPro
+        _value: "\u54C8\u54C8\u54C8"
+        _guid: b8f3ecd4-0e45-4297-8060-af08cfe9b4e6
+      - _name: Test
+        _value: "\uFF1F\uFF1F\uFF1F\u554A"
+        _guid: b8f3ecd4-0e45-4297-8060-af08cfe9b4e6
+    boolContainer:
+      variableList: []
+    intContainer:
+      variableList: []
 --- !u!114 &1621500344516663772
 MonoBehaviour:
   m_ObjectHideFlags: 0
