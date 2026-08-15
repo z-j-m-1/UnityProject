@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using XNode;
 
+/// <summary>图执行模式：默认（startNode）/ 入口（按标识符或 GUID 查找入口节点）</summary>
+public enum GraphExecutionMode
+{
+    Default,
+    Entry
+}
+
 // 通用节点图执行器 - 挂载到GameObject上使用
 public class GraphExecutor : MonoBehaviour
 {
@@ -10,6 +17,8 @@ public class GraphExecutor : MonoBehaviour
     [SerializeField] private bool autoExecute = false;
     [SerializeField] private float executeInterval = 1.0f;
     [SerializeField] private int executeCount = 0; // 0 代表无限执行
+    [SerializeField] private GraphExecutionMode executionMode = GraphExecutionMode.Default;
+    [SerializeField] private string entryIdentifier;
 
     private Coroutine executeCoroutine;
     private int currentExecuteCount = 0;
@@ -59,6 +68,28 @@ public class GraphExecutor : MonoBehaviour
         executeCoroutine = StartCoroutine(ExecuteCoroutine());
     }
 
+    /// <summary>
+    /// 解析执行起点：默认执行返回 startNode；入口执行按标识符/GUID 查找入口节点
+    /// 入口未找到时 LogError 并返回 null（不执行、不回退 startNode）
+    /// </summary>
+    private BaseNode GetStartNode()
+    {
+        if (nodeGraph == null) return null;
+
+        if (executionMode == GraphExecutionMode.Entry)
+        {
+            EntryNode entry = nodeGraph.GetEntryNode(entryIdentifier);
+            if (entry == null)
+            {
+                Debug.LogError($"GraphExecutor '{gameObject.name}': 入口节点未找到（标识符/GUID: '{entryIdentifier}'），不执行");
+                return null;
+            }
+            return entry;
+        }
+
+        return nodeGraph.startNode;
+    }
+
     // 执行协程
     private IEnumerator ExecuteCoroutine()
     {
@@ -68,9 +99,14 @@ public class GraphExecutor : MonoBehaviour
             yield break;
         }
 
-        if (nodeGraph.startNode == null)
+        // 解析执行起点（默认执行 = startNode；入口执行 = 按标识符/GUID 找入口节点）
+        BaseNode startNode = GetStartNode();
+        if (startNode == null)
         {
-            Debug.LogWarning("没有StartNode");
+            if (executionMode == GraphExecutionMode.Default)
+            {
+                Debug.LogWarning("没有StartNode");
+            }
             yield break;
         }
 
@@ -82,7 +118,7 @@ public class GraphExecutor : MonoBehaviour
             yield return new WaitForSeconds(executeInterval);
 
             // 执行节点链
-            nodeGraph.CurrentNode = nodeGraph.startNode;
+            nodeGraph.CurrentNode = startNode;
             int maxLoop = 100;
             int counter = 0;
 

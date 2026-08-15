@@ -145,6 +145,53 @@ public class BaseNodeGraph : NodeGraph, ISerializationCallbackReceiver
         variables.Rebuild();
     }
 
+    // ============ 入口节点 ============
+
+    /// <summary>
+    /// 按标识符（名字优先）/ GUID 兜底查找入口节点；找不到返回 null
+    /// 运行时与编辑器均实时扫描 nodes，动态变更也能命中
+    /// </summary>
+    public EntryNode GetEntryNode(string id)
+    {
+        if (string.IsNullOrEmpty(id) || nodes == null) return null;
+
+        EntryNode guidMatch = null;
+        foreach (Node node in nodes)
+        {
+            if (node is EntryNode entry)
+            {
+                // 名字优先
+                if (!string.IsNullOrEmpty(entry.Identifier) && entry.Identifier == id)
+                {
+                    return entry;
+                }
+                // GUID 兜底（记住第一个匹配）
+                if (guidMatch == null && !string.IsNullOrEmpty(entry.Guid) && entry.Guid == id)
+                {
+                    guidMatch = entry;
+                }
+            }
+        }
+        return guidMatch;
+    }
+
+    /// <summary>
+    /// 获取图中所有入口节点（按节点列表顺序）
+    /// </summary>
+    public List<EntryNode> GetAllEntryNodes()
+    {
+        List<EntryNode> entries = new List<EntryNode>();
+        if (nodes == null) return entries;
+        foreach (Node node in nodes)
+        {
+            if (node is EntryNode entry)
+            {
+                entries.Add(entry);
+            }
+        }
+        return entries;
+    }
+
     // ============ XNode 重写 ============
 
     public override Node AddNode(Type type)

@@ -9,7 +9,7 @@ xNode/
 ├── BaseNodeGraph.cs       # 图资产（变量包 + 图GUID + TryGetVariable/TrySetVariable）
 ├── GraphExecutor.cs       # 挂在场景物体上执行图
 └── Nodes/
-    ├── BaseNode/          # BaseNode / DataNode / FlowNode / StartNode / EndNode
+    ├── BaseNode/          # BaseNode / DataNode / FlowNode / StartNode / EndNode / EntryNode
     ├── BranchNodes/       # 分支（Branch / MultiBranch / StringCondition）
     ├── LogicNodes/        # 逻辑（And / Or / No）
     ├── OrderNodes/        # 流程（Print）
@@ -47,8 +47,17 @@ xNode/
 
 1. `Awake`：绑定图到挂载物体、注册到 `GraphCommunicator`；
 2. `Start`：`autoExecute` 时启动协程；
-3. 每 `executeInterval` 秒从 `startNode` 沿 `GetConnectedNode()` 走链式执行（上限 100 次防死循环）；
+3. 每 `executeInterval` 秒从起点沿 `GetConnectedNode()` 走链式执行（上限 100 次防死循环）；
 4. `executeCount`（0 = 无限循环）；`[ContextMenu("执行节点图")]` 可手动触发。
+
+## 入口节点（EntryNode）
+
+一张图可放多个入口节点（`基本/入口`），各自带标识符 + 自动 GUID。
+
+- `GraphExecutor` 执行模式：`Default`（默认从 `startNode`）/ `Entry`（按标识符或 GUID 从入口节点开始执行）；
+- 入口模式下未找到对应入口 → `LogError` 且**不执行**（不回退 startNode）；
+- `BaseNodeGraph.GetEntryNode(id)` 运行时 / 编辑器都实时扫描 `nodes`，动态变更也能命中；
+- Inspector 里入口模式下提供下拉选择器；标识符改名后会自动回填修正（编辑模式）。
 
 ## 节点图 GUID（存档键）
 

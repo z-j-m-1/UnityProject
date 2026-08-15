@@ -1,3 +1,10 @@
+新增入口节点（EntryNode）+ 图执行模式
+
+- 新增 EntryNode（基本/入口）：带标识符 + 自动 GUID，一张图可放多个
+- BaseNodeGraph.GetEntryNode(id) / GetAllEntryNodes()：运行时/编辑器实时扫描 nodes
+- GraphExecutor 新增执行模式：Default（startNode）/ Entry（按标识符或 GUID 从入口开始，未找到报错不执行）
+- GraphExecutor 自定义 Inspector：入口下拉选择器 + 标识符改名自动回填（编辑模式）
+
 近期修复（存档 / 编辑器 / 节点）
 
 - 存档：Commit 后清空预备层；场景改名兜底命中后删除旧名称存档
