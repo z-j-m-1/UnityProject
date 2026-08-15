@@ -211,7 +211,7 @@ MonoBehaviour:
         PublicKeyToken=b77a5c561934e089
       connections:
       - fieldName: outputValue
-        node: {fileID: -3156848765238538044}
+        node: {fileID: 79765989471656304}
         reroutePoints: []
       _direction: 0
       _connectionType: 1
@@ -290,7 +290,7 @@ MonoBehaviour:
       _typeConstraint: 0
       _dynamic: 0
   uiObjectName: ShowNameText
-  outputValue: SANS
+  outputValue: FRISK
   defaultValue: 
 --- !u!114 &-75630815921223546
 MonoBehaviour:
@@ -338,13 +338,13 @@ MonoBehaviour:
   nodes:
   - {fileID: -6457001297895177511}
   - {fileID: -75630815921223546}
-  - {fileID: -3156848765238538044}
   - {fileID: 4822132552790411118}
   - {fileID: -3636926754270636056}
   - {fileID: 7493263143861738120}
   - {fileID: -3890682598315292403}
   - {fileID: -8902498117885892314}
   - {fileID: 9135268579911835329}
+  - {fileID: 79765989471656304}
   startNode: {fileID: -6457001297895177511}
   _guid: 0fcd8e06-a37f-4f20-9493-a55b2ffcae0e
   variables:
@@ -356,6 +356,52 @@ MonoBehaviour:
       variableList: []
     floatContainer:
       variableList: []
+--- !u!114 &79765989471656304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25166474293504a418f18cd683007696, type: 3}
+  m_Name: Com UI Get Text
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -1528, y: 152}
+  ports:
+    keys:
+    - uiObjectName
+    - outputValue
+    values:
+    - _fieldName: uiObjectName
+      _node: {fileID: 79765989471656304}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: outputValue
+      _node: {fileID: 79765989471656304}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: sentence
+        node: {fileID: -3636926754270636056}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  source: 1
+  uiType: 1
+  uiObjectName: ShowNameText
+  stripRichText: 0
+  defaultValue: 
+  outputValue: 
 --- !u!114 &4822132552790411118
 MonoBehaviour:
   m_ObjectHideFlags: 0
