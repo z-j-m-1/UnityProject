@@ -1,3 +1,9 @@
+新增等待节点（WaitNode）+ 执行器协程钩子
+
+- BaseNode 新增 GetFlow() 协程钩子（默认 null，零影响现有节点）
+- GraphExecutor 链式执行在每个节点后 yield 节点协程（等待等可暂停链，不阻塞进程）
+- 新增 WaitNode（流程/等待）：等待指定秒数后继续，为以后"等待条件/对话选项"预留同一机制
+
 新增数学运算节点（四则运算 + 比较）
 
 - MathOpIntNode / MathOpFloatNode：加/减/乘/除（含除零保护），菜单 数学运算/整数运算、浮点运算

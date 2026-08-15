@@ -124,8 +124,17 @@ public class GraphExecutor : MonoBehaviour
 
             while (nodeGraph.CurrentNode != null && counter < maxLoop)
             {
-                nodeGraph.CurrentNode.Execute();
-                nodeGraph.CurrentNode = nodeGraph.CurrentNode.GetConnectedNode();
+                BaseNode node = nodeGraph.CurrentNode;
+                node.Execute();
+
+                // 节点可返回协程流程（等待/等待条件等），执行器 yield 暂停链直到完成
+                IEnumerator flow = node.GetFlow();
+                if (flow != null)
+                {
+                    yield return flow;
+                }
+
+                nodeGraph.CurrentNode = node.GetConnectedNode();
                 counter++;
             }
 
