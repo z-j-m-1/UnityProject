@@ -181,8 +181,8 @@ public class RoomVariableManager : PersistentVariableManager
             }
 
 #if UNITY_EDITOR
-            // 编辑器下把创建/加载到的资产回填到 RoomIdentity，之后场景改名也不受影响
-            if (currentRoomIdentity != null && currentRoomIdentity.VariableAsset != obj)
+            // 仅编辑器非播放模式把创建/加载到的资产回填到 RoomIdentity（play 中 MarkSceneDirty 会抛异常）
+            if (!Application.isPlaying && currentRoomIdentity != null && currentRoomIdentity.VariableAsset != obj)
             {
                 currentRoomIdentity.SetVariableAsset(obj);
                 UnityEditor.EditorUtility.SetDirty(currentRoomIdentity);
@@ -200,6 +200,13 @@ public class RoomVariableManager : PersistentVariableManager
     private VariableBundleObject CreateRoomVariableObject(string sceneName)
     {
 #if UNITY_EDITOR
+        // 播放模式下不创建真实资产、不触碰编辑器接口（MarkSceneDirty 等 play 中会抛异常），退回运行时实例
+        if (Application.isPlaying)
+        {
+            Debug.LogWarning($"房间变量：Resources 中未找到场景 '{sceneName}' 对应的变量对象（路径: {RoomVariableFolder}{sceneName}），使用运行时实例");
+            return ScriptableObject.CreateInstance<VariableBundleObject>();
+        }
+
         VariableBundleObject asset = ScriptableObject.CreateInstance<VariableBundleObject>();
         string assetPath = "Assets/Resources/" + RoomVariableFolder + sceneName + ".asset";
 
