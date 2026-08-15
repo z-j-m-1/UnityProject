@@ -1,3 +1,10 @@
+统一get/set变量节点为单一基类（source枚举）
+
+- 新增 VariableSource 枚举（本图/跨图/房间/全局）
+- GetVariableNode<T> / SetVariableNode<T> 统一基类，按 source 分发
+- 具体节点从 24 个收敛到 8 个，加新类型只需 2 个文件
+- 删除旧的本图/跨图/作用域 get/set 节点（30 个文件）
+
 新增物品持久化系统（PersistentItem + PersistentItemManager）
 
 - 新增 PersistentItem 基类：直接持有 VariableBundle，itemId 自动生成 GUID
