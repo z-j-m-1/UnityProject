@@ -32,6 +32,7 @@ xNode/
 
 - 端口保持强类型（`T`）；加新类型只需新建 2 个节点文件（Get + Set）；
 - 节点面板显示 `variableGuid`（自动记录，方便调试）；**名字优先 + GUID 兜底**解析，命中后自动回填修正；
+- `variableGuid` / 入口节点 `guid` 只在**检查器（Inspector）**中显示，节点体上不显示（避免误触）；
 - 具体节点：`GetVariableBool/Int/Float/StringNode`、`SetVariableBool/Int/Float/StringNode`。
 
 ## 其他节点分类

@@ -2,11 +2,18 @@ using UnityEngine;
 using XNode;
 
 /// <summary>
+/// 统一获取变量节点的非泛型基类（供自定义编辑器按类型定位）
+/// </summary>
+public abstract class GetVariableNodeBase : DataNode
+{
+}
+
+/// <summary>
 /// 统一获取变量节点基类 - 通过 source 选择操作对象（本图/跨图/房间/全局）
 /// 名字优先 + GUID 兜底解析，自动记录/修正变量 GUID
 /// </summary>
 /// <typeparam name="T">变量类型</typeparam>
-public abstract class GetVariableNode<T> : DataNode
+public abstract class GetVariableNode<T> : GetVariableNodeBase
 {
     [Header("操作对象")]
     public VariableSource source = VariableSource.Self;

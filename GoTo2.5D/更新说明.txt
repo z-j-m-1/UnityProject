@@ -4,6 +4,7 @@
 - BaseNodeGraph.GetEntryNode(id) / GetAllEntryNodes()：运行时/编辑器实时扫描 nodes
 - GraphExecutor 新增执行模式：Default（startNode）/ Entry（按标识符或 GUID 从入口开始，未找到报错不执行）
 - GraphExecutor 自定义 Inspector：入口下拉选择器 + 标识符改名自动回填（编辑模式）
+- Get/Set/入口节点的 GUID 只在检查器显示，节点图视图节点体上隐藏（避免误触）
 
 近期修复（存档 / 编辑器 / 节点）
 
