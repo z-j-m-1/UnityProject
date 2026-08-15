@@ -11,7 +11,8 @@ xNode/
 └── Nodes/
     ├── BaseNode/          # BaseNode / DataNode / FlowNode / StartNode / EndNode / EntryNode
     ├── BranchNodes/       # 分支（Branch / MultiBranch / StringCondition）
-    ├── LogicNodes/        # 逻辑（And / Or / No）
+    ├── LogicNodes/        # 逻辑（And / Or / No）+ 比较（Compare）
+    ├── MathNodes/         # 数学运算（四则运算 / 比较）
     ├── OrderNodes/        # 流程（Print）
     ├── ValueNodes/        # 常量值（Bool / Int / String）
     ├── TransformNodes/    # 物体变换（Move / Rote）
@@ -43,6 +44,7 @@ xNode/
 | 执行图 | `ComExecutionGraphNode` | 触发另一张图执行 |
 | 存档点 | `ComSaveGameNode` | 把预备存档提交为正式存档 |
 | 分支/逻辑/值/变换 | `BranchNode`、`AndLogicNode`、`BoolValueNode`、`MoveObjectNode` 等 | 流程控制、常量、物体运动 |
+| 数学运算 | `MathOpIntNode` / `MathOpFloatNode` / `CompareIntNode` / `CompareFloatNode` | 四则运算（加/减/乘/除）、比较（等于/大于/小于等，输出 bool） |
 
 ## 执行流程（GraphExecutor）
 

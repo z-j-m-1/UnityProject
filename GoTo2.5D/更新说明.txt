@@ -1,3 +1,9 @@
+新增数学运算节点（四则运算 + 比较）
+
+- MathOpIntNode / MathOpFloatNode：加/减/乘/除（含除零保护），菜单 数学运算/整数运算、浮点运算
+- CompareIntNode / CompareFloatNode：等于/不等/大于/大于等于/小于/小于等于（输出 bool），菜单 数学运算/整数比较、浮点比较
+- 新增 MathNodes 文件夹；比较节点放 LogicNodes
+
 新增入口节点（EntryNode）+ 图执行模式
 
 - 新增 EntryNode（基本/入口）：带标识符 + 自动 GUID，一张图可放多个
