@@ -1,7 +1,10 @@
-修复：启动时房间存档重复加载
+近期修复（存档 / 编辑器 / 节点）
 
-- 拆出 SaveSystem.LoadGlobal（只加载全局变量）；启动由 GraphCommunicator 调它，房间存档统一由进房间时（OnSceneLoaded）应用，不再重复加载
 - 存档：Commit 后清空预备层；场景改名兜底命中后删除旧名称存档
+- 存档：拆出 SaveSystem.LoadGlobal（只加载全局变量），启动改由它调用，房间存档由进房间时应用，不再重复加载
+- RoomIdentity 补齐工具：过滤失效 Build Settings 场景条目 + 单场景容错；场景已挂载 RoomIdentity、禁用失效 SampleScene 并登记 002
+- 编辑器模式：UI 通讯节点（Canvas 源）只读扫描场景 UI（不创建、不修改场景），悬停提示不再报错
+- StringConditionNode 改为 DataNode（纯数据节点）+ NodeTint 区分
 
 文档整理：重写架构说明与全部 README + Base/xNode 目录清理
 
