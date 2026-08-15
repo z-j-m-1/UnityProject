@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Set Variable String
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -392, y: 168}
+  position: {x: -408, y: 136}
   ports:
     keys:
     - targetName
@@ -78,6 +78,7 @@ MonoBehaviour:
   source: 1
   targetName: What
   variableName: "\u53CD\u5E94"
+  variableGuid: 591b9748-8ffa-4d56-9ba2-814d697810ba
   variableValue: "\u73A9\u5200\u7684"
 --- !u!114 &-6457001297895177511
 MonoBehaviour:
@@ -415,7 +416,7 @@ MonoBehaviour:
   m_Name: Set Variable String
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -386.8426, y: -108.80971}
+  position: {x: -408, y: -184}
   ports:
     keys:
     - targetName
@@ -480,6 +481,7 @@ MonoBehaviour:
   source: 1
   targetName: What
   variableName: "\u53CD\u5E94"
+  variableGuid: 591b9748-8ffa-4d56-9ba2-814d697810ba
   variableValue: "\u865A\u65E0\u7684"
 --- !u!114 &7493263143861738120
 MonoBehaviour:
@@ -603,7 +605,7 @@ MonoBehaviour:
   m_Name: Set Variable String
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -392, y: 440}
+  position: {x: -408, y: 456}
   ports:
     keys:
     - targetName
@@ -668,4 +670,5 @@ MonoBehaviour:
   source: 1
   targetName: What
   variableName: "\u53CD\u5E94"
+  variableGuid: 591b9748-8ffa-4d56-9ba2-814d697810ba
   variableValue: "\u65E0\u60C5\u8138\u7684"
