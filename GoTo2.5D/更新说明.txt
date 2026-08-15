@@ -1,3 +1,11 @@
+变量/场景 GUID 追踪（抗改名）+ RoomIdentity
+
+- VariableContainer 新增 nameToGuid/guidToName 映射 + TryResolve/TryResolveAndSet（名字优先 + GUID 兜底）
+- 存档格式 v2：变量条目改为 name+guid+value（VariableEntryData），旧存档不兼容
+- Get/Set 节点隐藏 variableGuid 字段，运行时自动记录/修正（名字↔GUID 双向适配）
+- 新增 RoomIdentity 组件（roomId + 直接引用房间变量资产），场景改名不影响加载
+- SaveSystem 房间存档记录 roomId，场景改名后按房间ID扫描 archive 兜底匹配
+
 UI通讯节点统一（UISource/UIType枚举）+ 新增UICollector
 
 - 新增 UICollector（Canvas 单例）：收集 Text/TextMeshPro/Image，按物体名索引，同名警告

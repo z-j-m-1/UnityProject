@@ -148,4 +148,69 @@ public class VariableBundle
             floats = floatContainer.Export()
         };
     }
+
+    /// <summary>
+    /// 名字优先 + GUID 兜底解析（得到实际名字与 GUID）
+    /// </summary>
+    public bool TryResolve<T>(string name, string guid, out T value, out string actualName, out string actualGuid)
+    {
+        value = default;
+        actualName = null;
+        actualGuid = null;
+        Type type = typeof(T);
+
+        if (type == typeof(string))
+        {
+            if (stringContainer.TryResolve(name, guid, out string s, out actualName, out actualGuid))
+            {
+                value = (T)(object)s;
+                return true;
+            }
+            return false;
+        }
+        if (type == typeof(bool))
+        {
+            if (boolContainer.TryResolve(name, guid, out bool b, out actualName, out actualGuid))
+            {
+                value = (T)(object)b;
+                return true;
+            }
+            return false;
+        }
+        if (type == typeof(int))
+        {
+            if (intContainer.TryResolve(name, guid, out int i, out actualName, out actualGuid))
+            {
+                value = (T)(object)i;
+                return true;
+            }
+            return false;
+        }
+        if (type == typeof(float))
+        {
+            if (floatContainer.TryResolve(name, guid, out float f, out actualName, out actualGuid))
+            {
+                value = (T)(object)f;
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// 名字优先 + GUID 兜底解析后设置值（仅对已存在的变量生效；都不存在返回 false）
+    /// </summary>
+    public bool TryResolveAndSet<T>(string name, string guid, T value, out string actualName, out string actualGuid)
+    {
+        actualName = null;
+        actualGuid = null;
+        Type type = typeof(T);
+
+        if (type == typeof(string)) return stringContainer.TryResolveAndSet(name, guid, value as string, out actualName, out actualGuid);
+        if (type == typeof(bool)) return boolContainer.TryResolveAndSet(name, guid, (bool)(object)value, out actualName, out actualGuid);
+        if (type == typeof(int)) return intContainer.TryResolveAndSet(name, guid, (int)(object)value, out actualName, out actualGuid);
+        if (type == typeof(float)) return floatContainer.TryResolveAndSet(name, guid, (float)(object)value, out actualName, out actualGuid);
+        return false;
+    }
 }

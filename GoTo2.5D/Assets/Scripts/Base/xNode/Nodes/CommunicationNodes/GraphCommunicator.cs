@@ -161,14 +161,14 @@ public class GraphCommunicator : MonoBehaviour
 
     private void OnComSetVariable<T>(ComSetVariableEvent<T> evt)
     {
-        SetVariableInternal<T>(evt.targetName, evt.variableName, evt.variableValue);
+        SetVariableInternal<T>(evt.targetName, evt.variableName, evt.guid, evt.variableValue, evt.onResolved);
     }
 
 
     /// <summary>
-    /// 内部设置变量方法
+    /// 内部设置变量方法（名字优先 + GUID 兜底）
     /// </summary>
-    private void SetVariableInternal<T>(string graphName, string varName, T varValue)
+    private void SetVariableInternal<T>(string graphName, string varName, string guid, T varValue, System.Action<string, string> onResolved)
     {
         GraphExecutor executor = GetGraphExecutor(graphName);
         if (executor != null)
@@ -176,8 +176,18 @@ public class GraphCommunicator : MonoBehaviour
             BaseNodeGraph graph = executor.GetNodeGraph() as BaseNodeGraph;
             if (graph != null)
             {
-                graph.Set<T>(varName, varValue);
-                Debug.Log($"GraphCommunicator: 通讯设置变量 '{graphName}.{varName}' = '{varValue}' (类型: {typeof(T).Name})");
+                if (graph.TrySetVariable(varName, guid, varValue, out string actualName, out string actualGuid))
+                {
+                    onResolved?.Invoke(actualName, actualGuid);
+                    Debug.Log($"GraphCommunicator: 通讯设置变量 '{graphName}.{actualName}' = '{varValue}' (类型: {typeof(T).Name})");
+                }
+                else
+                {
+                    // 名字和GUID都找不到：按名字直接创建/设置
+                    graph.Set(varName, varValue);
+                    onResolved?.Invoke(varName, guid);
+                    Debug.Log($"GraphCommunicator: 通讯设置变量 '{graphName}.{varName}' = '{varValue}' (类型: {typeof(T).Name})");
+                }
             }
             else
             {
@@ -194,13 +204,13 @@ public class GraphCommunicator : MonoBehaviour
 
     private void OnComGetVariable<T>(ComGetVariableEvent<T> evt)
     {
-        GetVariableInternal<T>(evt.targetName, evt.variableName, evt.defaultValue, evt.callback);
+        GetVariableInternal<T>(evt.targetName, evt.variableName, evt.guid, evt.defaultValue, evt.callback);
     }
 
     /// <summary>
-    /// 内部获取变量方法
+    /// 内部获取变量方法（名字优先 + GUID 兜底）
     /// </summary>
-    private void GetVariableInternal<T>(string graphName, string varName, T defaultValue, System.Action<T> callback)
+    private void GetVariableInternal<T>(string graphName, string varName, string guid, T defaultValue, System.Action<T, string, string> callback)
     {
         GraphExecutor executor = GetGraphExecutor(graphName);
         if (executor != null)
@@ -208,10 +218,13 @@ public class GraphCommunicator : MonoBehaviour
             BaseNodeGraph graph = executor.GetNodeGraph() as BaseNodeGraph;
             if (graph != null)
             {
-                T value = graph.Get<T>(varName, defaultValue);
-                callback?.Invoke(value);
-                Debug.Log($"GraphCommunicator: 通讯获取变量 '{graphName}.{varName}' = '{value}' (类型: {typeof(T).Name})");
-                return;
+                if (graph.TryGetVariable(varName, guid, out T value, out string actualName, out string actualGuid))
+                {
+                    callback?.Invoke(value, actualName, actualGuid);
+                    Debug.Log($"GraphCommunicator: 通讯获取变量 '{graphName}.{actualName}' = '{value}' (类型: {typeof(T).Name})");
+                    return;
+                }
+                Debug.LogError($"GraphCommunicator: 通讯获取变量失败，变量 '{graphName}.{varName}' 不存在");
             }
             else
             {
@@ -224,6 +237,6 @@ public class GraphCommunicator : MonoBehaviour
         }
 
         // 如果失败，返回默认值
-        callback?.Invoke(defaultValue);
+        callback?.Invoke(defaultValue, varName, guid);
     }
 }

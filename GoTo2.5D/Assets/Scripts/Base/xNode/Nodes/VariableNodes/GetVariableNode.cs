@@ -3,6 +3,7 @@ using XNode;
 
 /// <summary>
 /// 统一获取变量节点基类 - 通过 source 选择操作对象（本图/跨图/房间/全局）
+/// 名字优先 + GUID 兜底解析，自动记录/修正变量 GUID
 /// </summary>
 /// <typeparam name="T">变量类型</typeparam>
 public abstract class GetVariableNode<T> : DataNode
@@ -17,6 +18,9 @@ public abstract class GetVariableNode<T> : DataNode
     [Header("变量名")]
     [Input(ShowBackingValue.Unconnected, ConnectionType.Override)]
     public string variableName;
+
+    /// <summary>追踪的变量 GUID（隐藏，自动记录，用于变量改名后兜底解析）</summary>
+    [SerializeField, HideInInspector] private string variableGuid;
 
     [Header("默认值")]
     public T defaultValue;
@@ -42,7 +46,15 @@ public abstract class GetVariableNode<T> : DataNode
                 case VariableSource.Self:
                     if (graph is BaseNodeGraph selfGraph)
                     {
-                        outputValue = selfGraph.Get(varName, defaultValue);
+                        if (selfGraph.TryGetVariable(varName, variableGuid, out T value, out string actualName, out string actualGuid))
+                        {
+                            outputValue = value;
+                            ApplyResolved(actualName, actualGuid);
+                        }
+                        else
+                        {
+                            outputValue = selfGraph.Get(varName, defaultValue);
+                        }
                     }
                     break;
 
@@ -69,11 +81,12 @@ public abstract class GetVariableNode<T> : DataNode
         {
             evt.targetName = graphName;
             evt.variableName = varName;
+            evt.guid = variableGuid;
             evt.defaultValue = defaultValue;
-            evt.callback = value =>
+            evt.callback = (value, actualName, actualGuid) =>
             {
                 outputValue = value;
-                Debug.Log($"{GetType().Name}: 通讯获取到变量 '{graphName}.{varName}' = '{value}'");
+                ApplyResolved(actualName, actualGuid);
             };
         });
     }
@@ -90,12 +103,28 @@ public abstract class GetVariableNode<T> : DataNode
         {
             evt.scope = scope;
             evt.variableName = varName;
+            evt.guid = variableGuid;
             evt.defaultValue = defaultValue;
-            evt.callback = value =>
+            evt.callback = (value, actualName, actualGuid) =>
             {
                 outputValue = value;
-                Debug.Log($"{GetType().Name}: 通讯获取到持久变量 '{scope}.{varName}' = '{value}'");
+                ApplyResolved(actualName, actualGuid);
             };
         });
     }
+
+    /// <summary>用解析结果修正节点上的变量名/GUID（双向适配）</summary>
+    private void ApplyResolved(string actualName, string actualGuid)
+    {
+        if (!string.IsNullOrEmpty(actualName) && actualName != variableName)
+        {
+            variableName = actualName;
+            Debug.Log($"{GetType().Name}: 变量名已更新为 '{actualName}'");
+        }
+        if (!string.IsNullOrEmpty(actualGuid) && actualGuid != variableGuid)
+        {
+            variableGuid = actualGuid;
+        }
+    }
 }
+

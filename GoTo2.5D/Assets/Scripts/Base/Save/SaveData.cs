@@ -2,15 +2,26 @@ using System;
 using System.Collections.Generic;
 
 /// <summary>
+/// 单个变量条目存档数据（名字 + GUID + 值）
+/// </summary>
+[Serializable]
+public class VariableEntryData<T>
+{
+    public string name;
+    public string guid;
+    public T value;
+}
+
+/// <summary>
 /// 变量捆绑数据 - 存档用 LitJson 序列化的中转结构（全公共字段）
 /// </summary>
 [Serializable]
 public class VariableBundleData
 {
-    public Dictionary<string, string> strings;
-    public Dictionary<string, bool> bools;
-    public Dictionary<string, int> ints;
-    public Dictionary<string, float> floats;
+    public List<VariableEntryData<string>> strings;
+    public List<VariableEntryData<bool>> bools;
+    public List<VariableEntryData<int>> ints;
+    public List<VariableEntryData<float>> floats;
 }
 
 /// <summary>
@@ -22,6 +33,7 @@ public class RoomSaveData
 {
     public int version = 1;
     public string sceneName;
+    public string roomId;   // 房间稳定ID（RoomIdentity.roomId），用于场景改名后按ID匹配存档
     public VariableBundleData localVariables;
     public Dictionary<string, VariableBundleData> graphs;   // 图GUID → 图变量
     public Dictionary<string, VariableBundleData> items;    // itemId → 物品状态（预留）

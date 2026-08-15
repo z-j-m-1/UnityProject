@@ -3,6 +3,7 @@ using XNode;
 
 /// <summary>
 /// 统一设置变量节点基类 - 通过 source 选择操作对象（本图/跨图/房间/全局）
+/// 名字优先 + GUID 兜底解析，自动记录/修正变量 GUID
 /// </summary>
 /// <typeparam name="T">变量类型</typeparam>
 public abstract class SetVariableNode<T> : FlowNode
@@ -17,6 +18,9 @@ public abstract class SetVariableNode<T> : FlowNode
     [Header("变量名")]
     [Input(ShowBackingValue.Unconnected, ConnectionType.Override)]
     public string variableName;
+
+    /// <summary>追踪的变量 GUID（隐藏，自动记录，用于变量改名后兜底解析）</summary>
+    [SerializeField, HideInInspector] private string variableGuid;
 
     [Header("变量值")]
     [Input(ShowBackingValue.Unconnected, ConnectionType.Override)]
@@ -38,7 +42,15 @@ public abstract class SetVariableNode<T> : FlowNode
             case VariableSource.Self:
                 if (graph is BaseNodeGraph selfGraph)
                 {
-                    selfGraph.Set(varName, varValue);
+                    if (selfGraph.TrySetVariable(varName, variableGuid, varValue, out string actualName, out string actualGuid))
+                    {
+                        ApplyResolved(actualName, actualGuid);
+                    }
+                    else
+                    {
+                        // 名字和GUID都找不到：按名字直接创建/设置
+                        selfGraph.Set(varName, varValue);
+                    }
                 }
                 break;
 
@@ -47,7 +59,9 @@ public abstract class SetVariableNode<T> : FlowNode
                 {
                     evt.targetName = GetInputValue<string>(nameof(targetName), targetName);
                     evt.variableName = varName;
+                    evt.guid = variableGuid;
                     evt.variableValue = varValue;
+                    evt.onResolved = (actualName, actualGuid) => ApplyResolved(actualName, actualGuid);
                 });
                 break;
 
@@ -59,7 +73,9 @@ public abstract class SetVariableNode<T> : FlowNode
                 {
                     evt.scope = scope;
                     evt.variableName = varName;
+                    evt.guid = variableGuid;
                     evt.variableValue = varValue;
+                    evt.onResolved = (actualName, actualGuid) => ApplyResolved(actualName, actualGuid);
                 });
                 break;
         }
@@ -78,4 +94,19 @@ public abstract class SetVariableNode<T> : FlowNode
             return GetInputValue<T>(nameof(variableValue), variableValue);
         return null;
     }
+
+    /// <summary>用解析结果修正节点上的变量名/GUID（双向适配）</summary>
+    private void ApplyResolved(string actualName, string actualGuid)
+    {
+        if (!string.IsNullOrEmpty(actualName) && actualName != variableName)
+        {
+            variableName = actualName;
+            Debug.Log($"{GetType().Name}: 变量名已更新为 '{actualName}'");
+        }
+        if (!string.IsNullOrEmpty(actualGuid) && actualGuid != variableGuid)
+        {
+            variableGuid = actualGuid;
+        }
+    }
 }
+

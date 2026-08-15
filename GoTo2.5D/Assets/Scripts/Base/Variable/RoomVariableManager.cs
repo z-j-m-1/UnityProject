@@ -42,6 +42,24 @@ public class RoomVariableManager : PersistentVariableManager
     /// <summary>当前场景登记的节点图</summary>
     private List<BaseNodeGraph> currentRoomGraphs = new List<BaseNodeGraph>();
 
+    /// <summary>场景名 → 房间ID（加载场景时从 RoomIdentity 登记，用于存档匹配）</summary>
+    private readonly Dictionary<string, string> roomIdByScene = new Dictionary<string, string>();
+
+    /// <summary>当前场景的 RoomIdentity（缓存，场景切换时刷新）</summary>
+    private RoomIdentity currentRoomIdentity;
+
+    /// <summary>
+    /// 获取某个场景的房间ID（存档键）。没有 RoomIdentity 时退回场景名
+    /// </summary>
+    public string GetRoomId(string sceneName)
+    {
+        if (!string.IsNullOrEmpty(sceneName) && roomIdByScene.TryGetValue(sceneName, out string roomId))
+        {
+            return roomId;
+        }
+        return sceneName;
+    }
+
     /// <summary>
     /// 登记当前场景的所有节点图（离开房间时按图GUID导出）
     /// </summary>
@@ -133,17 +151,46 @@ public class RoomVariableManager : PersistentVariableManager
     }
 
     /// <summary>
-    /// 按场景名从 Resources 加载房间变量对象
-    /// 找不到时：编辑器模式下自动在该目录创建真实资产；构建运行时退回运行时实例
+    /// 加载房间变量对象：
+    /// 1. 优先使用 RoomIdentity 直接引用的资产（按资产GUID绑定，场景改名不影响）；
+    /// 2. 其次按场景名从 Resources 加载；
+    /// 3. 找不到时：编辑器模式下自动创建真实资产（若存在 RoomIdentity 则回填引用），构建运行时退回运行时实例
     /// </summary>
     private void LoadRoomVariableObject(Scene scene)
     {
-        string path = RoomVariableFolder + scene.name;
-        VariableBundleObject obj = Resources.Load<VariableBundleObject>(path);
+        // 场景切换时刷新 RoomIdentity（查找范围：所有已加载场景，房间场景只应有一个）
+        currentRoomIdentity = FindObjectOfType<RoomIdentity>();
+        if (currentRoomIdentity != null)
+        {
+            roomIdByScene[scene.name] = currentRoomIdentity.RoomId;
+        }
+        else
+        {
+            roomIdByScene.Remove(scene.name);
+        }
+
+        VariableBundleObject obj = currentRoomIdentity != null ? currentRoomIdentity.VariableAsset : null;
         if (obj == null)
         {
-            obj = CreateRoomVariableObject(scene.name);
+            // 资产未直接引用：退回按场景名加载 / 自动创建
+            string path = RoomVariableFolder + scene.name;
+            obj = Resources.Load<VariableBundleObject>(path);
+            if (obj == null)
+            {
+                obj = CreateRoomVariableObject(scene.name);
+            }
+
+#if UNITY_EDITOR
+            // 编辑器下把创建/加载到的资产回填到 RoomIdentity，之后场景改名也不受影响
+            if (currentRoomIdentity != null && currentRoomIdentity.VariableAsset != obj)
+            {
+                currentRoomIdentity.SetVariableAsset(obj);
+                UnityEditor.EditorUtility.SetDirty(currentRoomIdentity);
+                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
+            }
+#endif
         }
+
         SetVariableObject(obj);
     }
 

@@ -17,7 +17,7 @@ public class SaveSystem : MonoBehaviour
     private const string ArchiveFolder = "archive";
     private const string IndexFileName = "index.json";
     private const string GlobalFileName = "global.json";
-    private const int CurrentVersion = 1;
+    private const int CurrentVersion = 2;
 
     private static SaveSystem _instance;
 
@@ -168,6 +168,18 @@ public class SaveSystem : MonoBehaviour
         roomManager.RegisterCurrentRoomGraphs(sceneName);
 
         RoomSaveData roomData = ReadJson<RoomSaveData>(ArchiveRoomPath(sceneName));
+
+        // 场景改名后按场景名找不到文件：用房间ID扫描 archive 兜底
+        if (roomData == null)
+        {
+            string roomId = roomManager.GetRoomId(sceneName);
+            roomData = FindRoomSaveByRoomId(roomId);
+            if (roomData != null)
+            {
+                Debug.Log($"存档系统：按场景名 '{sceneName}' 未找到存档，已按房间ID '{roomId}' 匹配到存档");
+            }
+        }
+
         if (roomData == null)
         {
             Debug.Log($"存档系统：房间 '{sceneName}' 无存档，使用默认值");
@@ -185,6 +197,23 @@ public class SaveSystem : MonoBehaviour
     }
 
     /// <summary>
+    /// 在 archive 层扫描某个房间ID对应的存档（场景改名后的兜底匹配）
+    /// </summary>
+    private static RoomSaveData FindRoomSaveByRoomId(string roomId)
+    {
+        if (string.IsNullOrEmpty(roomId) || !Directory.Exists(ArchivePath)) return null;
+        foreach (string file in Directory.GetFiles(ArchivePath, "*.json"))
+        {
+            RoomSaveData data = ReadJson<RoomSaveData>(file);
+            if (data != null && !string.IsNullOrEmpty(data.roomId) && data.roomId == roomId)
+            {
+                return data;
+            }
+        }
+        return null;
+    }
+
+    /// <summary>
     /// 采集某个房间的当前状态（局部变量 + 图变量 + 物品）
     /// </summary>
     private RoomSaveData CaptureRoom(string sceneName)
@@ -193,6 +222,7 @@ public class SaveSystem : MonoBehaviour
         {
             version = CurrentVersion,
             sceneName = sceneName,
+            roomId = RoomVariableManager.Instance.GetRoomId(sceneName),
             localVariables = RoomVariableManager.Instance.Export(),
             graphs = RoomVariableManager.Instance.ExportRoomGraphs(sceneName),
             items = PersistentItemManager.IsInitialized ? PersistentItemManager.Instance.ExportCurrent() : null

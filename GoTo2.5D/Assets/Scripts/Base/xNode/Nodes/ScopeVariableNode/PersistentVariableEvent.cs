@@ -8,13 +8,19 @@ public class PersistentSetVariableEvent<T> : ParameterizedEvent<PersistentSetVar
 {
     public PersistentVariableScope scope;
     public string variableName;
+    public string guid;
     public T variableValue;
+
+    /// <summary>解析完成回调（实际变量名, 实际GUID），供节点更新自身字段</summary>
+    public System.Action<string, string> onResolved;
 
     public override void OnRecycled()
     {
         scope = default;
         variableName = null;
+        guid = null;
         variableValue = default;
+        onResolved = null;
     }
 }
 
@@ -25,14 +31,19 @@ public class PersistentGetVariableEvent<T> : ParameterizedEvent<PersistentGetVar
 {
     public PersistentVariableScope scope;
     public string variableName;
+    public string guid;
     public T defaultValue;
-    public System.Action<T> callback;
+
+    /// <summary>回调（值, 实际变量名, 实际GUID）</summary>
+    public System.Action<T, string, string> callback;
 
     public override void OnRecycled()
     {
         scope = default;
         variableName = null;
+        guid = null;
         defaultValue = default;
         callback = null;
     }
 }
+

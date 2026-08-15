@@ -13,6 +13,12 @@ public class VariableContainer<T>
 
     [NonSerialized] private Dictionary<string, T> runtimeDict;
 
+    /// <summary>运行时：名字 → GUID</summary>
+    [NonSerialized] private Dictionary<string, string> nameToGuid = new Dictionary<string, string>();
+
+    /// <summary>运行时：GUID → 名字</summary>
+    [NonSerialized] private Dictionary<string, string> guidToName = new Dictionary<string, string>();
+
     /// <summary>
     /// 获取运行字典
     /// 运行时：懒加载并缓存（存档导入与运行时修改都保存在 dict 中）
@@ -34,11 +40,13 @@ public class VariableContainer<T>
     }
 
     /// <summary>
-    /// 从列表构建字典
+    /// 从列表构建字典（同时构建名字 ↔ GUID 映射）
     /// </summary>
     private void BuildRuntimeDict()
     {
         runtimeDict = new Dictionary<string, T>();
+        nameToGuid.Clear();
+        guidToName.Clear();
 
         foreach (var variable in variableList)
         {
@@ -47,6 +55,9 @@ public class VariableContainer<T>
                 if (!runtimeDict.ContainsKey(variable.Name))
                 {
                     runtimeDict.Add(variable.Name, variable.Value);
+                    string guid = variable.Guid;
+                    nameToGuid[variable.Name] = guid;
+                    guidToName[guid] = variable.Name;
                 }
                 else
                 {
@@ -110,6 +121,14 @@ public class VariableContainer<T>
             dict.Add(key, value);
         }
 
+        // 保证名字→GUID 映射存在（运行时新建变量生成 GUID）
+        if (!nameToGuid.ContainsKey(key))
+        {
+            string guid = System.Guid.NewGuid().ToString();
+            nameToGuid[key] = guid;
+            guidToName[guid] = key;
+        }
+
         // 编辑模式（非运行）下同步写列表，作为设计默认值；运行时只写运行字典
         if (!Application.isPlaying)
         {
@@ -129,19 +148,96 @@ public class VariableContainer<T>
     }
 
     /// <summary>
-    /// 从外部数据导入运行值（存档加载时调用，替换运行字典）
+    /// 从外部数据导入运行值（存档加载时调用，替换运行字典，含 GUID）
     /// </summary>
-    public void ImportFrom(Dictionary<string, T> values)
+    public void ImportFrom(List<VariableEntryData<T>> entries)
     {
-        runtimeDict = values == null ? new Dictionary<string, T>() : new Dictionary<string, T>(values);
+        runtimeDict = new Dictionary<string, T>();
+        nameToGuid = new Dictionary<string, string>();
+        guidToName = new Dictionary<string, string>();
+
+        if (entries == null) return;
+        foreach (var e in entries)
+        {
+            if (e == null || string.IsNullOrEmpty(e.name)) continue;
+            string guid = string.IsNullOrEmpty(e.guid) ? System.Guid.NewGuid().ToString() : e.guid;
+            runtimeDict[e.name] = e.value;
+            nameToGuid[e.name] = guid;
+            guidToName[guid] = e.name;
+        }
     }
 
     /// <summary>
-    /// 导出当前运行值（存档保存时调用）
+    /// 导出当前运行值（存档保存时调用，含 GUID）
     /// </summary>
-    public Dictionary<string, T> Export()
+    public List<VariableEntryData<T>> Export()
     {
-        return new Dictionary<string, T>(GetRuntimeDict());
+        var dict = GetRuntimeDict();
+        var result = new List<VariableEntryData<T>>(dict.Count);
+        foreach (var kvp in dict)
+        {
+            nameToGuid.TryGetValue(kvp.Key, out string guid);
+            result.Add(new VariableEntryData<T> { name = kvp.Key, guid = guid, value = kvp.Value });
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// 名字优先 + GUID 兜底解析（得到实际名字与 GUID）
+    /// </summary>
+    public bool TryResolve(string name, string guid, out T value, out string actualName, out string actualGuid)
+    {
+        value = default;
+        actualName = null;
+        actualGuid = null;
+        var dict = GetRuntimeDict();
+
+        // 1) 名字优先
+        if (!string.IsNullOrEmpty(name) && dict.TryGetValue(name, out value))
+        {
+            actualName = name;
+            actualGuid = nameToGuid.TryGetValue(name, out string g) ? g : null;
+            return true;
+        }
+
+        // 2) GUID 兜底
+        if (!string.IsNullOrEmpty(guid) && guidToName.TryGetValue(guid, out string resolvedName))
+        {
+            if (dict.TryGetValue(resolvedName, out value))
+            {
+                actualName = resolvedName;
+                actualGuid = guid;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// 名字优先 + GUID 兜底解析后设置值（仅对已存在的变量生效；都不存在返回 false）
+    /// </summary>
+    public bool TryResolveAndSet(string name, string guid, T value, out string actualName, out string actualGuid)
+    {
+        actualName = null;
+        actualGuid = null;
+        var dict = GetRuntimeDict();
+
+        string targetName = null;
+        if (!string.IsNullOrEmpty(name) && dict.ContainsKey(name))
+        {
+            targetName = name;
+        }
+        else if (!string.IsNullOrEmpty(guid) && guidToName.TryGetValue(guid, out string resolvedName) && dict.ContainsKey(resolvedName))
+        {
+            targetName = resolvedName;
+        }
+
+        if (targetName == null) return false;
+
+        dict[targetName] = value;
+        actualName = targetName;
+        actualGuid = nameToGuid.TryGetValue(targetName, out string g) ? g : null;
+        return true;
     }
 
     /// <summary>

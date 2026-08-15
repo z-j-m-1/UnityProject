@@ -114,6 +114,22 @@ public class BaseNodeGraph : NodeGraph, ISerializationCallbackReceiver
         return variables.Export();
     }
 
+    /// <summary>
+    /// 名字优先 + GUID 兜底获取变量（得到实际名字与 GUID）
+    /// </summary>
+    public bool TryGetVariable<T>(string name, string guid, out T value, out string actualName, out string actualGuid)
+    {
+        return variables.TryResolve(name, guid, out value, out actualName, out actualGuid);
+    }
+
+    /// <summary>
+    /// 名字优先 + GUID 兜底设置变量
+    /// </summary>
+    public bool TrySetVariable<T>(string name, string guid, T value, out string actualName, out string actualGuid)
+    {
+        return variables.TryResolveAndSet(name, guid, value, out actualName, out actualGuid);
+    }
+
     // ============ 节点图生命周期方法 ============
 
     public void SetAttachedObject(GameObject obj)

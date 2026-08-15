@@ -91,6 +91,22 @@ public abstract class PersistentVariableManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 名字优先 + GUID 兜底获取变量（得到实际名字与 GUID）
+    /// </summary>
+    public bool TryGetVariable<T>(string name, string guid, out T value, out string actualName, out string actualGuid)
+    {
+        return VariableObject.TryResolve(name, guid, out value, out actualName, out actualGuid);
+    }
+
+    /// <summary>
+    /// 名字优先 + GUID 兜底设置变量
+    /// </summary>
+    public bool TrySetVariable<T>(string name, string guid, T value, out string actualName, out string actualGuid)
+    {
+        return VariableObject.TryResolveAndSet(name, guid, value, out actualName, out actualGuid);
+    }
+
+    /// <summary>
     /// 切换当前使用的变量对象（房间按场景切换时调用）
     /// </summary>
     protected void SetVariableObject(VariableBundleObject obj)
@@ -142,12 +158,28 @@ public abstract class PersistentVariableManager : MonoBehaviour
     private void OnSetVariable<T>(PersistentSetVariableEvent<T> evt)
     {
         if (evt.scope != Scope) return;
-        VariableObject.Set(evt.variableName, evt.variableValue);
+        if (VariableObject.TryResolveAndSet(evt.variableName, evt.guid, evt.variableValue, out string actualName, out string actualGuid))
+        {
+            evt.onResolved?.Invoke(actualName, actualGuid);
+        }
+        else
+        {
+            // 名字和GUID都找不到：按名字直接创建/设置
+            VariableObject.Set(evt.variableName, evt.variableValue);
+            evt.onResolved?.Invoke(evt.variableName, evt.guid);
+        }
     }
 
     private void OnGetVariable<T>(PersistentGetVariableEvent<T> evt)
     {
         if (evt.scope != Scope) return;
-        evt.callback?.Invoke(VariableObject.Get(evt.variableName, evt.defaultValue));
+        if (VariableObject.TryResolve(evt.variableName, evt.guid, out T value, out string actualName, out string actualGuid))
+        {
+            evt.callback?.Invoke(value, actualName, actualGuid);
+        }
+        else
+        {
+            evt.callback?.Invoke(evt.defaultValue, evt.variableName, evt.guid);
+        }
     }
 }

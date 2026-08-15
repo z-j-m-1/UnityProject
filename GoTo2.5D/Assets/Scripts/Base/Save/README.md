@@ -15,6 +15,14 @@ persistentDataPath/save/
 └── archive/<房间>.json # 正式
 ```
 
+## 存档格式（v2，含 GUID）
+
+v2 起变量条目为 `VariableEntryData<T>`（`name` + `guid` + `value`），变量改名后读档仍能靠 GUID 兜底命中。
+**旧 v1 存档不兼容**（结构由字典改为列表），可直接删除 `save/` 目录重置。
+
+- `RoomSaveData.roomId`：记录房间稳定 ID（`RoomIdentity.roomId`），场景改名后按场景名找不到文件时会扫描 archive 按 roomId 兜底匹配
+- 房间文件名仍用场景名（`archive/<场景名>.json`），便于人工查看
+
 ## 核心类
 
 | 类 | 说明 |

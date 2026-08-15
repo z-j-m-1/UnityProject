@@ -57,4 +57,20 @@ public class VariableBundleObject : ScriptableObject
     {
         return variables.Export();
     }
+
+    /// <summary>
+    /// 名字优先 + GUID 兜底解析（得到实际名字与 GUID）
+    /// </summary>
+    public bool TryResolve<T>(string name, string guid, out T value, out string actualName, out string actualGuid)
+    {
+        return variables.TryResolve(name, guid, out value, out actualName, out actualGuid);
+    }
+
+    /// <summary>
+    /// 名字优先 + GUID 兜底解析后设置值
+    /// </summary>
+    public bool TryResolveAndSet<T>(string name, string guid, T value, out string actualName, out string actualGuid)
+    {
+        return variables.TryResolveAndSet(name, guid, value, out actualName, out actualGuid);
+    }
 }
