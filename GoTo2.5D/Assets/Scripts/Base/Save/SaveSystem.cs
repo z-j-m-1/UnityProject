@@ -117,6 +117,9 @@ public class SaveSystem : MonoBehaviour
         // 2. 预备文件 → 存档文件（逐文件原子复制）
         CommitStagingToArchive();
 
+        // 提交完成后删除预备文件（staging 是临时保护层，正式保存后清空）
+        ClearStaging();
+
         // 3. 全局变量 + 索引（global.json 只在真正保存时写）
         WriteGlobal();
         WriteIndex(sceneName);
@@ -168,12 +171,13 @@ public class SaveSystem : MonoBehaviour
         roomManager.RegisterCurrentRoomGraphs(sceneName);
 
         RoomSaveData roomData = ReadJson<RoomSaveData>(ArchiveRoomPath(sceneName));
+        string oldSaveFile = null;
 
         // 场景改名后按场景名找不到文件：用房间ID扫描 archive 兜底
         if (roomData == null)
         {
             string roomId = roomManager.GetRoomId(sceneName);
-            roomData = FindRoomSaveByRoomId(roomId);
+            roomData = FindRoomSaveByRoomId(roomId, out oldSaveFile);
             if (roomData != null)
             {
                 Debug.Log($"存档系统：按场景名 '{sceneName}' 未找到存档，已按房间ID '{roomId}' 匹配到存档");
@@ -194,19 +198,27 @@ public class SaveSystem : MonoBehaviour
         {
             PersistentItemManager.Instance.ApplyCurrent(roomData.items);
         }
+
+        // 场景改名兜底命中后：删除旧名称的存档与预备文件
+        if (oldSaveFile != null)
+        {
+            DeleteOldRoomFiles(oldSaveFile, sceneName);
+        }
     }
 
     /// <summary>
     /// 在 archive 层扫描某个房间ID对应的存档（场景改名后的兜底匹配）
     /// </summary>
-    private static RoomSaveData FindRoomSaveByRoomId(string roomId)
+    private static RoomSaveData FindRoomSaveByRoomId(string roomId, out string filePath)
     {
+        filePath = null;
         if (string.IsNullOrEmpty(roomId) || !Directory.Exists(ArchivePath)) return null;
         foreach (string file in Directory.GetFiles(ArchivePath, "*.json"))
         {
             RoomSaveData data = ReadJson<RoomSaveData>(file);
             if (data != null && !string.IsNullOrEmpty(data.roomId) && data.roomId == roomId)
             {
+                filePath = file;
                 return data;
             }
         }
@@ -273,6 +285,58 @@ public class SaveSystem : MonoBehaviour
     /// <summary>
     /// 写全局变量文件（仅真正保存时调用）
     /// </summary>
+    /// <summary>
+    /// 提交完成后删除预备层所有文件（staging 是临时保护层，正式保存后清空）
+    /// </summary>
+    private void ClearStaging()
+    {
+        if (!Directory.Exists(StagingPath)) return;
+        foreach (string file in Directory.GetFiles(StagingPath, "*.json"))
+        {
+            try
+            {
+                File.Delete(file);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"存档系统：删除预备文件失败（{file}），{e.Message}");
+            }
+        }
+    }
+
+    /// <summary>
+    /// 场景改名兜底命中后：删除旧名称的存档文件与对应的预备文件
+    /// </summary>
+    private void DeleteOldRoomFiles(string archiveFilePath, string newSceneName)
+    {
+        string oldName = Path.GetFileNameWithoutExtension(archiveFilePath);
+        if (string.IsNullOrEmpty(oldName) || oldName == newSceneName) return;
+
+        try
+        {
+            File.Delete(archiveFilePath);
+            Debug.Log($"存档系统：已删除旧房间名存档 '{archiveFilePath}'");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning($"存档系统：删除旧存档失败（{archiveFilePath}），{e.Message}");
+        }
+
+        string oldStaging = StagingRoomPath(oldName);
+        if (File.Exists(oldStaging))
+        {
+            try
+            {
+                File.Delete(oldStaging);
+                Debug.Log($"存档系统：已删除旧房间名预备文件 '{oldStaging}'");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"存档系统：删除旧预备文件失败（{oldStaging}），{e.Message}");
+            }
+        }
+    }
+
     private void WriteGlobal()
     {
         Directory.CreateDirectory(SavePath);
