@@ -40,28 +40,46 @@ public static class RoomIdentityEditorTools
     [MenuItem("Tools/房间/RoomIdentity 补齐（Build Settings 所有场景）", false, 11)]
     private static void EnsureAllBuildScenes()
     {
-        string[] scenePaths = EditorBuildSettings.scenes
-            .Where(s => s.enabled && !string.IsNullOrEmpty(s.path))
+        // 有效场景：启用、有路径、且文件实际存在（Build Settings 可能残留已删除的默认 SampleScene 等失效条目）
+        string[] validPaths = EditorBuildSettings.scenes
+            .Where(s => s.enabled && !string.IsNullOrEmpty(s.path) && File.Exists(s.path))
             .Select(s => s.path)
             .ToArray();
 
-        if (scenePaths.Length == 0)
+        string[] missingPaths = EditorBuildSettings.scenes
+            .Where(s => s.enabled && !string.IsNullOrEmpty(s.path) && !File.Exists(s.path))
+            .Select(s => s.path)
+            .ToArray();
+
+        if (missingPaths.Length > 0)
         {
-            Debug.LogWarning("RoomIdentity 补齐：Build Settings 中没有启用的场景");
+            Debug.LogWarning("RoomIdentity 补齐：以下 Build Settings 场景文件不存在，已跳过（可在 Build Settings 中移除失效条目）：\n" + string.Join("\n", missingPaths));
+        }
+
+        if (validPaths.Length == 0)
+        {
+            Debug.LogWarning("RoomIdentity 补齐：Build Settings 中没有可处理的场景");
             return;
         }
 
-        foreach (string path in scenePaths)
+        foreach (string path in validPaths)
         {
-            Scene scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
-            if (EnsureRoomIdentityInScene(scene, out string log))
+            try
             {
-                EditorSceneManager.SaveScene(scene);
-                Debug.Log(log + $"\n场景 '{scene.name}' 已保存。");
+                Scene scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
+                if (EnsureRoomIdentityInScene(scene, out string log))
+                {
+                    EditorSceneManager.SaveScene(scene);
+                    Debug.Log(log + $"\n场景 '{scene.name}' 已保存。");
+                }
+                else
+                {
+                    Debug.Log(log);
+                }
             }
-            else
+            catch (System.Exception e)
             {
-                Debug.Log(log);
+                Debug.LogError($"RoomIdentity 补齐：处理场景 '{path}' 失败，已跳过（{e.Message}）");
             }
         }
     }
