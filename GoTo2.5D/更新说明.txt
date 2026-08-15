@@ -1,3 +1,9 @@
+文档整理：重写架构说明与全部 README + Base/xNode 目录清理
+
+- 重写仓库根《架构说明.md》《README.md》与 Event/Music/Save/UI/Variable/xNode 子系统 README
+- 删除 xNode/Nodes 下重构遗留的 5 个空文件夹及其 meta
+- PersistentVariableEvent.cs 移入 CommunicationNodes/（与 ComSetAndGetVariableEvent 并列）
+
 变量/场景 GUID 追踪（抗改名）+ RoomIdentity
 
 - VariableContainer 新增 nameToGuid/guidToName 映射 + TryResolve/TryResolveAndSet（名字优先 + GUID 兜底）

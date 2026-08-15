@@ -8,7 +8,7 @@
 |---|---|
 | `EventBus` | 静态事件总线（发布 / 订阅 / 退订） |
 | `GameEvent` | 事件基类（实现 `IPoolable`） |
-| `ParameterizedEvent<T>` | 泛型参数事件：`Trigger` / `Subscribe` / `Unsubscribe` |
+| `ParameterizedEvent<T>` | 泛型参数事件：`Trigger` / `TriggerAsync` / `TriggerAsyncRecycle` / `Subscribe` / `Unsubscribe` |
 | `SignalEvent<T>` | 无参信号事件 |
 | `ClassPool<T>` / `ListPool<T>` | 对象池 |
 
@@ -25,11 +25,12 @@ public class MyEvent : ParameterizedEvent<MyEvent>
 // 订阅
 MyEvent.Subscribe(e => Debug.Log(e.value));
 
-// 触发（同步发布，订阅者立刻收到）
+// 触发（同步发布，订阅者立刻收到，回调返回后自动回收）
 MyEvent.Trigger(e => e.value = 42);
 ```
 
 ## 说明
 
-- `Trigger` 同步发布事件，回调内可安全读取数据；
-- 事件对象从对象池复用，实现 `OnRecycled` 清理字段防止脏数据。
+- `Trigger` 同步发布事件，回调内可安全读取数据；事件对象从池复用，回调返回后自动回收；
+- 异步高频事件用 `TriggerAsyncRecycle`（不自动回收），需外部手动 `ClassPool<T>.Recycle`；
+- 事件字段记得在 `OnRecycled` 清理，防止复用脏数据。

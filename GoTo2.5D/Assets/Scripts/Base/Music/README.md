@@ -2,7 +2,7 @@
 
 ## MusicManager（单例）
 
-自动创建（`Instance` 访问时自动生成 GameObject），`DontDestroyOnLoad`。
+访问 `Instance` 时自动生成 GameObject 并 `DontDestroyOnLoad`。
 
 | 方法 | 说明 |
 |---|---|
