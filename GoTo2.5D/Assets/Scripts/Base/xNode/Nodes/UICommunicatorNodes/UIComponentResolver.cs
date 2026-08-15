@@ -12,7 +12,24 @@ public static class UIComponentResolver
 
         if (source == UISource.Canvas)
         {
-            return UICollector.Instance.Find<T>(uiObjectName);
+            if (Application.isPlaying)
+            {
+                return UICollector.Instance.Find<T>(uiObjectName);
+            }
+#if UNITY_EDITOR
+            // 编辑器模式：UICollector 的 Awake 不触发（不会收集），直接扫场景 Canvas 下组件
+            // 纯只读：不创建 Canvas、不新增组件、不修改场景
+            Canvas canvas = Object.FindObjectOfType<Canvas>();
+            if (canvas == null) return null;
+            T[] comps = canvas.GetComponentsInChildren<T>(true);
+            for (int i = 0; i < comps.Length; i++)
+            {
+                if (comps[i].gameObject.name == uiObjectName) return comps[i];
+            }
+            return null;
+#else
+            return null;
+#endif
         }
 
         // Self：自身或子物体

@@ -39,7 +39,10 @@ public class ComUIGetTextNode : DataNode
 
             if (string.IsNullOrEmpty(uiName))
             {
-                Debug.LogError($"{GetType().Name}: UI对象名称不能为空");
+                if (Application.isPlaying)
+                {
+                    Debug.LogError($"{GetType().Name}: UI对象名称不能为空");
+                }
                 return outputValue;
             }
 
@@ -50,7 +53,11 @@ public class ComUIGetTextNode : DataNode
             }
             else
             {
-                Debug.LogError($"{GetType().Name}: 未找到UI对象 '{uiName}'（{uiType}）");
+                if (Application.isPlaying)
+                {
+                    Debug.LogError($"{GetType().Name}: 未找到UI对象 '{uiName}'（{uiType}）");
+                }
+                // 编辑器模式下找不到属于正常（场景可能没有对应 UI / Self 源无附加物体），静默返回默认值
             }
 
             return outputValue;
