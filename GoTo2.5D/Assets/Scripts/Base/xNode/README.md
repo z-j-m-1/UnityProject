@@ -7,6 +7,7 @@
 | 节点 | 菜单 | 说明 |
 |---|---|---|
 | 获取/设置变量 | `变量操作/获取\|设置/字符串\|布尔\|整数\|浮点` | 通过 `source` 枚举选择操作对象 |
+| UI 文本 | `通讯UI/获取\|设置文本` | 读/写 Text / TextMeshPro（`source`：自身或 Canvas） |
 | 执行图 | `通讯/执行节点图` | 触发另一张图执行 |
 | 存档点 | `通讯/存档/保存游戏` | 把预备存档提交为正式存档 |
 
@@ -31,8 +32,9 @@ xNode/
 └── Nodes/
     ├── BaseNode/                 # DataNode / FlowNode / BaseNode
     ├── VariableNodes/            # 统一 get/set 节点（source 枚举）
-    ├── CommunicationNodes/       # 通讯事件 + 存档点 + UI 通讯
-    └── ScopeVariableNode/        # 持久变量事件
+    ├── CommunicationNodes/       # 通讯事件 + 存档点
+    ├── ScopeVariableNode/        # 持久变量事件
+    └── UICommunicatorNodes/      # 统一 UI 文本节点（source/type 枚举）
 ```
 
 ## 节点图 GUID

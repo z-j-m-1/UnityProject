@@ -1,19 +1,32 @@
 # UI 系统
 
+## UICollector（UI 收集者）
+
+挂在 Canvas 上，收集其下所有 `Text` / `TextMeshPro` / `Image` 组件，按**物体名**索引。单例，**不 DontDestroyOnLoad**（随场景重建）。
+
+- 自动找场景 Canvas；没有则创建（补 `CanvasScaler` + `GraphicRaycaster`）
+- 同类型同名会覆盖并打警告，请避免 UI 重名
+- `Find<T>(name)` 按类型 + 名字查找；`Refresh()` 重新收集
+
 ## TextEvents
 
 挂在 UI 文本（TextMeshProUGUI）上，提供：
 
 | 方法 | 说明 |
 |---|---|
-| `UpdateText(string newText)` | 直接设置文本 |
-| `UpdateTextWithRichText(string newText)` | 用 `<wave>` 富文本包裹设置 |
+| `UpdateText(string)` | 直接设置文本 |
+| `UpdateTextWithRichText(string)` | 用 `<wave>` 富文本包裹设置 |
 
 ## UI 通讯节点（`xNode/Nodes/UICommunicatorNodes`）
 
-跨图通讯更新 UI：
+统一节点（`source` + `uiType` 枚举）：
 
-- `ComGetSelfTextNode` / `ComSetSelfTextNode`
-- `ComGetSelfTextMeshProNode` / `ComSetSelfTextMeshProNode`
+| 节点 | 菜单 |
+|---|---|
+| `ComUIGetTextNode` | `通讯UI/获取文本` |
+| `ComUISetTextNode` | `通讯UI/设置文本` |
 
-由 `UICommunicator`（单例）按"图 + UI 名"缓存组件引用，节点图里可直接读写 UI 文本。
+- `source`：`Self`（图附加物体的自身/子物体）或 `Canvas`（UICollector 任意 UI）
+- `uiType`：`Text` / `TextMeshPro`（`Image` 只收集、暂不支持读写）
+- Get 节点带 `stripRichText` 选项（剔除 `<...>` 富文本标签）
+

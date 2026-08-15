@@ -1,3 +1,10 @@
+UI通讯节点统一（UISource/UIType枚举）+ 新增UICollector
+
+- 新增 UICollector（Canvas 单例）：收集 Text/TextMeshPro/Image，按物体名索引，同名警告
+- UI 节点统一为 ComUIGetTextNode / ComUISetTextNode（source=自身/Canvas，type=Text/TextMeshPro）
+- Get 节点新增 stripRichText 富文本剔除选项
+- 删除旧 UICommunicator + 旧事件 + 旧 4 个自身UI节点
+
 统一get/set变量节点为单一基类（source枚举）
 
 - 新增 VariableSource 枚举（本图/跨图/房间/全局）
