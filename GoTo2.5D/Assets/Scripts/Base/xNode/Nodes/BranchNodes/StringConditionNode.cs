@@ -1,11 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using XNode;
 
-
+/// <summary>
+/// 分支条件-字符条件节点（数据节点）：对输入句子与预设文本做比较，输出 bool[]
+/// </summary>
+[NodeTint("#E67E22")]
 [CreateNodeMenu("分支条件/字符条件")]
-public class StringConditionNode : FlowNode
+public class StringConditionNode : DataNode
 {
     [Output]
     public bool[] conditions;  // 输出端口：每个文本的判断结果
