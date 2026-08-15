@@ -1,3 +1,8 @@
+修复：启动时房间存档重复加载
+
+- 拆出 SaveSystem.LoadGlobal（只加载全局变量）；启动由 GraphCommunicator 调它，房间存档统一由进房间时（OnSceneLoaded）应用，不再重复加载
+- 存档：Commit 后清空预备层；场景改名兜底命中后删除旧名称存档
+
 文档整理：重写架构说明与全部 README + Base/xNode 目录清理
 
 - 重写仓库根《架构说明.md》《README.md》与 Event/Music/Save/UI/Variable/xNode 子系统 README

@@ -59,8 +59,8 @@ public class GraphCommunicator : MonoBehaviour
         ComGetVariableEvent<int>.Subscribe(OnComGetVariable<int>);
         ComGetVariableEvent<float>.Subscribe(OnComGetVariable<float>);
 
-        // 启动时加载存档（场景变量与图执行器就绪后）
-        SaveSystem.Load();
+        // 启动时加载全局变量（房间存档由 RoomVariableManager.OnSceneLoaded 应用，避免重复加载）
+        SaveSystem.LoadGlobal();
 
     }
 

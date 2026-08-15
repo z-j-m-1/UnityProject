@@ -63,6 +63,7 @@ public class SaveSystem : MonoBehaviour
     /// <summary>真正保存：把预备文件提交为正式存档</summary>
     public static void Commit() => Instance.CommitNow();
     public static void Load() => Instance.LoadNow();
+    public static void LoadGlobal() => Instance.LoadGlobalNow();
     public static void Delete() => Instance.DeleteNow();
 
     /// <summary>应用某个房间的存档（进入房间或加载存档时调用）</summary>
@@ -130,6 +131,19 @@ public class SaveSystem : MonoBehaviour
     /// <summary>
     /// 加载存档：导入全局变量 + 当前房间存档（只读 archive）
     /// </summary>
+    /// <summary>
+    /// 加载全局变量与索引（不应用房间存档，房间存档由 RoomVariableManager.OnSceneLoaded 负责，避免重复加载）
+    /// </summary>
+    public void LoadGlobalNow()
+    {
+        GlobalSaveData globalData = ReadJson<GlobalSaveData>(GlobalPath);
+        if (globalData != null && globalData.global != null)
+        {
+            GameGlobalVariableManager.Instance.Import(globalData.global);
+        }
+        Debug.Log("存档系统：已加载全局变量");
+    }
+
     [ContextMenu("加载存档")]
     public void LoadNow()
     {

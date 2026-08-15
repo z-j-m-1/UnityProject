@@ -29,10 +29,11 @@ persistentDataPath/save/
 ## API
 
 ```csharp
-SaveSystem.Commit();   // 真正保存（存档点 / Inspector 右键）
-SaveSystem.Load();     // 读档（启动自动调用）
-SaveSystem.Delete();   // 删除整个 save 目录
-SaveSystem.HasSave();  // 是否存在正式存档
+SaveSystem.Commit();      // 真正保存（存档点 / Inspector 右键）
+SaveSystem.LoadGlobal();  // 加载全局变量（启动时自动调用；房间存档由进房间时应用）
+SaveSystem.Load();        // 完整读档：全局 + 当前房间（手动 / 调试用）
+SaveSystem.Delete();      // 删除整个 save 目录
+SaveSystem.HasSave();     // 是否存在正式存档
 ```
 
 ## 存档格式（v2，含 GUID）
