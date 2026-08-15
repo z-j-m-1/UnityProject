@@ -5,6 +5,7 @@
 - RoomIdentity 补齐工具：过滤失效 Build Settings 场景条目 + 单场景容错；场景已挂载 RoomIdentity、禁用失效 SampleScene 并登记 002
 - 编辑器模式：UI 通讯节点（Canvas 源）只读扫描场景 UI（不创建、不修改场景），悬停提示不再报错
 - StringConditionNode 改为 DataNode（纯数据节点）+ NodeTint 区分
+- 开始场景图资产合并：ShowNameText / What 合并为通用节点图.asset
 
 文档整理：重写架构说明与全部 README + Base/xNode 目录清理
 
