@@ -19,8 +19,9 @@ public abstract class SetVariableNode<T> : FlowNode
     [Input(ShowBackingValue.Unconnected, ConnectionType.Override)]
     public string variableName;
 
-    /// <summary>追踪的变量 GUID（隐藏，自动记录，用于变量改名后兜底解析）</summary>
-    [SerializeField, HideInInspector] private string variableGuid;
+    [Header("变量 GUID（自动追踪，调试用）")]
+    [Tooltip("自动记录/修正的变量 GUID，用于变量改名后兜底解析")]
+    public string variableGuid;
 
     [Header("变量值")]
     [Input(ShowBackingValue.Unconnected, ConnectionType.Override)]
