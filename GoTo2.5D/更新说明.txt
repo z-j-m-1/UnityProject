@@ -1,3 +1,11 @@
+事件触发节点（复用入口节点 + GraphEvent 事件总线）
+
+- 新增 GraphEvent（ParameterizedEvent）：字符串 eventId 事件总线，任意触发源统一调用
+- GraphExecutor 新增 subscribeEntryEvent 开关：入口模式开启后订阅该入口标识的事件，触发时从该入口执行（ExecuteFrom）
+- Execute 重构为 ExecuteFrom(BaseNode start)：事件/指定起点优先，触发策略（Restart/Ignore/Queue）同样生效
+- 新增 GraphEventEmitter（Emit()，可拖入按钮/UnityEvent，不引用节点图）+ CollisionEventEmitter（2D/3D 碰撞触发）
+- 事件入口 = 入口节点（identifier 即事件标识），不新建节点类型
+
 数据节点补全 + 组件动作节点扩库存 + Vector3 变量类型
 
 - 数据节点：RandomIntNode / RandomFloatNode（随机）、6 个类型转换节点（int↔float↔string）、StringSubstringNode / StringReplaceNode（截取/替换）

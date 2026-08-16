@@ -28,10 +28,13 @@ public class GraphExecutor : MonoBehaviour
     [SerializeField] private GraphExecutionMode executionMode = GraphExecutionMode.Default;
     [SerializeField] private string entryIdentifier;
     [SerializeField] private GraphExecutionTriggerPolicy triggerPolicy = GraphExecutionTriggerPolicy.Restart;
+    [SerializeField] private bool subscribeEntryEvent;
 
     private Coroutine executeCoroutine;
     private int currentExecuteCount = 0;
     private bool queueTriggered;
+    private BaseNode pendingStartOverride;
+    private System.Action<GraphEvent> entryEventHandler;
 
     /// <summary>当前正在执行的节点（供编辑器运行高亮；未执行时为 null）</summary>
     [System.NonSerialized] private BaseNode currentNode;
@@ -63,6 +66,10 @@ public class GraphExecutor : MonoBehaviour
             Execute();
         }
 
+        if (subscribeEntryEvent)
+        {
+            SubscribeEntryEvent();
+        }
     }
 
     void OnDestroy()
@@ -73,10 +80,19 @@ public class GraphExecutor : MonoBehaviour
             executeCoroutine = null;
             currentNode = null;
         }
+
+        if (entryEventHandler != null)
+        {
+            GraphEvent.Unsubscribe(entryEventHandler);
+            entryEventHandler = null;
+        }
     }
 
-    // 执行节点图（启动协程）
-    public void Execute()
+    // 执行节点图（启动协程，默认起点）
+    public void Execute() => ExecuteFrom(null);
+
+    /// <summary>从指定节点开始执行（null = 按配置的默认/入口起点）；触发策略同样生效</summary>
+    public void ExecuteFrom(BaseNode startOverride)
     {
         switch (triggerPolicy)
         {
@@ -109,7 +125,31 @@ public class GraphExecutor : MonoBehaviour
         }
 
         queueTriggered = false;
+        pendingStartOverride = startOverride;
         executeCoroutine = StartCoroutine(ExecuteCoroutine());
+    }
+
+    /// <summary>订阅入口事件：入口模式 + subscribeEntryEvent 开启时，事件触发从该入口执行</summary>
+    private void SubscribeEntryEvent()
+    {
+        if (executionMode != GraphExecutionMode.Entry || string.IsNullOrEmpty(entryIdentifier)) return;
+
+        entryEventHandler = OnGraphEvent;
+        GraphEvent.Subscribe(entryEventHandler);
+        NodeLog.Info($"GraphExecutor '{gameObject.name}': 已订阅入口事件 '{entryIdentifier}'");
+    }
+
+    private void OnGraphEvent(GraphEvent evt)
+    {
+        if (evt.eventId != entryIdentifier) return;
+
+        EntryNode entry = nodeGraph != null ? nodeGraph.GetEntryNode(entryIdentifier) : null;
+        if (entry == null)
+        {
+            NodeLog.Warning($"GraphExecutor '{gameObject.name}': 入口事件 '{entryIdentifier}' 未找到对应入口节点");
+            return;
+        }
+        ExecuteFrom(entry);
     }
 
     /// <summary>
@@ -145,8 +185,9 @@ public class GraphExecutor : MonoBehaviour
             yield break;
         }
 
-        // 解析执行起点（默认执行 = startNode；入口执行 = 按标识符/GUID 找入口节点）
-        BaseNode startNode = GetStartNode();
+        // 解析执行起点：指定起点（事件等）优先，否则按配置（默认 = startNode；入口 = 标识符/GUID）
+        BaseNode startNode = pendingStartOverride != null ? pendingStartOverride : GetStartNode();
+        pendingStartOverride = null;
         if (startNode == null)
         {
             if (executionMode == GraphExecutionMode.Default)
