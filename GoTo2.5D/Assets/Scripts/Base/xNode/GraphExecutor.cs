@@ -10,6 +10,14 @@ public enum GraphExecutionMode
     Entry
 }
 
+/// <summary>图执行触发策略：执行中再次被触发时的行为</summary>
+public enum GraphExecutionTriggerPolicy
+{
+    Restart,               // 停止当前并整条链重跑（默认）
+    IgnoreWhileRunning,    // 运行中忽略重复触发
+    Queue                  // 运行中排队，当前跑完后自动再跑一轮
+}
+
 // 通用节点图执行器 - 挂载到GameObject上使用
 public class GraphExecutor : MonoBehaviour
 {
@@ -19,9 +27,11 @@ public class GraphExecutor : MonoBehaviour
     [SerializeField] private int executeCount = 0; // 0 代表无限执行
     [SerializeField] private GraphExecutionMode executionMode = GraphExecutionMode.Default;
     [SerializeField] private string entryIdentifier;
+    [SerializeField] private GraphExecutionTriggerPolicy triggerPolicy = GraphExecutionTriggerPolicy.Restart;
 
     private Coroutine executeCoroutine;
     private int currentExecuteCount = 0;
+    private bool queueTriggered;
 
     void Awake()
     {
@@ -61,10 +71,36 @@ public class GraphExecutor : MonoBehaviour
     // 执行节点图（启动协程）
     public void Execute()
     {
-        if (executeCoroutine != null)
+        switch (triggerPolicy)
         {
-            StopCoroutine(executeCoroutine);
+            case GraphExecutionTriggerPolicy.IgnoreWhileRunning:
+                if (executeCoroutine != null)
+                {
+                    Debug.Log($"GraphExecutor '{gameObject.name}': 正在执行中，忽略本次触发");
+                    return;
+                }
+                break;
+
+            case GraphExecutionTriggerPolicy.Queue:
+                if (executeCoroutine != null)
+                {
+                    queueTriggered = true;
+                    Debug.Log($"GraphExecutor '{gameObject.name}': 正在执行中，已排队一次触发");
+                    return;
+                }
+                break;
+
+            case GraphExecutionTriggerPolicy.Restart:
+            default:
+                if (executeCoroutine != null)
+                {
+                    StopCoroutine(executeCoroutine);
+                    executeCoroutine = null;
+                }
+                break;
         }
+
+        queueTriggered = false;
         executeCoroutine = StartCoroutine(ExecuteCoroutine());
     }
 
@@ -96,6 +132,7 @@ public class GraphExecutor : MonoBehaviour
         if (nodeGraph == null)
         {
             Debug.LogWarning("节点图为空");
+            executeCoroutine = null;
             yield break;
         }
 
@@ -107,6 +144,7 @@ public class GraphExecutor : MonoBehaviour
             {
                 Debug.LogWarning("没有StartNode");
             }
+            executeCoroutine = null;
             yield break;
         }
 
@@ -117,14 +155,13 @@ public class GraphExecutor : MonoBehaviour
         {
             yield return new WaitForSeconds(executeInterval);
 
-            // 执行节点链
-            nodeGraph.CurrentNode = startNode;
+            // 执行节点链（游标为执行器私有：多个执行器跑同一张图互不干扰）
+            BaseNode node = startNode;
             int maxLoop = 100;
             int counter = 0;
 
-            while (nodeGraph.CurrentNode != null && counter < maxLoop)
+            while (node != null && counter < maxLoop)
             {
-                BaseNode node = nodeGraph.CurrentNode;
                 node.Execute();
 
                 // 节点可返回协程流程（等待/等待条件等），执行器 yield 暂停链直到完成
@@ -134,7 +171,7 @@ public class GraphExecutor : MonoBehaviour
                     yield return flow;
                 }
 
-                nodeGraph.CurrentNode = node.GetConnectedNode();
+                node = node.GetConnectedNode();
                 counter++;
             }
 
@@ -148,6 +185,13 @@ public class GraphExecutor : MonoBehaviour
             {
                 Debug.Log($"节点图 '{gameObject.name}' 已执行 {executeCount} 次，自动停止");
                 executeCoroutine = null;
+
+                // 排队触发：当前跑完后自动再跑一轮
+                if (queueTriggered)
+                {
+                    queueTriggered = false;
+                    Execute();
+                }
                 yield break;
             }
         }

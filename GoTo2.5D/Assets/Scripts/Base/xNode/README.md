@@ -52,7 +52,9 @@ xNode/
 1. `Awake`：绑定图到挂载物体、注册到 `GraphCommunicator`；
 2. `Start`：`autoExecute` 时启动协程；
 3. 每 `executeInterval` 秒从起点沿 `GetConnectedNode()` 走链式执行（上限 100 次防死循环）；
-4. `executeCount`（0 = 无限循环）；`[ContextMenu("执行节点图")]` 可手动触发。
+4. `executeCount`（0 = 无限循环）；`[ContextMenu("执行节点图")]` 可手动触发；
+5. 执行游标为**执行器私有**，多个执行器跑同一张图互不干扰；
+6. 触发策略 `triggerPolicy`：`Restart`（默认，重触发=停止并重跑）/ `IgnoreWhileRunning`（运行中忽略）/ `Queue`（运行中排队，当前跑完自动再跑一轮）。
 
 ## 入口节点（EntryNode）
 

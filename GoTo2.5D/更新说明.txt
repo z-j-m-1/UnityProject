@@ -1,3 +1,9 @@
+新增执行触发策略 + 修复多执行器共享游标
+
+- GraphExecutor 新增 triggerPolicy：Restart（默认，重触发=停止并重跑）/ IgnoreWhileRunning（运行中忽略）/ Queue（运行中排队，跑完自动再跑）
+- 执行游标从图资产（BaseNodeGraph.CurrentNode）移到执行器实例私有，多执行器跑同一张图互不干扰
+- 移除 BaseNodeGraph.CurrentNode（仅执行器使用，已无用）；协程自然/异常结束均清空引用
+
 新增变量持久化开关（persist）
 
 - Variable<T> 新增 persist 字段（默认开启）：关闭后不进存档、读档不覆盖，每次开始游戏重置为列表初始值

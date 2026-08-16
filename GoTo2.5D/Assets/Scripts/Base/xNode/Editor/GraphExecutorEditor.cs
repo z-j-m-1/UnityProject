@@ -17,6 +17,7 @@ public class GraphExecutorEditor : Editor
     private SerializedProperty executeCountProp;
     private SerializedProperty executionModeProp;
     private SerializedProperty entryIdentifierProp;
+    private SerializedProperty triggerPolicyProp;
 
     private void OnEnable()
     {
@@ -26,6 +27,7 @@ public class GraphExecutorEditor : Editor
         executeCountProp = serializedObject.FindProperty("executeCount");
         executionModeProp = serializedObject.FindProperty("executionMode");
         entryIdentifierProp = serializedObject.FindProperty("entryIdentifier");
+        triggerPolicyProp = serializedObject.FindProperty("triggerPolicy");
     }
 
     public override void OnInspectorGUI()
@@ -37,6 +39,7 @@ public class GraphExecutorEditor : Editor
         EditorGUILayout.PropertyField(executeIntervalProp);
         EditorGUILayout.PropertyField(executeCountProp);
         EditorGUILayout.PropertyField(executionModeProp);
+        EditorGUILayout.PropertyField(triggerPolicyProp);
 
         if (executionModeProp.enumValueIndex == (int)GraphExecutionMode.Entry)
         {

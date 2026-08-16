@@ -13,9 +13,6 @@ public class BaseNodeGraph : NodeGraph, ISerializationCallbackReceiver
     [SerializeField]
     public StartNode startNode;
 
-    [NonSerialized]
-    private BaseNode _currentNode;
-
     // ============ 节点图唯一标识（存档用） ============
 
     [SerializeField] private string _guid;
@@ -63,14 +60,6 @@ public class BaseNodeGraph : NodeGraph, ISerializationCallbackReceiver
     // ============ 变量容器 ============
 
     [SerializeField] private VariableBundle variables = new VariableBundle();
-
-    // ============ 公共属性 ============
-
-    public BaseNode CurrentNode
-    {
-        get { return _currentNode; }
-        set { _currentNode = value; }
-    }
 
     // ============ 公共泛型 API ============
 
@@ -139,7 +128,6 @@ public class BaseNodeGraph : NodeGraph, ISerializationCallbackReceiver
 
     public void ResetGraph()
     {
-        _currentNode = null;
         attachedObject = null;
 
         variables.Rebuild();
