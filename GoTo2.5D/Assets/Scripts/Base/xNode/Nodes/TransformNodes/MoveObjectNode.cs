@@ -1,35 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using ZGameFramework.Core;
+using XNode;
 
+/// <summary>变换-移动物体节点（对目标 Transform 增加位移偏移）</summary>
 [CreateNodeMenu("变换/移动")]
-// 物体移动节点
-// 物体移动节点
 [NodeTint("#44AAFF")]
-public class MoveObjectNode : FlowNode
+public class MoveObjectNode : ComponentActionNode<Transform>
 {
-    public Vector3 moveOffset; // 移动偏移量输入端口
+    [Header("移动偏移量")]
+    public Vector3 moveOffset;
 
-    public override void Execute()
+    protected override void Apply(Transform t)
     {
-        MoveObjectNodeEvent.Trigger(evt =>
-        {
-            evt.targetObject = (graph as BaseNodeGraph).attachedObject; // 获取节点图绑定的物体
-            evt.moveOffset = moveOffset;
-        });
+        t.position += moveOffset;
     }
 }
-
-public class MoveObjectNodeEvent : ParameterizedEvent<MoveObjectNodeEvent>
-{
-    public GameObject targetObject; // 目标物体
-    public Vector3 moveOffset; // 移动偏移量输入端口
-    public override void OnRecycled()
-    {
-        targetObject = null;
-        moveOffset = Vector3.zero;
-    }
-}
-
-

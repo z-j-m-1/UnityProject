@@ -1,3 +1,10 @@
+Transform 节点重构：泛型组件动作基类
+
+- 新增 ComponentActionNode<T>（BaseNode）：统一目标解析（Attached/ByName/Direct）+ GetComponent + Apply
+- MoveObjectNode / RoteObjectNode 改继承 ComponentActionNode<Transform>，类名/菜单不变（图资产兼容）
+- 删除 TransformNodeEventExecutor 及 Move/Rote 事件类（不再需要事件中间层）
+- 注意：开始2 场景若挂有 TransformNodeEventExecutor 组件，Unity 会显示 Missing Script，需手动移除
+
 新增日志收敛 + 字符串运算节点
 
 - NodeLog 统一日志工具（Error/Warning/Info/Verbose 分级，默认 Warning）+ 菜单 Tools/节点系统/日志级别 切换

@@ -16,7 +16,7 @@ xNode/
     ├── OrderNodes/        # 流程（Print / Wait / 等待条件）
     ├── StringNodes/       # 字符串运算（运算 / 比较 / 长度）
     ├── ValueNodes/        # 常量值（Bool / Int / String）
-    ├── TransformNodes/    # 物体变换（Move / Rote）
+    ├── TransformNodes/    # 物体变换（Move / Rote，继承 ComponentActionNode）
     ├── CommunicationNodes/# 通讯（GraphCommunicator + 事件 + 执行图 + 存档点）
     ├── UICommunicatorNodes# UI 通讯（ComUIGetTextNode / ComUISetTextNode）
     └── VariableNodes/     # 统一 get/set 变量节点（source 枚举）
@@ -44,7 +44,8 @@ xNode/
 | UI 通讯 | `ComUIGetTextNode` / `ComUISetTextNode` | 读/写 Text / TextMeshPro（source：自身或 Canvas） |
 | 执行图 | `ComExecutionGraphNode` | 触发另一张图执行 |
 | 存档点 | `ComSaveGameNode` | 把预备存档提交为正式存档 |
-| 分支/逻辑/值/变换 | `BranchNode`、`AndLogicNode`、`BoolValueNode`、`MoveObjectNode` 等 | 流程控制、常量、物体运动 |
+| 变换 | `MoveObjectNode` / `RoteObjectNode` | 移动 / 旋转（目标：图绑定物体 / 子物体名 / 直接引用） |
+| 分支/逻辑/值/变换 | `BranchNode`、`AndLogicNode`、`BoolValueNode` 等 | 流程控制、常量、物体运动 |
 | 数学运算 | `MathOpIntNode` / `MathOpFloatNode` / `CompareIntNode` / `CompareFloatNode` | 四则运算（加/减/乘/除）、比较（等于/大于/小于等，输出 bool） |
 | 字符串 | `StringOpNode` / `StringCompareNode` / `StringLengthNode` | 拼接/大小写/去空格、包含/开头/结尾比较（输出 bool）、长度 |
 | 流程 | `PrintNode` / `WaitNode` / `WaitUntilNode` | 日志输出 / 等待指定秒数 / 等待条件成立（可接比较·逻辑·变量节点，支持超时） |
@@ -57,6 +58,15 @@ xNode/
 4. `executeCount`（0 = 无限循环）；`[ContextMenu("执行节点图")]` 可手动触发；
 5. 执行游标为**执行器私有**，多个执行器跑同一张图互不干扰；
 6. 触发策略 `triggerPolicy`：`Restart`（默认，重触发=停止并重跑）/ `IgnoreWhileRunning`（运行中忽略）/ `Queue`（运行中排队，当前跑完自动再跑一轮）。
+
+## 组件动作节点（ComponentActionNode）
+
+统一"目标解析 + 组件获取"的泛型基类 `ComponentActionNode<T>`：
+
+- 目标三模式：`Attached`（图绑定物体）/ `ByName`（子物体名查找）/ `Direct`（直接拖引用）；
+- 自动 `GetComponent<T>`，找不到给出警告；
+- 子类只需实现 `Apply(T component)` 做具体动作；
+- 加新操作（缩放 / 音频 / 动画等）= 继承基类 + 一个 `Apply`。
 
 ## 日志级别
 
