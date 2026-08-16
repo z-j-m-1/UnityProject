@@ -24,6 +24,9 @@ xNode/
     ├── TransformNodes/    # 物体变换（Move / Rote / Scale / SetPosition / SetRotation，继承 ComponentActionNode）
     ├── AudioNodes/        # 音频（Play / Stop，继承 ComponentActionNode）
     ├── AnimationNodes/    # 动画（Play，继承 ComponentActionNode）
+    ├── SpawnNodes/        # 生成/销毁（SpawnObjectNode / DestroyObjectNode）
+    ├── PhysicsNodes/      # 物理查询（3D/2D 射线检测、球形/圆形检测）
+    ├── RigidbodyNodes/    # 刚体控制（施加力/设置速度/角速度，3D+2D，继承 ComponentActionNode）
     ├── CommunicationNodes/# 通讯（GraphCommunicator + 事件 + 执行图 + 存档点）
     ├── UICommunicatorNodes# UI 通讯（ComUIGetTextNode / ComUISetTextNode）
     ├── VariableNodes/     # 变量操作：Get/（获取）+ Set/（设置），source 枚举选操作对象；含 Vector2 与列表（List）变量节点
@@ -52,7 +55,10 @@ xNode/
 | UI 通讯 | `ComUIGetTextNode` / `ComUISetTextNode` | 读/写 Text / TextMeshPro（source：自身或 Canvas） |
 | 执行图 | `ComExecutionGraphNode` | 触发另一张图执行 |
 | 存档点 | `ComSaveGameNode` | 把预备存档提交为正式存档 |
-| 变换 | `MoveObjectNode` / `RoteObjectNode` / `ScaleObjectNode` / `SetPositionNode` / `SetRotationNode` | 移动 / 旋转 / 缩放 / 设置位置 / 设置旋转（目标：图绑定物体 / 子物体名 / 直接引用） |
+| 变换 | `MoveObjectNode` / `RoteObjectNode` / `ScaleObjectNode` / `SetPositionNode` / `SetRotationNode` | 移动 / 旋转 / 缩放 / 设置位置 / 设置旋转（目标：图绑定物体 / 子物体名 / 直接引用 / GameObject 输入端口） |
+| 刚体 | `RigidbodyAddForceNode` / `RigidbodySetVelocityNode` / `RigidbodySetAngularVelocityNode` + 2D 版 | 施加力（ForceMode）/ 设置速度 / 设置角速度（3D 与 2D 各一套） |
+| 生成/销毁 | `SpawnObjectNode` / `DestroyObjectNode` | 实例化预制体（位置/旋转可接线、可选父物体、输出生成物体）、销毁物体（可延迟） |
+| 物理 | `PhysicsRaycastNode` / `PhysicsRaycast2DNode` / `PhysicsOverlapSphereNode` / `PhysicsOverlapCircleNode` | 3D/2D 射线检测、球形/圆形范围检测；输出是否命中、命中点/法线/距离、命中物体、命中数量（索引取物体，帧缓存同帧共享） |
 | 音频/动画 | `PlayAudioNode` / `StopAudioNode` / `PlayAnimationNode` | 播放/停止音频（AudioSource）、播放动画（Animator.Play） |
 | 分支/逻辑/值/变换 | `BranchNode`、`AndLogicNode`、`BoolValueNode` 等 | 流程控制、常量、物体运动 |
 | 数学运算 | `MathOpIntNode` / `MathOpFloatNode` / `CompareIntNode` / `CompareFloatNode` / `RandomIntNode` / `RandomFloatNode` | 四则运算、比较、随机整数/浮点 |

@@ -1,3 +1,14 @@
+新增游戏逻辑节点：生成/销毁 + 物理查询 + 刚体控制
+
+- 生成/销毁（生成/）：SpawnObjectNode 实例化预制体（位置/旋转可接线，未接线非零用填写值、否则用预制体原变换；可选父物体；spawned 输出端口非序列化）；DestroyObjectNode 销毁物体（GameObject 输入端口 > 直接引用；可延迟）
+- 物理查询（物理/，DataNode，帧缓存同帧共享检测结果）：
+  - 射线检测 / 射线检测(2D)：origin + direction + distance + LayerMask → isHit / hitPoint / hitNormal / hitDistance / hitObject
+  - 球形检测 / 圆形检测(2D)：center + radius + LayerMask + index → hitCount / 按索引取 hitObject / hitPoint（越界警告）
+- 刚体控制（刚体/，继承 ComponentActionNode，目标解析统一：GameObject 输入端口 > Attached/ByName/Direct）：
+  - 施加力（ForceMode）/ 设置速度 / 设置角速度（3D）
+  - 施加力（ForceMode2D）/ 设置速度（2D）
+- 全部 11 个新节点位于 SpawnNodes / PhysicsNodes / RigidbodyNodes
+
 新增数据层：Vector2 类型 + 列表变量（全栈打通）
 
 - Vector2 全栈：变量容器（vector2Container）+ 存档（VariableBundleData.vector2s）+ Get/Set 变量节点（变量操作/获取|设置/Vector2）+ 子图参数（子图/参数输入|输出/二维向量）+ 常量节点（值/二维向量）+ 转换（两个浮点→二维向量、二维向量↔三维向量）+ 数学（二维向量运算加/减、标量缩放）
