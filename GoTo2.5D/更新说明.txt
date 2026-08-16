@@ -1,3 +1,18 @@
+新增表现层节点：动画参数 + 插值补间 + Cinemachine 相机控制
+
+- 重构 ComponentActionNodeBase：目标解析（targetGameObject 输入端口 > Attached/ByName/Direct + ResolveTarget()）上移进非泛型基类，新增 protected ResolveTargetObject()；ComponentActionNode&lt;T&gt; 与插值节点共用同一套解析
+- 动画参数（动画/，ComponentActionNode&lt;Animator&gt;）：触发参数 SetTrigger / 布尔参数 SetBool / 浮点参数 SetFloat / 整数参数 SetInteger / 交叉淡入 CrossFade(stateName, duration)
+- 插值补间（插值/，ComponentActionNodeBase + GetFlow 逐帧插值，结束精确归位）：
+  - 移动到 MoveToNode：Transform.position 从当前 Lerp 到 targetPosition，duration 秒
+  - 透明度 FadeCanvasGroupNode：CanvasGroup.alpha 渐变到 targetAlpha（0=隐 1=显）
+- Cinemachine（相机/，依赖 com.unity.cinemachine 2.10.x，namespace Cinemachine）：
+  - 虚拟相机优先级 SetVcamPriorityNode：vcam.Priority（>其它即被 Brain 激活，0 切走）
+  - 设置跟随/注视 SetVcamFollowNode/SetVcamLookAtNode：vcam.Follow/LookAt = 目标（接获取物体/参数输入/物体）
+  - 震屏 CinemachineImpulseNode：位置口→GenerateImpulseAt(pos,vel)；速度口→GenerateImpulse(vel)；都未接→GenerateImpulse()
+  - 噪声振幅 SetVcamNoiseNode：Get/AddCinemachineComponent&lt;BasicMultiChannelPerlin&gt; 改振幅/频率
+  - 轨道速度 SetDollySpeedNode：CinemachineDollyCart.m_Speed（过场沿路径移动）
+  - 目标组添加成员 TargetGroupAddMemberNode：CinemachineTargetGroup.AddMember(transform, weight, radius)（多目标取景）
+
 新增流程控制节点：循环 + 并行 + 跳转 + 计时器
 
 - 计数循环 ForLoopNode（流程/计数循环）：startIndex + count 输入，index 输出每轮更新，body 子链（EndNode 收尾）每轮执行，结束后沿 next

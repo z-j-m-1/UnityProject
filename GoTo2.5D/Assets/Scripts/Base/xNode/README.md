@@ -26,7 +26,9 @@ xNode/
     ├── StateMachineNodes/ # 状态机（切换状态节点）
     ├── TransformNodes/    # 物体变换（Move / Rote / Scale / SetPosition / SetRotation，继承 ComponentActionNode）
     ├── AudioNodes/        # 音频（Play / Stop，继承 ComponentActionNode）
-    ├── AnimationNodes/    # 动画（Play，继承 ComponentActionNode）
+    ├── AnimationNodes/    # 动画（Play + 参数：触发/布尔/浮点/整数 + 交叉淡入，继承 ComponentActionNode）
+    ├── TweenNodes/        # 插值（移动到 / 透明度渐隐渐显）
+    ├── CinemachineNodes/  # Cinemachine 相机（优先级切换/跟随/注视/震屏/噪声/轨道/目标组）
     ├── SpawnNodes/        # 生成/销毁（SpawnObjectNode / DestroyObjectNode）
     ├── PhysicsNodes/      # 物理查询（3D/2D 射线检测、球形/圆形检测）
     ├── RigidbodyNodes/    # 刚体控制（施加力/设置速度/角速度，3D+2D，继承 ComponentActionNode）
@@ -64,6 +66,9 @@ xNode/
 | 生成/销毁 | `SpawnObjectNode` / `DestroyObjectNode` | 实例化预制体（位置/旋转可接线、可选父物体、输出生成物体）、销毁物体（可延迟） |
 | 物理 | `PhysicsRaycastNode` / `PhysicsRaycast2DNode` / `PhysicsOverlapSphereNode` / `PhysicsOverlapCircleNode` | 3D/2D 射线检测、球形/圆形范围检测；输出是否命中、命中点/法线/距离、命中物体、命中数量（索引取物体，帧缓存同帧共享） |
 | 音频/动画 | `PlayAudioNode` / `StopAudioNode` / `PlayAnimationNode` | 播放/停止音频（AudioSource）、播放动画（Animator.Play） |
+| 动画参数 | `SetAnimatorTriggerNode` / `SetAnimatorBoolNode` / `SetAnimatorFloatNode` / `SetAnimatorIntNode` / `CrossFadeAnimatorNode` | 设置 Animator 参数（Trigger/Bool/Float/Int）、交叉淡入 |
+| 插值 | `MoveToNode` / `FadeCanvasGroupNode` | 位置插值移动、CanvasGroup 透明度渐隐渐显（逐帧，结束精确归位） |
+| 相机 | `SetVcamPriorityNode` / `SetVcamFollowNode` / `SetVcamLookAtNode` / `CinemachineImpulseNode` / `SetVcamNoiseNode` / `SetDollySpeedNode` / `TargetGroupAddMemberNode` | Cinemachine：优先级切换相机、设置跟随/注视目标、震屏、噪声振幅、轨道小车速度、目标组添加成员（依赖 Cinemachine 2.x 包） |
 | 分支/逻辑/值/变换 | `BranchNode`、`AndLogicNode`、`BoolValueNode` 等 | 流程控制、常量、物体运动 |
 | 数学运算 | `MathOpIntNode` / `MathOpFloatNode` / `CompareIntNode` / `CompareFloatNode` / `RandomIntNode` / `RandomFloatNode` | 四则运算、比较、随机整数/浮点 |
 | 字符串 | `StringOpNode` / `StringCompareNode` / `StringLengthNode` / `StringSubstringNode` / `StringReplaceNode` | 拼接/大小写/去空格、比较、长度、截取、替换 |
