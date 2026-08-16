@@ -25,6 +25,6 @@ public class StartNode : BaseNode
 
     public override void Execute()
     {
-        Debug.Log($"StartNode: {name} 执行");
+        NodeLog.Verbose($"StartNode: {name} 执行");
     }
 }

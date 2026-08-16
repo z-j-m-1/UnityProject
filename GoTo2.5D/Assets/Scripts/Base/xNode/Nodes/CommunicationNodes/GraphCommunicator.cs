@@ -91,7 +91,7 @@ public class GraphCommunicator : MonoBehaviour
     private void OnSceneUnloaded(Scene scene)
     {
         ClearAllExecutors();
-        Debug.Log($"场景 '{scene.name}' 已卸载，GraphExecutors 字典已清空");
+        NodeLog.Info($"场景 '{scene.name}' 已卸载，GraphExecutors 字典已清空");
     }
 
     // 注册 GraphExecutor（使用物体名称作为键）
@@ -103,7 +103,7 @@ public class GraphCommunicator : MonoBehaviour
         if (executor != null && !graphExecutors.ContainsKey(gameObject.name))
         {
             graphExecutors.Add(gameObject.name, executor);
-            Debug.Log($"已注册 GraphExecutor: {gameObject.name}");
+            NodeLog.Info($"已注册 GraphExecutor: {gameObject.name}");
         }
     }
 
@@ -149,7 +149,7 @@ public class GraphCommunicator : MonoBehaviour
         if (executor != null)
         {
             executor.Execute();
-            Debug.Log($"GraphCommunicator: 通讯执行节点图 '{evt.graphName}'");
+            NodeLog.Info($"GraphCommunicator: 通讯执行节点图 '{evt.graphName}'");
         }
         else
         {
@@ -179,14 +179,14 @@ public class GraphCommunicator : MonoBehaviour
                 if (graph.TrySetVariable(varName, guid, varValue, out string actualName, out string actualGuid))
                 {
                     onResolved?.Invoke(actualName, actualGuid);
-                    Debug.Log($"GraphCommunicator: 通讯设置变量 '{graphName}.{actualName}' = '{varValue}' (类型: {typeof(T).Name})");
+                    NodeLog.Info($"GraphCommunicator: 通讯设置变量 '{graphName}.{actualName}' = '{varValue}' (类型: {typeof(T).Name})");
                 }
                 else
                 {
                     // 名字和GUID都找不到：按名字直接创建/设置
                     graph.Set(varName, varValue);
                     onResolved?.Invoke(varName, guid);
-                    Debug.Log($"GraphCommunicator: 通讯设置变量 '{graphName}.{varName}' = '{varValue}' (类型: {typeof(T).Name})");
+                    NodeLog.Info($"GraphCommunicator: 通讯设置变量 '{graphName}.{varName}' = '{varValue}' (类型: {typeof(T).Name})");
                 }
             }
             else
@@ -221,7 +221,7 @@ public class GraphCommunicator : MonoBehaviour
                 if (graph.TryGetVariable(varName, guid, out T value, out string actualName, out string actualGuid))
                 {
                     callback?.Invoke(value, actualName, actualGuid);
-                    Debug.Log($"GraphCommunicator: 通讯获取变量 '{graphName}.{actualName}' = '{value}' (类型: {typeof(T).Name})");
+                    NodeLog.Info($"GraphCommunicator: 通讯获取变量 '{graphName}.{actualName}' = '{value}' (类型: {typeof(T).Name})");
                     return;
                 }
                 Debug.LogError($"GraphCommunicator: 通讯获取变量失败，变量 '{graphName}.{varName}' 不存在");

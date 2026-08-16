@@ -15,13 +15,13 @@ public class TransformNodeEventExecutor : MonoBehaviour
     {
         GameObject targetObject = moveObjectNodeEvent.targetObject;
         targetObject.transform.position += moveObjectNodeEvent.moveOffset;
-        Debug.Log($"移动物体: {targetObject.name}, 移动偏移量: {moveObjectNodeEvent.moveOffset}");
+        NodeLog.Info($"移动物体: {targetObject.name}, 移动偏移量: {moveObjectNodeEvent.moveOffset}");
     }
 
     private void RoteObject(RoteObjectNodeEvent roteObjectNodeEvent)
     {
         GameObject targetObject = roteObjectNodeEvent.targetObject;
         targetObject.transform.rotation *= Quaternion.Euler(roteObjectNodeEvent.roteOffset);
-        Debug.Log($"旋转物体: {targetObject.name}, 旋转偏移量: {roteObjectNodeEvent.roteOffset}");
+        NodeLog.Info($"旋转物体: {targetObject.name}, 旋转偏移量: {roteObjectNodeEvent.roteOffset}");
     }
 }

@@ -76,7 +76,7 @@ public class GraphExecutor : MonoBehaviour
             case GraphExecutionTriggerPolicy.IgnoreWhileRunning:
                 if (executeCoroutine != null)
                 {
-                    Debug.Log($"GraphExecutor '{gameObject.name}': 正在执行中，忽略本次触发");
+                    NodeLog.Info($"GraphExecutor '{gameObject.name}': 正在执行中，忽略本次触发");
                     return;
                 }
                 break;
@@ -85,7 +85,7 @@ public class GraphExecutor : MonoBehaviour
                 if (executeCoroutine != null)
                 {
                     queueTriggered = true;
-                    Debug.Log($"GraphExecutor '{gameObject.name}': 正在执行中，已排队一次触发");
+                    NodeLog.Info($"GraphExecutor '{gameObject.name}': 正在执行中，已排队一次触发");
                     return;
                 }
                 break;
@@ -183,7 +183,7 @@ public class GraphExecutor : MonoBehaviour
             // 检查是否达到执行次数限制
             if (executeCount > 0 && currentExecuteCount >= executeCount)
             {
-                Debug.Log($"节点图 '{gameObject.name}' 已执行 {executeCount} 次，自动停止");
+                NodeLog.Info($"节点图 '{gameObject.name}' 已执行 {executeCount} 次，自动停止");
                 executeCoroutine = null;
 
                 // 排队触发：当前跑完后自动再跑一轮

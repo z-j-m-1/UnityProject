@@ -43,7 +43,7 @@ public class ComUISetTextNode : FlowNode
                 if (text != null)
                 {
                     text.text = content;
-                    Debug.Log($"{GetType().Name}: 设置文本 '{uiName}' = '{content}'");
+                    NodeLog.Info($"{GetType().Name}: 设置文本 '{uiName}' = '{content}'");
                 }
                 else
                 {
@@ -56,7 +56,7 @@ public class ComUISetTextNode : FlowNode
                 if (tmp != null)
                 {
                     tmp.text = content;
-                    Debug.Log($"{GetType().Name}: 设置文本 '{uiName}' = '{content}'");
+                    NodeLog.Info($"{GetType().Name}: 设置文本 '{uiName}' = '{content}'");
                 }
                 else
                 {

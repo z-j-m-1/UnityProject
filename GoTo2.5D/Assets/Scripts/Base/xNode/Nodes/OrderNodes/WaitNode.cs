@@ -13,7 +13,7 @@ public class WaitNode : FlowNode
 
     public override void Execute()
     {
-        Debug.Log($"WaitNode: 等待 {duration} 秒");
+        NodeLog.Verbose($"WaitNode: 等待 {duration} 秒");
     }
 
     public override IEnumerator GetFlow()

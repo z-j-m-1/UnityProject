@@ -109,7 +109,7 @@ public abstract class SetVariableNode<T> : SetVariableNodeBase
         if (!string.IsNullOrEmpty(actualName) && actualName != variableName)
         {
             variableName = actualName;
-            Debug.Log($"{GetType().Name}: 变量名已更新为 '{actualName}'");
+            NodeLog.Info($"{GetType().Name}: 变量名已更新为 '{actualName}'");
         }
         if (!string.IsNullOrEmpty(actualGuid) && actualGuid != variableGuid)
         {

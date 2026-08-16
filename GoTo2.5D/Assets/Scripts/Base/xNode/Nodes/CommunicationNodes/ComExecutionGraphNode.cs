@@ -26,7 +26,7 @@ public class ComExecutionGraphNode : FlowNode
             evt.graphName = targetGraphName;
         });
 
-        Debug.Log($"ComExecutionGraphNode: 触发通讯执行节点图事件 - 图:'{targetGraphName}'");
+        NodeLog.Info($"ComExecutionGraphNode: 触发通讯执行节点图事件 - 图:'{targetGraphName}'");
 
         base.Execute();
     }

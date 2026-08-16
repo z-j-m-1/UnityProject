@@ -11,7 +11,7 @@ public class ComSaveGameNode : FlowNode
     {
         // 真正保存：把预备文件提交为正式存档
         SaveSystem.Commit();
-        Debug.Log($"{GetType().Name}: 触发保存存档（预备文件已提交为正式存档）");
+        NodeLog.Info($"{GetType().Name}: 触发保存存档（预备文件已提交为正式存档）");
 
         // 执行下一个节点
         base.Execute();

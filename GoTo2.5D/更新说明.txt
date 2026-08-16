@@ -1,3 +1,9 @@
+新增日志收敛 + 字符串运算节点
+
+- NodeLog 统一日志工具（Error/Warning/Info/Verbose 分级，默认 Warning）+ 菜单 Tools/节点系统/日志级别 切换
+- 收敛噪声日志：变量 Get（Verbose）、节点执行（Verbose）、GraphCommunicator 通讯（Info）等
+- 新增字符串节点（StringNodes）：StringOpNode（拼接/大小写/去空格）、StringCompareNode（等于/包含/开头/结尾→bool）、StringLengthNode（长度→int）
+
 新增条件等待（两层设计）
 
 - ConditionWaitNode 基类：OnWaitStart（准备）+ CheckCondition（条件）+ timeout（超时，0=不限）

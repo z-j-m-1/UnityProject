@@ -26,6 +26,6 @@ public abstract class FlowNode : BaseNode
 
     public override void Execute()
     {
-        Debug.Log($"FlowNode: {name} 执行");
+        NodeLog.Verbose($"FlowNode: {name} 执行");
     }
 }

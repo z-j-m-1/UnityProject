@@ -15,6 +15,6 @@ public class EndNode : BaseNode
 
     public override void Execute()
     {
-        Debug.Log($"EndNode: {name} 执行");
+        NodeLog.Verbose($"EndNode: {name} 执行");
     }
 }

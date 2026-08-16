@@ -57,6 +57,6 @@ public class EntryNode : BaseNode, ISerializationCallbackReceiver
 
     public override void Execute()
     {
-        Debug.Log($"EntryNode: {name} 执行");
+        NodeLog.Verbose($"EntryNode: {name} 执行");
     }
 }
