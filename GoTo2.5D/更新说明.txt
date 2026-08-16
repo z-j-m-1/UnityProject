@@ -1,3 +1,9 @@
+新增浮点常量节点（补全取值常量类型）
+
+- FloatValueNode（菜单「值/浮点」）：与 Bool/Int/String/Vector3 常量对齐，位于 ValueNodes/Constants/，输出 float 可直接接入 Float3ToVector3Node / 数学运算 / 变量节点等
+
+新增三维向量数据节点 + 变换节点 Vector3 端口输入 + 取值/变量节点目录分类
+
 新增三维向量数据节点 + 变换节点 Vector3 端口输入 + 取值/变量节点目录分类
 
 - 新增 Float3ToVector3Node（DataNode）：三个浮点输入（x/y/z，可接线）合成 Vector3 输出，菜单「取值/转换/三维向量(三个浮点)」
