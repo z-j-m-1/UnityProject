@@ -91,7 +91,7 @@ MonoBehaviour:
   uiObjectName: ShowNameText
   stripRichText: 1
   defaultValue: 
-  outputValue: 
+  outputValue: EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
 --- !u!114 &-6408266692869625539
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -174,6 +174,7 @@ MonoBehaviour:
     keys:
     - input
     - next
+    - roteOffset
     values:
     - _fieldName: input
       _node: {fileID: -2605502180663472546}
@@ -196,6 +197,18 @@ MonoBehaviour:
         node: {fileID: -3213181764406991893}
         reroutePoints: []
       _direction: 1
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: roteOffset
+      _node: {fileID: -2605502180663472546}
+      _typeQualifiedName: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: Value
+        node: {fileID: 7188414774797467769}
+        reroutePoints: []
+      _direction: 0
       _connectionType: 1
       _typeConstraint: 0
       _dynamic: 0
@@ -396,6 +409,7 @@ MonoBehaviour:
   - {fileID: -2605502180663472546}
   - {fileID: -3213181764406991893}
   - {fileID: 5674941444787290870}
+  - {fileID: 7188414774797467769}
   startNode: {fileID: 8730430274632667667}
   _guid: ce5a44a4-d2d4-4c4a-8169-5467304d90c1
   variables:
@@ -760,6 +774,7 @@ MonoBehaviour:
     keys:
     - input
     - next
+    - targetPosition
     values:
     - _fieldName: input
       _node: {fileID: 5674941444787290870}
@@ -779,12 +794,52 @@ MonoBehaviour:
       _connectionType: 1
       _typeConstraint: 0
       _dynamic: 0
+    - _fieldName: targetPosition
+      _node: {fileID: 5674941444787290870}
+      _typeQualifiedName: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
   input: {fileID: 0}
   next: {fileID: 0}
   target: 0
   targetName: 
   targetObject: {fileID: 0}
   targetPosition: {x: 0, y: 0, z: 0}
+--- !u!114 &7188414774797467769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d1f77d363541294c8e0e42a8dc8f94d, type: 3}
+  m_Name: Vector 3 Value
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -536, y: -8}
+  ports:
+    keys:
+    - Value
+    values:
+    - _fieldName: Value
+      _node: {fileID: 7188414774797467769}
+      _typeQualifiedName: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: roteOffset
+        node: {fileID: -2605502180663472546}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  Value: {x: 1, y: 1, z: 1}
 --- !u!114 &7512109849085726623
 MonoBehaviour:
   m_ObjectHideFlags: 0

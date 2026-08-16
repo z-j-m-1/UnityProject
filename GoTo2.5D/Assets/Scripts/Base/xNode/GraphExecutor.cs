@@ -184,40 +184,8 @@ public class GraphExecutor : MonoBehaviour
         {
             yield return new WaitForSeconds(executeInterval);
 
-            BaseNode node = start;
-            int maxLoop = 100;
-            int counter = 0;
-
-            while (node != null && counter < maxLoop)
-            {
-                run.currentNode = node;
-
-                // 执行上下文：让节点能解析到"当前执行器"的目标物体
-                NodeExecuteContext.Current = this;
-                try
-                {
-                    node.Execute();
-                }
-                finally
-                {
-                    NodeExecuteContext.Current = null;
-                }
-
-                // 节点可返回协程流程（等待/等待条件等），执行器 yield 暂停链直到完成
-                IEnumerator flow = node.GetFlow();
-                if (flow != null)
-                {
-                    yield return flow;
-                }
-
-                node = node.GetConnectedNode();
-                counter++;
-            }
-
-            if (counter >= maxLoop)
-            {
-                Debug.LogWarning("执行达到最大循环次数");
-            }
+            // 共享链执行器：走链 + yield 流程（含"当前节点"回调与循环上限保护）
+            yield return GraphChainRunner.RunChain(nodeGraph, start, this, n => run.currentNode = n);
 
             run.executeCount++;
             run.currentNode = null;
