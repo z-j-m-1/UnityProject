@@ -7,10 +7,11 @@ using XNode;
 public class ScaleObjectNode : ComponentActionNode<Transform>
 {
     [Header("缩放偏移")]
+    [Input(ShowBackingValue.Unconnected, ConnectionType.Override)]
     public Vector3 scaleOffset = Vector3.one;
 
     protected override void Apply(Transform t)
     {
-        t.localScale += scaleOffset;
+        t.localScale += GetInputValue<Vector3>(nameof(scaleOffset), scaleOffset);
     }
 }

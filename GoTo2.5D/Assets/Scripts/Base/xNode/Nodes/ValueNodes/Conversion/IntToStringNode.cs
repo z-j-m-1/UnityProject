@@ -1,7 +1,7 @@
 using XNode;
 
 /// <summary>取值-转换：整数 → 字符串</summary>
-[CreateNodeMenu("取值/转换/整数转字符串")]
+[CreateNodeMenu("取值/转换/字符串(整数)")]
 public class IntToStringNode : DataNode
 {
     [Input(ShowBackingValue.Unconnected, ConnectionType.Override)]

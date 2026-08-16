@@ -2,7 +2,7 @@ using UnityEngine;
 using XNode;
 
 /// <summary>取值-转换：浮点 → 整数（四舍五入）</summary>
-[CreateNodeMenu("取值/转换/浮点转整数")]
+[CreateNodeMenu("取值/转换/整数(浮点)")]
 public class FloatToIntNode : DataNode
 {
     [Input(ShowBackingValue.Unconnected, ConnectionType.Override)]

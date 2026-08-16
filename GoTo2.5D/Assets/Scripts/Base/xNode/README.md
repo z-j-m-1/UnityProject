@@ -15,13 +15,13 @@ xNode/
     ├── MathNodes/         # 数学运算（四则运算 / 比较）
     ├── OrderNodes/        # 流程（Print / Wait / 等待条件）
     ├── StringNodes/       # 字符串运算（运算 / 比较 / 长度）
-    ├── ValueNodes/        # 常量值（Bool / Int / String）
+    ├── ValueNodes/        # 取值：Constants/（常量 Bool/Int/String/Vector3）+ Conversion/（类型转换 + 三浮点合成三维向量）
     ├── TransformNodes/    # 物体变换（Move / Rote / Scale / SetPosition / SetRotation，继承 ComponentActionNode）
     ├── AudioNodes/        # 音频（Play / Stop，继承 ComponentActionNode）
     ├── AnimationNodes/    # 动画（Play，继承 ComponentActionNode）
     ├── CommunicationNodes/# 通讯（GraphCommunicator + 事件 + 执行图 + 存档点）
     ├── UICommunicatorNodes# UI 通讯（ComUIGetTextNode / ComUISetTextNode）
-    └── VariableNodes/     # 统一 get/set 变量节点（source 枚举）
+    └── VariableNodes/     # 变量操作：Get/（获取）+ Set/（设置），source 枚举选操作对象
 ```
 
 ## 统一 get/set 变量节点
@@ -37,7 +37,7 @@ xNode/
 - 端口保持强类型（`T`）；加新类型只需新建 2 个节点文件（Get + Set）；
 - 节点面板显示 `variableGuid`（自动记录，方便调试）；**名字优先 + GUID 兜底**解析，命中后自动回填修正；
 - `variableGuid` / 入口节点 `guid` 只在**检查器（Inspector）**中显示，节点体上不显示（避免误触）；
-- 具体节点：`GetVariableBool/Int/Float/StringNode`、`SetVariableBool/Int/Float/StringNode`。
+- 具体节点：`GetVariableBool/Int/Float/String/Vector3Node`、`SetVariableBool/Int/Float/String/Vector3Node`。
 
 ## 其他节点分类
 

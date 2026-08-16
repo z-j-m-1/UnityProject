@@ -7,10 +7,11 @@ using XNode;
 public class MoveObjectNode : ComponentActionNode<Transform>
 {
     [Header("移动偏移量")]
+    [Input(ShowBackingValue.Unconnected, ConnectionType.Override)]
     public Vector3 moveOffset;
 
     protected override void Apply(Transform t)
     {
-        t.position += moveOffset;
+        t.position += GetInputValue<Vector3>(nameof(moveOffset), moveOffset);
     }
 }

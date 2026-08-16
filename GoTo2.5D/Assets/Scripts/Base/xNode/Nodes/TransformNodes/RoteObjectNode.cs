@@ -8,10 +8,11 @@ using XNode;
 public class RoteObjectNode : ComponentActionNode<Transform>
 {
     [Header("旋转偏移量（欧拉角）")]
+    [Input(ShowBackingValue.Unconnected, ConnectionType.Override)]
     public Vector3 roteOffset;
 
     protected override void Apply(Transform t)
     {
-        t.rotation *= Quaternion.Euler(roteOffset);
+        t.rotation *= Quaternion.Euler(GetInputValue<Vector3>(nameof(roteOffset), roteOffset));
     }
 }

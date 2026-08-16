@@ -7,10 +7,11 @@ using XNode;
 public class SetPositionNode : ComponentActionNode<Transform>
 {
     [Header("目标位置")]
+    [Input(ShowBackingValue.Unconnected, ConnectionType.Override)]
     public Vector3 targetPosition;
 
     protected override void Apply(Transform t)
     {
-        t.position = targetPosition;
+        t.position = GetInputValue<Vector3>(nameof(targetPosition), targetPosition);
     }
 }

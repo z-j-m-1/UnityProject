@@ -1,3 +1,12 @@
+新增三维向量数据节点 + 变换节点 Vector3 端口输入 + 取值/变量节点目录分类
+
+- 新增 Float3ToVector3Node（DataNode）：三个浮点输入（x/y/z，可接线）合成 Vector3 输出，菜单「取值/转换/三维向量(三个浮点)」
+- 变换节点（Move/Rote/Scale/SetPosition/SetRotation，继承 ComponentActionNode<Transform>）的 Vector3 字段全部升级为输入端口 [Input]：位置/移动偏移/旋转/缩放都可接线输入（未接线时仍用节点上的默认值），可接 Vector3ValueNode / GetVariableVector3Node / Float3ToVector3Node
+- 转换节点菜单前栏改为"目标类型"：浮点转整数→「整数(浮点)」、浮点转字符串→「字符串(浮点)」、整数转浮点→「浮点(整数)」、整数转字符串→「字符串(整数)」、字符串转浮点→「浮点(字符串)」、字符串转整数→「整数(字符串)」
+- 目录分类：ValueNodes 拆分 Constants/（常量节点）与 Conversion/（转换节点）；VariableNodes 拆分 Get/（获取节点）与 Set/（设置节点），VariableSource 保留在根目录；文件与 .meta 一并移动（GUID 不变，图资产/场景引用不受影响）
+
+修复：触发器入口标识下拉仅在已命中时才显示
+
 修复：触发器入口标识下拉仅在已命中时才显示
 
 - DrawEventIdPicker 重构：入口下拉**始终可见**（未命中时首项为「（选择入口标识…）」占位，选中真实入口才回填 eventId，不覆盖手填值）

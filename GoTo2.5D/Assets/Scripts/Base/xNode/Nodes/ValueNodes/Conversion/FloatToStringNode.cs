@@ -1,7 +1,7 @@
 using XNode;
 
 /// <summary>取值-转换：浮点 → 字符串</summary>
-[CreateNodeMenu("取值/转换/浮点转字符串")]
+[CreateNodeMenu("取值/转换/字符串(浮点)")]
 public class FloatToStringNode : DataNode
 {
     [Input(ShowBackingValue.Unconnected, ConnectionType.Override)]

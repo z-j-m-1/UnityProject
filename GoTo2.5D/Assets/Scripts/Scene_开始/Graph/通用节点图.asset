@@ -365,34 +365,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
---- !u!114 &-132221669007746618
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1446321c695e444ba967d262b7c4f8b, type: 3}
-  m_Name: Bool Value
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: -296, y: -312}
-  ports:
-    keys:
-    - Value
-    values:
-    - _fieldName: Value
-      _node: {fileID: -132221669007746618}
-      _typeQualifiedName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
-        PublicKeyToken=b77a5c561934e089
-      connections: []
-      _direction: 1
-      _connectionType: 0
-      _typeConstraint: 0
-      _dynamic: 0
-  Value: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -423,8 +395,7 @@ MonoBehaviour:
   - {fileID: -6408266692869625539}
   - {fileID: -2605502180663472546}
   - {fileID: -3213181764406991893}
-  - {fileID: -132221669007746618}
-  - {fileID: 8050362175835345044}
+  - {fileID: 5674941444787290870}
   startNode: {fileID: 8730430274632667667}
   _guid: ce5a44a4-d2d4-4c4a-8169-5467304d90c1
   variables:
@@ -771,6 +742,49 @@ MonoBehaviour:
   identifier: "OK\u6309\u94AE"
   guid: 6bab0a7e-fe41-4c6d-918b-24fb9901aff6
   next: {fileID: 0}
+--- !u!114 &5674941444787290870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e80b4a43008ee1e4eb61b2bf7d410629, type: 3}
+  m_Name: Set Position
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 664, y: -312}
+  ports:
+    keys:
+    - input
+    - next
+    values:
+    - _fieldName: input
+      _node: {fileID: 5674941444787290870}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: next
+      _node: {fileID: 5674941444787290870}
+      _typeQualifiedName: BaseNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+  input: {fileID: 0}
+  next: {fileID: 0}
+  target: 0
+  targetName: 
+  targetObject: {fileID: 0}
+  targetPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &7512109849085726623
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -888,34 +902,6 @@ MonoBehaviour:
       _typeConstraint: 0
       _dynamic: 0
   Node: {fileID: 0}
---- !u!114 &8050362175835345044
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d1f77d363541294c8e0e42a8dc8f94d, type: 3}
-  m_Name: Vector 3 Value
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: -296, y: -40}
-  ports:
-    keys:
-    - Value
-    values:
-    - _fieldName: Value
-      _node: {fileID: 8050362175835345044}
-      _typeQualifiedName: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
-      connections: []
-      _direction: 1
-      _connectionType: 0
-      _typeConstraint: 0
-      _dynamic: 0
-  Value: {x: 0, y: 0, z: 0}
 --- !u!114 &8730430274632667667
 MonoBehaviour:
   m_ObjectHideFlags: 0
