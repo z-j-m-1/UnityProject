@@ -8,8 +8,12 @@ public class GraphEvent : ParameterizedEvent<GraphEvent>
 {
     public string eventId;
 
+    /// <summary>可选：触发时携带的外部参数（GraphExecutor 命中入口后注入图内外部参数存储）</summary>
+    public GraphParams data;
+
     public override void OnRecycled()
     {
         eventId = null;
+        data = null;
     }
 }

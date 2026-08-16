@@ -1,3 +1,12 @@
+新增外部传参：C# 触发图时可携带参数包，图内参数节点读取
+
+- GraphParams 参数包（xNode/GraphParams.cs）：Set<T>(name, value) / Get<T> / Data 遍历，纯运行期
+- BaseNodeGraph 新增瞬态外部参数存储（NonSerialized Dictionary，不进存档/变量包/编辑器下拉）：SetExternalParam / GetExternalParam<T> / ClearExternalParam / ClearExternalParams；ResetGraph 一并清空
+- GraphExecutor：ExecuteFromEntry(entryId, GraphParams args = null)（标识符/GUID，找不到报错不执行）；ExecuteFrom(start, args) 重载；每次带参触发先清空上一批再注入（替换语义）；ClearExternalParams()
+- GraphEvent 新增 data 载荷：GraphEvent.Trigger(e => { e.eventId = "..."; e.data = p; })，OnGraphEvent 命中入口后注入再执行；GraphEventEmitter 保持无参
+- 图内读取：参数/输入/字符串|布尔|整数|浮点|二维向量|三维向量|物体 7 个 ExternalParamNode（paramName + fallback + 类型化输出，值字段非序列化）；未命中/类型不符返回 fallback
+- 与子图参数区分：子图参数 = SubGraphNode 动态端口 + 子图变量；外部参数 = 最近一次带参触发注入的那批（替换语义），适合外部 Input 逐帧/事件驱动
+
 新增游戏逻辑节点：生成/销毁 + 物理查询 + 刚体控制
 
 - 生成/销毁（生成/）：SpawnObjectNode 实例化预制体（位置/旋转可接线，未接线非零用填写值、否则用预制体原变换；可选父物体；spawned 输出端口非序列化）；DestroyObjectNode 销毁物体（GameObject 输入端口 > 直接引用；可延迟）

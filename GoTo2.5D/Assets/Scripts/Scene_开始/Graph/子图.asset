@@ -133,24 +133,24 @@ MonoBehaviour:
     stringContainer:
       variableList: []
     boolContainer:
-      variableList:
-      - _name: result
-        _value: 0
-        _guid: 78520203-c379-45d0-992b-9870ab756e3a
-        persist: 0
+      variableList: []
     intContainer:
-      variableList:
-      - _name: CI
-        _value: 0
-        _guid: 138e0f7d-7ce3-43fc-8d41-f3ddcb150c8a
-        persist: 0
+      variableList: []
     floatContainer:
-      variableList:
-      - _name: A
-        _value: 123
-        _guid: 4725a7fd-7bd5-4cb7-8e17-a58a3cc69fde
-        persist: 0
+      variableList: []
     vector3Container:
+      variableList: []
+    vector2Container:
+      variableList: []
+    stringListContainer:
+      variableList: []
+    intListContainer:
+      variableList: []
+    floatListContainer:
+      variableList: []
+    vector2ListContainer:
+      variableList: []
+    vector3ListContainer:
       variableList: []
 --- !u!114 &2431770753703091632
 MonoBehaviour:

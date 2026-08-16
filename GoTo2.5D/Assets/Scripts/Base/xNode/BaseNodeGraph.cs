@@ -145,7 +145,41 @@ public class BaseNodeGraph : NodeGraph, ISerializationCallbackReceiver
         attachedObject = null;
 
         variables.Rebuild();
+        externalParams.Clear();
     }
+
+    // ============ 外部参数（瞬态：外部代码触发图时注入，不序列化、不进存档） ============
+
+    [NonSerialized] private Dictionary<string, object> externalParams = new Dictionary<string, object>();
+
+    /// <summary>设置外部参数（同名覆盖；由执行器/事件触发时注入）</summary>
+    public void SetExternalParam(string name, object value)
+    {
+        if (string.IsNullOrEmpty(name)) return;
+        externalParams[name] = value;
+    }
+
+    /// <summary>读取外部参数；不存在或类型不匹配返回 fallback</summary>
+    public T GetExternalParam<T>(string name, T fallback = default)
+    {
+        if (!string.IsNullOrEmpty(name) && externalParams.TryGetValue(name, out object value) && value is T typed)
+        {
+            return typed;
+        }
+        return fallback;
+    }
+
+    /// <summary>移除指定外部参数</summary>
+    public void ClearExternalParam(string name)
+    {
+        if (!string.IsNullOrEmpty(name))
+        {
+            externalParams.Remove(name);
+        }
+    }
+
+    /// <summary>清空全部外部参数</summary>
+    public void ClearExternalParams() => externalParams.Clear();
 
     // ============ 入口节点 ============
 

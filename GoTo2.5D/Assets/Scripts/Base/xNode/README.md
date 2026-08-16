@@ -27,6 +27,7 @@ xNode/
     ├── SpawnNodes/        # 生成/销毁（SpawnObjectNode / DestroyObjectNode）
     ├── PhysicsNodes/      # 物理查询（3D/2D 射线检测、球形/圆形检测）
     ├── RigidbodyNodes/    # 刚体控制（施加力/设置速度/角速度，3D+2D，继承 ComponentActionNode）
+    ├── ParamNodes/        # 外部参数读取（参数/输入：字符串/布尔/整数/浮点/二维向量/三维向量/物体）
     ├── CommunicationNodes/# 通讯（GraphCommunicator + 事件 + 执行图 + 存档点）
     ├── UICommunicatorNodes# UI 通讯（ComUIGetTextNode / ComUISetTextNode）
     ├── VariableNodes/     # 变量操作：Get/（获取）+ Set/（设置），source 枚举选操作对象；含 Vector2 与列表（List）变量节点
@@ -89,6 +90,24 @@ xNode/
   - **引用语义**：Get 列表节点返回的是变量容器里的列表**引用**，`列表/添加`、`列表/移除` 直接改引用即写回变量（无需再 Set）；列表为 null（未定义）时操作节点警告并跳过；
   - 存档：Vector2 与列表都进 `VariableBundleData`（旧存档缺字段 → 导入时安全跳过，不破坏旧档）。
 - 新增类型全部可作子图参数传递、可存房间/全局持久变量（`PersistentVariableManager` 已订阅对应事件通道）。
+
+## 外部传参（外部代码 → 节点图）
+
+外部 C# 代码（如 Unity Input 系统处理器）可在触发图入口时携带**命名参数包**，图内用「参数/输入/xxx」节点读取：
+
+```csharp
+GraphParams p = new GraphParams();
+p.Set("move", new Vector2(0, 1f));   // 输入轴
+p.Set("jump", true);                  // 按键
+executor.ExecuteFromEntry("OnInput", p);   // 直调
+// 或事件路径：
+GraphEvent.Trigger(e => { e.eventId = "OnInput"; e.data = p; });
+```
+
+- **图内读取**：`参数/输入/字符串|布尔|整数|浮点|二维向量|三维向量|物体` 节点，`paramName` 与传入键一致，未命中/类型不符返回节点上的 `fallback` 默认值；
+- **瞬态语义**：参数存于图资产的非序列化存储（不进存档、不进 VariableBundle、不进编辑器下拉）；每次**带参**触发先清空上一批再注入（替换语义）；`GraphExecutor.ClearExternalParams()` 可主动清空；
+- **触发 API**：`ExecuteFromEntry(entryId, args)`（标识符/GUID）；`ExecuteFrom(start, args)`；`GraphEvent.data` 载荷；`GraphEventEmitter` 仍是无参触发；
+- 与子图参数的区别：子图参数走 SubGraphNode 动态端口 + 子图变量；外部参数是"最后一次带参触发注入的那批"，适合逐帧/事件式输入驱动。
 
 ## 组件动作节点（ComponentActionNode）
 

@@ -106,9 +106,42 @@ public class GraphExecutor : MonoBehaviour
     /// <summary>按配置的默认/入口起点执行（启动一条新链；同起点按触发策略处理）</summary>
     public void Execute() => ExecuteFrom(null);
 
-    /// <summary>从指定节点开始执行一条链（null = 按配置起点）；不同起点并发执行，同一起点按触发策略处理</summary>
-    public void ExecuteFrom(BaseNode start)
+    /// <summary>从指定入口节点执行（标识符/GUID），可携带外部参数（先替换图内现有外部参数再执行）</summary>
+    public void ExecuteFromEntry(string entryId, GraphParams args = null)
     {
+        if (nodeGraph == null)
+        {
+            Debug.LogWarning("节点图为空");
+            return;
+        }
+        EntryNode entry = nodeGraph.GetEntryNode(entryId);
+        if (entry == null)
+        {
+            Debug.LogError($"GraphExecutor '{gameObject.name}': 入口节点未找到（标识符/GUID: '{entryId}'），不执行");
+            return;
+        }
+        ExecuteFrom(entry, args);
+    }
+
+    /// <summary>清空图内所有外部参数</summary>
+    public void ClearExternalParams() => nodeGraph?.ClearExternalParams();
+
+    /// <summary>从指定节点开始执行一条链（null = 按配置起点）；不同起点并发执行，同一起点按触发策略处理</summary>
+    public void ExecuteFrom(BaseNode start) => ExecuteFrom(start, null);
+
+    /// <summary>从指定节点开始执行一条链，args 非空时先替换图内外部参数再执行（触发策略同无参版本）</summary>
+    public void ExecuteFrom(BaseNode start, GraphParams args)
+    {
+        if (args != null && args.Count > 0 && nodeGraph != null)
+        {
+            nodeGraph.ClearExternalParams();
+            foreach (var kv in args.Data)
+            {
+                nodeGraph.SetExternalParam(kv.Key, kv.Value);
+            }
+            NodeLog.Info($"GraphExecutor '{gameObject.name}': 已注入外部参数 {args.Count} 个");
+        }
+
         if (start == null)
         {
             start = GetStartNode();
@@ -241,7 +274,7 @@ public class GraphExecutor : MonoBehaviour
             NodeLog.Warning($"GraphExecutor '{gameObject.name}': 事件 '{evt.eventId}' 未找到对应入口节点");
             return;
         }
-        ExecuteFrom(entry);
+        ExecuteFrom(entry, evt.data);
     }
 
     // ============ 运行状态（编辑器高亮等） ============
