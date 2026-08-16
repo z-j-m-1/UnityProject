@@ -16,7 +16,7 @@ public class SpawnObjectNode : FlowNode
 
     [Header("生成位置（接线优先；未接线非零用填写值；否则用预制体原位置）")]
     [Input(ShowBackingValue.Unconnected, ConnectionType.Override)]
-    public Vector3 position;
+    public Vector3 spawnPosition;
 
     [Header("生成旋转（欧拉角，规则同上）")]
     [Input(ShowBackingValue.Unconnected, ConnectionType.Override)]
@@ -42,13 +42,13 @@ public class SpawnObjectNode : FlowNode
 
         GameObject go = GameObject.Instantiate(prefab);
 
-        if (GetPort(nameof(position)).IsConnected)
+        if (GetPort(nameof(spawnPosition)).IsConnected)
         {
-            go.transform.position = GetInputValue<Vector3>(nameof(position), position);
+            go.transform.position = GetInputValue<Vector3>(nameof(spawnPosition), spawnPosition);
         }
-        else if (position != Vector3.zero)
+        else if (spawnPosition != Vector3.zero)
         {
-            go.transform.position = position;
+            go.transform.position = spawnPosition;
         }
         else
         {
@@ -81,8 +81,8 @@ public class SpawnObjectNode : FlowNode
 
     public override object GetValue(NodePort port)
     {
-        if (port.fieldName == nameof(position))
-            return GetInputValue<Vector3>(nameof(position), position);
+        if (port.fieldName == nameof(spawnPosition))
+            return GetInputValue<Vector3>(nameof(spawnPosition), spawnPosition);
         if (port.fieldName == nameof(eulerAngles))
             return GetInputValue<Vector3>(nameof(eulerAngles), eulerAngles);
         if (port.fieldName == nameof(parent))

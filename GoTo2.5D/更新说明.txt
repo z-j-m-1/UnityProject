@@ -6,6 +6,7 @@
 - GraphEvent 新增 data 载荷：GraphEvent.Trigger(e => { e.eventId = "..."; e.data = p; })，OnGraphEvent 命中入口后注入再执行；GraphEventEmitter 保持无参
 - 图内读取：参数/输入/字符串|布尔|整数|浮点|二维向量|三维向量|物体 7 个 ExternalParamNode（paramName + fallback + 类型化输出，值字段非序列化）；未命中/类型不符返回 fallback
 - 与子图参数区分：子图参数 = SubGraphNode 动态端口 + 子图变量；外部参数 = 最近一次带参触发注入的那批（替换语义），适合外部 Input 逐帧/事件驱动
+- 参数节点体编辑器：paramName 提供图中已用参数名下拉（保持一致）；运行时节点体显示当前注入值（调试用）；物体类型隐藏 fallback；修复 SpawnObjectNode 字段 position 遮蔽 Node.position 的 CS0108 警告（改名 spawnPosition）
 
 新增游戏逻辑节点：生成/销毁 + 物理查询 + 刚体控制
 

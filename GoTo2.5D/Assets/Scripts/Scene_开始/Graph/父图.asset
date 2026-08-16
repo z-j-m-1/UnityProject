@@ -122,7 +122,7 @@ MonoBehaviour:
   uiObjectName: ShowNameText
   stripRichText: 1
   defaultValue: 
-  outputValue: C
+  outputValue: B
 --- !u!114 &-6408266692869625539
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -195,6 +195,35 @@ MonoBehaviour:
       _dynamic: 0
   source: 1
   objectName: 
+--- !u!114 &-4919465572897097238
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75444da3008da8641bde65e581cfd616, type: 3}
+  m_Name: External Param String
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -520, y: -392}
+  ports:
+    keys:
+    - value
+    values:
+    - _fieldName: value
+      _node: {fileID: -4919465572897097238}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  paramName: A
+  fallback: 0
 --- !u!114 &-3213181764406991893
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -443,6 +472,7 @@ MonoBehaviour:
   - {fileID: 5353203107825057985}
   - {fileID: 7552544830437437201}
   - {fileID: -5374349111643674461}
+  - {fileID: -4919465572897097238}
   startNode: {fileID: 8730430274632667667}
   _guid: ce5a44a4-d2d4-4c4a-8169-5467304d90c1
   variables:
@@ -459,6 +489,18 @@ MonoBehaviour:
     floatContainer:
       variableList: []
     vector3Container:
+      variableList: []
+    vector2Container:
+      variableList: []
+    stringListContainer:
+      variableList: []
+    intListContainer:
+      variableList: []
+    floatListContainer:
+      variableList: []
+    vector2ListContainer:
+      variableList: []
+    vector3ListContainer:
       variableList: []
 --- !u!114 &429609290430833619
 MonoBehaviour:
@@ -595,7 +637,7 @@ MonoBehaviour:
   variableName: "\u53CD\u5E94"
   variableGuid: 108ac9b2-0839-4c0c-8bfc-e77dac8a27ca
   defaultValue: 
-  outputValue: "\u8FD9\u662FC"
+  outputValue: "\u8FD9\u662FB"
 --- !u!114 &2747464632876373095
 MonoBehaviour:
   m_ObjectHideFlags: 0

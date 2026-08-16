@@ -169,6 +169,17 @@ public class BaseNodeGraph : NodeGraph, ISerializationCallbackReceiver
         return fallback;
     }
 
+    /// <summary>读取外部参数（不转型）；不存在返回 false</summary>
+    public bool TryGetExternalParam(string name, out object value)
+    {
+        if (!string.IsNullOrEmpty(name))
+        {
+            return externalParams.TryGetValue(name, out value);
+        }
+        value = null;
+        return false;
+    }
+
     /// <summary>移除指定外部参数</summary>
     public void ClearExternalParam(string name)
     {
