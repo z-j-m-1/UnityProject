@@ -19,6 +19,9 @@ public class VariableContainer<T>
     /// <summary>运行时：GUID → 名字</summary>
     [NonSerialized] private Dictionary<string, string> guidToName = new Dictionary<string, string>();
 
+    /// <summary>运行时：名字 → 是否持久化（来自列表 persist 标志；运行时新建默认持久化）</summary>
+    [NonSerialized] private Dictionary<string, bool> nameToPersist = new Dictionary<string, bool>();
+
     /// <summary>
     /// 获取运行字典
     /// 运行时：懒加载并缓存（存档导入与运行时修改都保存在 dict 中）
@@ -47,6 +50,7 @@ public class VariableContainer<T>
         runtimeDict = new Dictionary<string, T>();
         nameToGuid.Clear();
         guidToName.Clear();
+        nameToPersist.Clear();
 
         foreach (var variable in variableList)
         {
@@ -58,6 +62,7 @@ public class VariableContainer<T>
                     string guid = variable.Guid;
                     nameToGuid[variable.Name] = guid;
                     guidToName[guid] = variable.Name;
+                    nameToPersist[variable.Name] = variable.persist;
                 }
                 else
                 {
@@ -152,18 +157,27 @@ public class VariableContainer<T>
     /// </summary>
     public void ImportFrom(List<VariableEntryData<T>> entries)
     {
-        runtimeDict = new Dictionary<string, T>();
-        nameToGuid = new Dictionary<string, string>();
-        guidToName = new Dictionary<string, string>();
+        // 合并式：先以列表（设计默认值）构建运行时字典，再用存档条目覆盖持久化变量
+        // - 非持久化变量保持列表默认值（每次开始游戏重置）
+        // - 存档里没有的列表新变量也以默认值出现（修掉旧的"存档完全替换字典"隐患）
+        BuildRuntimeDict();
 
         if (entries == null) return;
         foreach (var e in entries)
         {
             if (e == null || string.IsNullOrEmpty(e.name)) continue;
+
+            // 非持久化变量：跳过存档覆盖，保持列表默认值
+            if (nameToPersist.TryGetValue(e.name, out bool persist) && !persist) continue;
+
             string guid = string.IsNullOrEmpty(e.guid) ? System.Guid.NewGuid().ToString() : e.guid;
             runtimeDict[e.name] = e.value;
             nameToGuid[e.name] = guid;
             guidToName[guid] = e.name;
+            if (!nameToPersist.ContainsKey(e.name))
+            {
+                nameToPersist[e.name] = true;   // 存档中有但列表没有的名字：视为持久化
+            }
         }
     }
 
@@ -176,6 +190,9 @@ public class VariableContainer<T>
         var result = new List<VariableEntryData<T>>(dict.Count);
         foreach (var kvp in dict)
         {
+            // 非持久化变量不进存档
+            if (nameToPersist.TryGetValue(kvp.Key, out bool persist) && !persist) continue;
+
             nameToGuid.TryGetValue(kvp.Key, out string guid);
             result.Add(new VariableEntryData<T> { name = kvp.Key, guid = guid, value = kvp.Value });
         }

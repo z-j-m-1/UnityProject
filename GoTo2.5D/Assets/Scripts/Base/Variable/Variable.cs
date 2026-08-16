@@ -8,6 +8,10 @@ public class Variable<T> : ISerializationCallbackReceiver
     [SerializeField] private T _value;
     [SerializeField] private string _guid;
 
+    /// <summary>是否持久化：关闭后不进存档、读档不覆盖，每次开始游戏重置为初始值（默认开启）</summary>
+    [Tooltip("关闭后该变量不进存档，每次开始游戏重置为初始值")]
+    public bool persist = true;
+
     public string Name
     {
         get { return _name; }

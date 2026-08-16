@@ -1,3 +1,9 @@
+新增变量持久化开关（persist）
+
+- Variable<T> 新增 persist 字段（默认开启）：关闭后不进存档、读档不覆盖，每次开始游戏重置为列表初始值
+- VariableContainer.ImportFrom 改为合并式：先以列表默认值建字典，再覆盖持久化变量（非持久化保持默认值；存档缺失的列表新变量也以默认值出现）
+- Export 跳过非持久化变量；开关对图/房间/全局变量通用
+
 新增等待节点（WaitNode）+ 执行器协程钩子
 
 - BaseNode 新增 GetFlow() 协程钩子（默认 null，零影响现有节点）
