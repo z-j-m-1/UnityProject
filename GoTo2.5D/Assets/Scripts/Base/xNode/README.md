@@ -10,6 +10,8 @@ xNode/
 ├── GraphExecutor.cs       # 挂在场景物体上执行图
 ├── GraphStateMachine.cs   # 挂在场景物体上的图状态机容器（状态=子图）
 ├── SceneObjectFinder.cs   # 全场景物体按名字缓存查找（GetGameObjectNode All 来源用）
+├── GraphParams.cs         # 外部参数包（C# 触发图时携带的命名参数）
+├── GraphParamList.cs      # 可序列化参数列表（外部脚本 Inspector 可视化编辑）+ GraphParamEmitter.cs
 └── Nodes/
     ├── BaseNode/          # BaseNode / DataNode / FlowNode / StartNode / EndNode / EntryNode
     ├── BranchNodes/       # 分支（Branch / MultiBranch / StringCondition）
@@ -107,6 +109,7 @@ GraphEvent.Trigger(e => { e.eventId = "OnInput"; e.data = p; });
 - **图内读取**：`参数/输入/字符串|布尔|整数|浮点|二维向量|三维向量|物体` 节点，`paramName` 与传入键一致，未命中/类型不符返回节点上的 `fallback` 默认值；
 - **瞬态语义**：参数存于图资产的非序列化存储（不进存档、不进 VariableBundle、不进编辑器下拉）；每次**带参**触发先清空上一批再注入（替换语义）；`GraphExecutor.ClearExternalParams()` 可主动清空；
 - **触发 API**：`ExecuteFromEntry(entryId, args)`（标识符/GUID）；`ExecuteFrom(start, args)`；`GraphEvent.data` 载荷；`GraphEventEmitter` 仍是无参触发；
+- **面板可视化编辑**：任何外部 MonoBehaviour 声明 `public GraphParamList xxx;` 即可在 Inspector 里增删/改参数（名称 + 类型下拉 + 按类型显示的值字段，`GraphParamEntryDrawer` 绘制）；运行时 `xxx.Build()` 出 `GraphParams`。开箱即用的 `GraphParamEmitter`（挂场景物体）：Inspector 编辑参数包 + eventId，按钮/UnityEvent 拖 `Emit()` 即**带参**触发事件；
 - 与子图参数的区别：子图参数走 SubGraphNode 动态端口 + 子图变量；外部参数是"最后一次带参触发注入的那批"，适合逐帧/事件式输入驱动。
 
 ## 组件动作节点（ComponentActionNode）
