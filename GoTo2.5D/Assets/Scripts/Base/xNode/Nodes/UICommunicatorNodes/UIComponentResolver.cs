@@ -32,14 +32,15 @@ public static class UIComponentResolver
 #endif
         }
 
-        // Self：自身或子物体
-        if (graph != null && graph.attachedObject != null)
+        // Self：自身或子物体（按当前执行器解析目标，避免多执行器共享 attachedObject 互相覆盖）
+        GameObject attached = graph != null ? graph.GetAttachedObject() : null;
+        if (attached != null)
         {
-            if (graph.attachedObject.name == uiObjectName)
+            if (attached.name == uiObjectName)
             {
-                return graph.attachedObject.GetComponent<T>();
+                return attached.GetComponent<T>();
             }
-            Transform t = graph.attachedObject.transform.Find(uiObjectName);
+            Transform t = attached.transform.Find(uiObjectName);
             if (t != null)
             {
                 return t.GetComponent<T>();

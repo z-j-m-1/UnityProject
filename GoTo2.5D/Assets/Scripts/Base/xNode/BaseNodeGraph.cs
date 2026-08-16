@@ -126,6 +126,14 @@ public class BaseNodeGraph : NodeGraph, ISerializationCallbackReceiver
         attachedObject = obj;
     }
 
+    /// <summary>
+    /// 获取当前生效的目标物体：优先取"正在执行节点的执行器"对象，其次回退 attachedObject（编辑模式 / 非执行上下文）
+    /// </summary>
+    public GameObject GetAttachedObject()
+    {
+        return NodeExecuteContext.Current != null ? NodeExecuteContext.Current.gameObject : attachedObject;
+    }
+
     public void ResetGraph()
     {
         attachedObject = null;

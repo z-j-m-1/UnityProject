@@ -53,13 +53,14 @@ public abstract class ComponentActionNode<T> : FlowNode where T : Component
 
     private GameObject ResolveTarget()
     {
+        BaseNodeGraph nodeGraph = graph as BaseNodeGraph;
         switch (target)
         {
             case ComponentTarget.Attached:
-                return (graph as BaseNodeGraph)?.attachedObject;
+                return nodeGraph != null ? nodeGraph.GetAttachedObject() : null;
 
             case ComponentTarget.ByName:
-                GameObject attached = (graph as BaseNodeGraph)?.attachedObject;
+                GameObject attached = nodeGraph != null ? nodeGraph.GetAttachedObject() : null;
                 if (attached == null || string.IsNullOrEmpty(targetName)) return null;
                 Transform child = attached.transform.Find(targetName);
                 return child != null ? child.gameObject : null;

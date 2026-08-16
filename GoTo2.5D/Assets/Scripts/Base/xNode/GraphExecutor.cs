@@ -173,7 +173,17 @@ public class GraphExecutor : MonoBehaviour
             while (node != null && counter < maxLoop)
             {
                 currentNode = node;
-                node.Execute();
+
+                // 执行上下文：让节点能解析到"当前执行器"的目标物体
+                NodeExecuteContext.Current = this;
+                try
+                {
+                    node.Execute();
+                }
+                finally
+                {
+                    NodeExecuteContext.Current = null;
+                }
 
                 // 节点可返回协程流程（等待/等待条件等），执行器 yield 暂停链直到完成
                 IEnumerator flow = node.GetFlow();

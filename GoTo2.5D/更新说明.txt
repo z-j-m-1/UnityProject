@@ -1,3 +1,10 @@
+修复：多执行器共享 attachedObject 导致目标错乱
+
+- 新增 NodeExecuteContext（执行上下文）：GraphExecutor 执行每个节点前设入自身、执行后清空（try/finally）
+- BaseNodeGraph.GetAttachedObject()：优先取当前执行器对象，其次回退 attachedObject
+- ComponentActionNode（Attached/ByName）与 UIComponentResolver（Self）改走 GetAttachedObject()
+- 同一张图多个执行器（start/入口分路线）现在各自解析自己的目标物体
+
 Transform 节点重构：泛型组件动作基类
 
 - 新增 ComponentActionNode<T>（BaseNode）：统一目标解析（Attached/ByName/Direct）+ GetComponent + Apply
