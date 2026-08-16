@@ -6,7 +6,7 @@ using XNode;
 /// <summary>
 /// 子图执行节点：调用另一张节点图作为子流程。
 /// - 动态端口自动与子图「参数输入/参数输出」节点同步（端口名 = 参数名）；
-/// - 执行时：父图连线值 → 子图变量 → 跑子图链 → 子图变量 → 输出端口；
+/// - 执行时：父图连线值 → 子图变量 → 跑子图链 → 输出节点输入求值 → 输出端口；
 /// - 嵌套有深度上限（防循环引用）。
 /// </summary>
 [CreateNodeMenu("子图/执行")]
@@ -128,14 +128,23 @@ public class SubGraphNode : FlowNode
         foreach (NodePort port in DynamicOutputs)
         {
             if (!port.IsConnected) continue;
-            string varName = port.fieldName;
-            System.Type t = port.ValueType;
-            if (t == typeof(string)) outputCache[varName] = subGraph.Get<string>(varName);
-            else if (t == typeof(bool)) outputCache[varName] = subGraph.Get<bool>(varName);
-            else if (t == typeof(int)) outputCache[varName] = subGraph.Get<int>(varName);
-            else if (t == typeof(float)) outputCache[varName] = subGraph.Get<float>(varName);
-            else if (t == typeof(Vector3)) outputCache[varName] = subGraph.Get<Vector3>(varName);
+            SubGraphOutputNodeBase outNode = FindOutputNode(port.fieldName);
+            if (outNode == null) continue;
+            outputCache[port.fieldName] = outNode.EvaluateValue();
         }
+    }
+
+    private SubGraphOutputNodeBase FindOutputNode(string parameterName)
+    {
+        if (subGraph == null) return null;
+        foreach (XNode.Node node in subGraph.nodes)
+        {
+            if (node is SubGraphOutputNodeBase output && output.parameterName == parameterName)
+            {
+                return output;
+            }
+        }
+        return null;
     }
 
     /// <summary>

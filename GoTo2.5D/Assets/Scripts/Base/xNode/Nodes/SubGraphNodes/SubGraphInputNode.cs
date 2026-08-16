@@ -13,12 +13,12 @@ public abstract class SubGraphInputNodeBase : DataNode
 }
 
 /// <summary>
-/// 子图参数输入节点：父图 SubGraphNode 会自动生成匹配的输入端口（端口名 = 参数名），
-/// 执行时把父图连线值写入子图变量；子图内部用「获取变量」或本节点读取。
+/// 子图参数输入节点（取值源）：父图 SubGraphNode 会自动生成匹配的输入端口（端口名 = 参数名），
+/// 执行时把父图连线值写入子图变量；子图内部连本节点的「输出」端口取参数值（未注入时返回节点字段默认值）。
 /// </summary>
 public abstract class SubGraphInputNode<T> : SubGraphInputNodeBase
 {
-    [Input(ShowBackingValue.Unconnected, ConnectionType.Override)]
+    [Output(ShowBackingValue.Always)]
     public T value;
 
     public override Type ParamType => typeof(T);

@@ -1,3 +1,12 @@
+修复：子图参数节点端口方向（对齐标准"函数边界"语义）
+
+- 参数输入节点改为**输出端口**（取值源）：子图内部连它的输出取参数值，未注入时返回节点字段默认值
+- 参数输出节点改为**输入端口**（返回值槽）：子图内部把结果连进来，子图链跑完后 SubGraphNode 求值该输入读回（不再依赖"设置变量"中转）
+- SubGraphOutputNodeBase 新增 EvaluateValue() 类型化求值访问器；SubGraphNode.ReadBackOutputs 按参数名找到子图输出节点并求值
+- 注意：已创建的子图.asset 里的参数节点需重放/重连（端口方向变化）
+
+修复：子图参数节点"No script asset"报错（具体节点拆分为同名单文件）
+
 修复：子图参数节点"No script asset"报错（具体节点拆分为同名单文件）
 
 - 根因：Unity 要求可实例化的 ScriptableObject 类文件名与类名一致；此前 10 个具体参数节点（5 输入 + 5 输出）合在 SubGraphInputNode.cs / SubGraphOutputNode.cs 中，创建时报 No script asset
