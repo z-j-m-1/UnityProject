@@ -7,8 +7,8 @@
 | 类 | 说明 |
 |---|---|
 | `Variable<T>` | 单个变量（Name / Value / Guid），序列化列表元素，GUID 自动生成 |
-| `VariableContainer<T>` | 按类型（string / bool / int / float）的变量容器，含名字↔GUID 映射 |
-| `VariableBundle` | 四类容器捆成一组，统一泛型读写 `Get<T>` / `Set<T>` / `Has<T>` / `TryResolve<T>` |
+| `VariableContainer<T>` | 按类型（string / bool / int / float / Vector3）的变量容器，含名字↔GUID 映射 |
+| `VariableBundle` | 五类容器捆成一组，统一泛型读写 `Get<T>` / `Set<T>` / `Has<T>` / `TryResolve<T>` |
 | `VariableBundleObject` | ScriptableObject 资产，Inspector 可直接编辑变量 |
 | `PersistentVariableScope` | 枚举：`Room` / `Global` |
 | `PersistentVariableManager` | 持久变量管理器基类（订阅事件 + Import/Export） |

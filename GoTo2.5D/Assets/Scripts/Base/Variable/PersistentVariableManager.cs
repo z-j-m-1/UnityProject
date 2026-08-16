@@ -135,11 +135,13 @@ public abstract class PersistentVariableManager : MonoBehaviour
         PersistentSetVariableEvent<bool>.Subscribe(OnSetVariable<bool>);
         PersistentSetVariableEvent<int>.Subscribe(OnSetVariable<int>);
         PersistentSetVariableEvent<float>.Subscribe(OnSetVariable<float>);
+        PersistentSetVariableEvent<Vector3>.Subscribe(OnSetVariable<Vector3>);
 
         PersistentGetVariableEvent<string>.Subscribe(OnGetVariable<string>);
         PersistentGetVariableEvent<bool>.Subscribe(OnGetVariable<bool>);
         PersistentGetVariableEvent<int>.Subscribe(OnGetVariable<int>);
         PersistentGetVariableEvent<float>.Subscribe(OnGetVariable<float>);
+        PersistentGetVariableEvent<Vector3>.Subscribe(OnGetVariable<Vector3>);
     }
 
     protected virtual void OnDisable()
@@ -148,11 +150,13 @@ public abstract class PersistentVariableManager : MonoBehaviour
         PersistentSetVariableEvent<bool>.Unsubscribe(OnSetVariable<bool>);
         PersistentSetVariableEvent<int>.Unsubscribe(OnSetVariable<int>);
         PersistentSetVariableEvent<float>.Unsubscribe(OnSetVariable<float>);
+        PersistentSetVariableEvent<Vector3>.Unsubscribe(OnSetVariable<Vector3>);
 
         PersistentGetVariableEvent<string>.Unsubscribe(OnGetVariable<string>);
         PersistentGetVariableEvent<bool>.Unsubscribe(OnGetVariable<bool>);
         PersistentGetVariableEvent<int>.Unsubscribe(OnGetVariable<int>);
         PersistentGetVariableEvent<float>.Unsubscribe(OnGetVariable<float>);
+        PersistentGetVariableEvent<Vector3>.Unsubscribe(OnGetVariable<Vector3>);
     }
 
     private void OnSetVariable<T>(PersistentSetVariableEvent<T> evt)

@@ -12,6 +12,7 @@ public class VariableBundle
     [SerializeField] private VariableContainer<bool> boolContainer = new VariableContainer<bool>();
     [SerializeField] private VariableContainer<int> intContainer = new VariableContainer<int>();
     [SerializeField] private VariableContainer<float> floatContainer = new VariableContainer<float>();
+    [SerializeField] private VariableContainer<Vector3> vector3Container = new VariableContainer<Vector3>();
 
     /// <summary>
     /// 获取变量值
@@ -41,6 +42,10 @@ public class VariableBundle
         if (type == typeof(float))
         {
             return (T)(object)floatContainer.Get(key, (float)(object)defaultValue);
+        }
+        if (type == typeof(Vector3))
+        {
+            return (T)(object)vector3Container.Get(key, (Vector3)(object)defaultValue);
         }
 
         throw new NotSupportedException($"不支持的类型: {type}");
@@ -79,6 +84,11 @@ public class VariableBundle
             floatContainer.Set(key, (float)(object)value);
             return;
         }
+        if (type == typeof(Vector3))
+        {
+            vector3Container.Set(key, (Vector3)(object)value);
+            return;
+        }
 
         throw new NotSupportedException($"不支持的类型: {type}");
     }
@@ -108,6 +118,10 @@ public class VariableBundle
         {
             return floatContainer.Has(key);
         }
+        if (type == typeof(Vector3))
+        {
+            return vector3Container.Has(key);
+        }
 
         throw new NotSupportedException($"不支持的类型: {type}");
     }
@@ -121,6 +135,7 @@ public class VariableBundle
         boolContainer.Rebuild();
         intContainer.Rebuild();
         floatContainer.Rebuild();
+        vector3Container.Rebuild();
     }
 
     /// <summary>
@@ -133,6 +148,7 @@ public class VariableBundle
         boolContainer.ImportFrom(data.bools);
         intContainer.ImportFrom(data.ints);
         floatContainer.ImportFrom(data.floats);
+        vector3Container.ImportFrom(data.vector3s);
     }
 
     /// <summary>
@@ -145,7 +161,8 @@ public class VariableBundle
             strings = stringContainer.Export(),
             bools = boolContainer.Export(),
             ints = intContainer.Export(),
-            floats = floatContainer.Export()
+            floats = floatContainer.Export(),
+            vector3s = vector3Container.Export()
         };
     }
 
@@ -195,6 +212,15 @@ public class VariableBundle
             }
             return false;
         }
+        if (type == typeof(Vector3))
+        {
+            if (vector3Container.TryResolve(name, guid, out Vector3 v, out actualName, out actualGuid))
+            {
+                value = (T)(object)v;
+                return true;
+            }
+            return false;
+        }
         return false;
     }
 
@@ -211,6 +237,7 @@ public class VariableBundle
         if (type == typeof(bool)) return boolContainer.TryResolveAndSet(name, guid, (bool)(object)value, out actualName, out actualGuid);
         if (type == typeof(int)) return intContainer.TryResolveAndSet(name, guid, (int)(object)value, out actualName, out actualGuid);
         if (type == typeof(float)) return floatContainer.TryResolveAndSet(name, guid, (float)(object)value, out actualName, out actualGuid);
+        if (type == typeof(Vector3)) return vector3Container.TryResolveAndSet(name, guid, (Vector3)(object)value, out actualName, out actualGuid);
         return false;
     }
 }

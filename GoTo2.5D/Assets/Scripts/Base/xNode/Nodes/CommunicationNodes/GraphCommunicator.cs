@@ -51,6 +51,7 @@ public class GraphCommunicator : MonoBehaviour
         ComSetVariableEvent<bool>.Subscribe(OnComSetVariable<bool>);
         ComSetVariableEvent<int>.Subscribe(OnComSetVariable<int>);
         ComSetVariableEvent<float>.Subscribe(OnComSetVariable<float>);
+        ComSetVariableEvent<Vector3>.Subscribe(OnComSetVariable<Vector3>);
 
 
         // 订阅通讯获取变量事件
@@ -58,6 +59,7 @@ public class GraphCommunicator : MonoBehaviour
         ComGetVariableEvent<bool>.Subscribe(OnComGetVariable<bool>);
         ComGetVariableEvent<int>.Subscribe(OnComGetVariable<int>);
         ComGetVariableEvent<float>.Subscribe(OnComGetVariable<float>);
+        ComGetVariableEvent<Vector3>.Subscribe(OnComGetVariable<Vector3>);
 
         // 启动时加载全局变量（房间存档由 RoomVariableManager.OnSceneLoaded 应用，避免重复加载）
         SaveSystem.LoadGlobal();
@@ -80,10 +82,12 @@ public class GraphCommunicator : MonoBehaviour
         ComSetVariableEvent<bool>.Unsubscribe(OnComSetVariable<bool>);
         ComSetVariableEvent<int>.Unsubscribe(OnComSetVariable<int>);
         ComSetVariableEvent<float>.Unsubscribe(OnComSetVariable<float>);
+        ComSetVariableEvent<Vector3>.Unsubscribe(OnComSetVariable<Vector3>);
         ComGetVariableEvent<string>.Unsubscribe(OnComGetVariable<string>);
         ComGetVariableEvent<bool>.Unsubscribe(OnComGetVariable<bool>);
         ComGetVariableEvent<int>.Unsubscribe(OnComGetVariable<int>);
         ComGetVariableEvent<float>.Unsubscribe(OnComGetVariable<float>);
+        ComGetVariableEvent<Vector3>.Unsubscribe(OnComGetVariable<Vector3>);
 
     }
 

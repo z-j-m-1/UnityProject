@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
 /// 单个变量条目存档数据（名字 + GUID + 值）
@@ -22,6 +23,7 @@ public class VariableBundleData
     public List<VariableEntryData<bool>> bools;
     public List<VariableEntryData<int>> ints;
     public List<VariableEntryData<float>> floats;
+    public List<VariableEntryData<Vector3>> vector3s;
 }
 
 /// <summary>

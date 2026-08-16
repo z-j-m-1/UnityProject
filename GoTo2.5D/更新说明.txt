@@ -1,3 +1,10 @@
+数据节点补全 + 组件动作节点扩库存 + Vector3 变量类型
+
+- 数据节点：RandomIntNode / RandomFloatNode（随机）、6 个类型转换节点（int↔float↔string）、StringSubstringNode / StringReplaceNode（截取/替换）
+- 组件动作：ScaleObjectNode / SetPositionNode / SetRotationNode（变换）、PlayAudioNode / StopAudioNode（音频）、PlayAnimationNode（动画）——继承 ComponentActionNode<T>
+- 新增 Vector3 变量类型：VariableBundle 第 5 容器 + SaveData.vector3s（兼容旧档）+ Get/SetVariableVector3Node + 通讯/持久变量事件补 Vector3 订阅
+- LitJSON 对 Vector3 有 Exporter（x/y/z），导入走默认反射（需 Unity 实测确认）
+
 修复：多执行器共享 attachedObject 导致目标错乱
 
 - 新增 NodeExecuteContext（执行上下文）：GraphExecutor 执行每个节点前设入自身、执行后清空（try/finally）

@@ -16,7 +16,9 @@ xNode/
     ├── OrderNodes/        # 流程（Print / Wait / 等待条件）
     ├── StringNodes/       # 字符串运算（运算 / 比较 / 长度）
     ├── ValueNodes/        # 常量值（Bool / Int / String）
-    ├── TransformNodes/    # 物体变换（Move / Rote，继承 ComponentActionNode）
+    ├── TransformNodes/    # 物体变换（Move / Rote / Scale / SetPosition / SetRotation，继承 ComponentActionNode）
+    ├── AudioNodes/        # 音频（Play / Stop，继承 ComponentActionNode）
+    ├── AnimationNodes/    # 动画（Play，继承 ComponentActionNode）
     ├── CommunicationNodes/# 通讯（GraphCommunicator + 事件 + 执行图 + 存档点）
     ├── UICommunicatorNodes# UI 通讯（ComUIGetTextNode / ComUISetTextNode）
     └── VariableNodes/     # 统一 get/set 变量节点（source 枚举）
@@ -44,10 +46,12 @@ xNode/
 | UI 通讯 | `ComUIGetTextNode` / `ComUISetTextNode` | 读/写 Text / TextMeshPro（source：自身或 Canvas） |
 | 执行图 | `ComExecutionGraphNode` | 触发另一张图执行 |
 | 存档点 | `ComSaveGameNode` | 把预备存档提交为正式存档 |
-| 变换 | `MoveObjectNode` / `RoteObjectNode` | 移动 / 旋转（目标：图绑定物体 / 子物体名 / 直接引用） |
+| 变换 | `MoveObjectNode` / `RoteObjectNode` / `ScaleObjectNode` / `SetPositionNode` / `SetRotationNode` | 移动 / 旋转 / 缩放 / 设置位置 / 设置旋转（目标：图绑定物体 / 子物体名 / 直接引用） |
+| 音频/动画 | `PlayAudioNode` / `StopAudioNode` / `PlayAnimationNode` | 播放/停止音频（AudioSource）、播放动画（Animator.Play） |
 | 分支/逻辑/值/变换 | `BranchNode`、`AndLogicNode`、`BoolValueNode` 等 | 流程控制、常量、物体运动 |
-| 数学运算 | `MathOpIntNode` / `MathOpFloatNode` / `CompareIntNode` / `CompareFloatNode` | 四则运算（加/减/乘/除）、比较（等于/大于/小于等，输出 bool） |
-| 字符串 | `StringOpNode` / `StringCompareNode` / `StringLengthNode` | 拼接/大小写/去空格、包含/开头/结尾比较（输出 bool）、长度 |
+| 数学运算 | `MathOpIntNode` / `MathOpFloatNode` / `CompareIntNode` / `CompareFloatNode` / `RandomIntNode` / `RandomFloatNode` | 四则运算、比较、随机整数/浮点 |
+| 字符串 | `StringOpNode` / `StringCompareNode` / `StringLengthNode` / `StringSubstringNode` / `StringReplaceNode` | 拼接/大小写/去空格、比较、长度、截取、替换 |
+| 转换 | `IntToFloatNode` / `FloatToIntNode` / `IntToStringNode` / `FloatToStringNode` / `StringToIntNode` / `StringToFloatNode` | int↔float↔string 互转 |
 | 流程 | `PrintNode` / `WaitNode` / `WaitUntilNode` | 日志输出 / 等待指定秒数 / 等待条件成立（可接比较·逻辑·变量节点，支持超时） |
 
 ## 执行流程（GraphExecutor）
