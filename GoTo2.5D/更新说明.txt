@@ -1,3 +1,15 @@
+新增数据层：Vector2 类型 + 列表变量（全栈打通）
+
+- Vector2 全栈：变量容器（vector2Container）+ 存档（VariableBundleData.vector2s）+ Get/Set 变量节点（变量操作/获取|设置/Vector2）+ 子图参数（子图/参数输入|输出/二维向量）+ 常量节点（值/二维向量）+ 转换（两个浮点→二维向量、二维向量↔三维向量）+ 数学（二维向量运算加/减、标量缩放）
+- 列表变量（List）：五种元素类型（字符串/整数/浮点/Vector2/Vector3），VariableBundle 新增 stringList/intList/floatList/vector2List/vector3List 容器，定义初始值在图资产 / VariableBundleObject Inspector
+  - Get/Set 列表变量节点（变量操作/获取|设置/字符串列表 等，source 支持本图/跨图/房间/全局）
+  - 子图列表参数输入/输出节点（子图/参数输入|输出/字符串列表 等，ParamType = List&lt;T&gt;，SyncParameterPorts 自动识别）
+  - 列表操作节点（列表/添加、移除、取元素、数量、是否包含，各 5 种元素类型）
+  - 引用语义：Get 列表返回变量引用，添加/移除直接修改即写回；null 列表操作警告并跳过
+- 存档：VariableBundleData 新增 vector2s + 5 个列表字段（VariableEntryData&lt;List&lt;T&gt;&gt;）；旧存档缺字段由 ImportFrom null 防护安全跳过
+- 持久变量：PersistentVariableManager 订阅新增 Vector2 + 5 列表事件通道（房间/全局变量可用）
+- 子图注入：SubGraphNode.InjectInputs 新增 Vector2 + 5 列表分发（子图变量 Set）
+
 新增 GameObject 引用支持 + 图状态机容器
 
 - GetGameObjectNode（菜单「取值/获取物体」）：GameObjectSource 枚举 Self（图绑定物体/子物体，transform.Find）/ All（全场景按名字，含 inactive）；对象名称为可接线 string 输入端口；输出字段非序列化（运行时求值，规避场景引用写进图资产）

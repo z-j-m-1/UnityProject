@@ -131,6 +131,12 @@ public class SubGraphNode : FlowNode
             else if (t == typeof(int)) subGraph.Set(varName, GetInputValue<int>(varName, 0));
             else if (t == typeof(float)) subGraph.Set(varName, GetInputValue<float>(varName, 0f));
             else if (t == typeof(Vector3)) subGraph.Set(varName, GetInputValue<Vector3>(varName, Vector3.zero));
+            else if (t == typeof(Vector2)) subGraph.Set(varName, GetInputValue<Vector2>(varName, Vector2.zero));
+            else if (t == typeof(List<string>)) subGraph.Set(varName, GetInputValue<List<string>>(varName, null));
+            else if (t == typeof(List<int>)) subGraph.Set(varName, GetInputValue<List<int>>(varName, null));
+            else if (t == typeof(List<float>)) subGraph.Set(varName, GetInputValue<List<float>>(varName, null));
+            else if (t == typeof(List<Vector2>)) subGraph.Set(varName, GetInputValue<List<Vector2>>(varName, null));
+            else if (t == typeof(List<Vector3>)) subGraph.Set(varName, GetInputValue<List<Vector3>>(varName, null));
         }
     }
 

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -136,12 +137,24 @@ public abstract class PersistentVariableManager : MonoBehaviour
         PersistentSetVariableEvent<int>.Subscribe(OnSetVariable<int>);
         PersistentSetVariableEvent<float>.Subscribe(OnSetVariable<float>);
         PersistentSetVariableEvent<Vector3>.Subscribe(OnSetVariable<Vector3>);
+        PersistentSetVariableEvent<Vector2>.Subscribe(OnSetVariable<Vector2>);
+        PersistentSetVariableEvent<List<string>>.Subscribe(OnSetVariable<List<string>>);
+        PersistentSetVariableEvent<List<int>>.Subscribe(OnSetVariable<List<int>>);
+        PersistentSetVariableEvent<List<float>>.Subscribe(OnSetVariable<List<float>>);
+        PersistentSetVariableEvent<List<Vector2>>.Subscribe(OnSetVariable<List<Vector2>>);
+        PersistentSetVariableEvent<List<Vector3>>.Subscribe(OnSetVariable<List<Vector3>>);
 
         PersistentGetVariableEvent<string>.Subscribe(OnGetVariable<string>);
         PersistentGetVariableEvent<bool>.Subscribe(OnGetVariable<bool>);
         PersistentGetVariableEvent<int>.Subscribe(OnGetVariable<int>);
         PersistentGetVariableEvent<float>.Subscribe(OnGetVariable<float>);
         PersistentGetVariableEvent<Vector3>.Subscribe(OnGetVariable<Vector3>);
+        PersistentGetVariableEvent<Vector2>.Subscribe(OnGetVariable<Vector2>);
+        PersistentGetVariableEvent<List<string>>.Subscribe(OnGetVariable<List<string>>);
+        PersistentGetVariableEvent<List<int>>.Subscribe(OnGetVariable<List<int>>);
+        PersistentGetVariableEvent<List<float>>.Subscribe(OnGetVariable<List<float>>);
+        PersistentGetVariableEvent<List<Vector2>>.Subscribe(OnGetVariable<List<Vector2>>);
+        PersistentGetVariableEvent<List<Vector3>>.Subscribe(OnGetVariable<List<Vector3>>);
     }
 
     protected virtual void OnDisable()
@@ -151,12 +164,24 @@ public abstract class PersistentVariableManager : MonoBehaviour
         PersistentSetVariableEvent<int>.Unsubscribe(OnSetVariable<int>);
         PersistentSetVariableEvent<float>.Unsubscribe(OnSetVariable<float>);
         PersistentSetVariableEvent<Vector3>.Unsubscribe(OnSetVariable<Vector3>);
+        PersistentSetVariableEvent<Vector2>.Unsubscribe(OnSetVariable<Vector2>);
+        PersistentSetVariableEvent<List<string>>.Unsubscribe(OnSetVariable<List<string>>);
+        PersistentSetVariableEvent<List<int>>.Unsubscribe(OnSetVariable<List<int>>);
+        PersistentSetVariableEvent<List<float>>.Unsubscribe(OnSetVariable<List<float>>);
+        PersistentSetVariableEvent<List<Vector2>>.Unsubscribe(OnSetVariable<List<Vector2>>);
+        PersistentSetVariableEvent<List<Vector3>>.Unsubscribe(OnSetVariable<List<Vector3>>);
 
         PersistentGetVariableEvent<string>.Unsubscribe(OnGetVariable<string>);
         PersistentGetVariableEvent<bool>.Unsubscribe(OnGetVariable<bool>);
         PersistentGetVariableEvent<int>.Unsubscribe(OnGetVariable<int>);
         PersistentGetVariableEvent<float>.Unsubscribe(OnGetVariable<float>);
         PersistentGetVariableEvent<Vector3>.Unsubscribe(OnGetVariable<Vector3>);
+        PersistentGetVariableEvent<Vector2>.Unsubscribe(OnGetVariable<Vector2>);
+        PersistentGetVariableEvent<List<string>>.Unsubscribe(OnGetVariable<List<string>>);
+        PersistentGetVariableEvent<List<int>>.Unsubscribe(OnGetVariable<List<int>>);
+        PersistentGetVariableEvent<List<float>>.Unsubscribe(OnGetVariable<List<float>>);
+        PersistentGetVariableEvent<List<Vector2>>.Unsubscribe(OnGetVariable<List<Vector2>>);
+        PersistentGetVariableEvent<List<Vector3>>.Unsubscribe(OnGetVariable<List<Vector3>>);
     }
 
     private void OnSetVariable<T>(PersistentSetVariableEvent<T> evt)

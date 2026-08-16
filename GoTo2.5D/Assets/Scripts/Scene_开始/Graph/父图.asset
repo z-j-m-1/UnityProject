@@ -122,7 +122,7 @@ MonoBehaviour:
   uiObjectName: ShowNameText
   stripRichText: 1
   defaultValue: 
-  outputValue: A
+  outputValue: C
 --- !u!114 &-6408266692869625539
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,6 +156,45 @@ MonoBehaviour:
   identifier: "\u65CB\u8F6C\u7EBF"
   guid: efb9269a-0603-4729-a73c-e371db2a7634
   next: {fileID: 0}
+--- !u!114 &-5374349111643674461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5380a06786284cb44a4b76608823468f, type: 3}
+  m_Name: Get Game Object
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -296.87747, y: 650.2253}
+  ports:
+    keys:
+    - objectName
+    - output
+    values:
+    - _fieldName: objectName
+      _node: {fileID: -5374349111643674461}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: output
+      _node: {fileID: -5374349111643674461}
+      _typeQualifiedName: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  source: 1
+  objectName: 
 --- !u!114 &-3213181764406991893
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -206,6 +245,7 @@ MonoBehaviour:
     - input
     - next
     - roteOffset
+    - targetGameObject
     values:
     - _fieldName: input
       _node: {fileID: -2605502180663472546}
@@ -241,6 +281,15 @@ MonoBehaviour:
         reroutePoints: []
       _direction: 0
       _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: targetGameObject
+      _node: {fileID: -2605502180663472546}
+      _typeQualifiedName: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
   input: {fileID: 0}
@@ -393,6 +442,7 @@ MonoBehaviour:
   - {fileID: -8940636818342122017}
   - {fileID: 5353203107825057985}
   - {fileID: 7552544830437437201}
+  - {fileID: -5374349111643674461}
   startNode: {fileID: 8730430274632667667}
   _guid: ce5a44a4-d2d4-4c4a-8169-5467304d90c1
   variables:
@@ -545,7 +595,7 @@ MonoBehaviour:
   variableName: "\u53CD\u5E94"
   variableGuid: 108ac9b2-0839-4c0c-8bfc-e77dac8a27ca
   defaultValue: 
-  outputValue: "\u8FD9\u662FA"
+  outputValue: "\u8FD9\u662FC"
 --- !u!114 &2747464632876373095
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -783,7 +833,7 @@ MonoBehaviour:
       _typeConstraint: 0
       _dynamic: 0
   input: 0
-  result: 0
+  result: 8
 --- !u!114 &5674941444787290870
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -803,6 +853,7 @@ MonoBehaviour:
     - input
     - next
     - targetPosition
+    - targetGameObject
     values:
     - _fieldName: input
       _node: {fileID: 5674941444787290870}
@@ -829,6 +880,15 @@ MonoBehaviour:
       connections: []
       _direction: 0
       _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: targetGameObject
+      _node: {fileID: 5674941444787290870}
+      _typeQualifiedName: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
   input: {fileID: 0}

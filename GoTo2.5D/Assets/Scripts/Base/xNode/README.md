@@ -14,10 +14,11 @@ xNode/
     ├── BaseNode/          # BaseNode / DataNode / FlowNode / StartNode / EndNode / EntryNode
     ├── BranchNodes/       # 分支（Branch / MultiBranch / StringCondition）
     ├── LogicNodes/        # 逻辑（And / Or / No）+ 比较（Compare）
-    ├── MathNodes/         # 数学运算（四则运算 / 比较）
+    ├── MathNodes/         # 数学运算（四则运算 / 比较 / 二维向量运算与缩放）
+    ├── ListNodes/         # 列表操作（添加 / 移除 / 取元素 / 数量 / 是否包含）
     ├── OrderNodes/        # 流程（Print / Wait / 等待条件）
     ├── StringNodes/       # 字符串运算（运算 / 比较 / 长度）
-    ├── ValueNodes/        # 取值：Constants/（常量 Bool/Int/String/Vector3）+ Conversion/（类型转换 + 三浮点合成三维向量）
+    ├── ValueNodes/        # 取值：Constants/（常量 Bool/Int/Float/String/Vector2/Vector3）+ Conversion/（类型转换 + 浮点合成向量 + 向量互转）
     ├── ObjectNodes/       # 物体引用（获取物体：Self/All 来源）
     ├── StateMachineNodes/ # 状态机（切换状态节点）
     ├── TransformNodes/    # 物体变换（Move / Rote / Scale / SetPosition / SetRotation，继承 ComponentActionNode）
@@ -25,7 +26,7 @@ xNode/
     ├── AnimationNodes/    # 动画（Play，继承 ComponentActionNode）
     ├── CommunicationNodes/# 通讯（GraphCommunicator + 事件 + 执行图 + 存档点）
     ├── UICommunicatorNodes# UI 通讯（ComUIGetTextNode / ComUISetTextNode）
-    └── VariableNodes/     # 变量操作：Get/（获取）+ Set/（设置），source 枚举选操作对象
+    ├── VariableNodes/     # 变量操作：Get/（获取）+ Set/（设置），source 枚举选操作对象；含 Vector2 与列表（List）变量节点
 ```
 
 ## 统一 get/set 变量节点
@@ -41,7 +42,8 @@ xNode/
 - 端口保持强类型（`T`）；加新类型只需新建 2 个节点文件（Get + Set）；
 - 节点面板显示 `variableGuid`（自动记录，方便调试）；**名字优先 + GUID 兜底**解析，命中后自动回填修正；
 - `variableGuid` / 入口节点 `guid` 只在**检查器（Inspector）**中显示，节点体上不显示（避免误触）；
-- 具体节点：`GetVariableBool/Int/Float/String/Vector3Node`、`SetVariableBool/Int/Float/String/Vector3Node`。
+- 具体节点：`GetVariableBool/Int/Float/String/Vector2/Vector3Node`、`SetVariableBool/Int/Float/String/Vector2/Vector3Node`；
+- **Vector2 / 列表变量**也走同一基类：`GetVariableVector2Node`、`GetVariableStringListNode`（字符串/整数/浮点/Vector2/Vector3 五种列表）等，source 同样支持本图/跨图/房间/全局。
 
 ## 其他节点分类
 
@@ -68,6 +70,19 @@ xNode/
 4. `executeCount`（0 = 无限循环）按链独立计数；`[ContextMenu("执行节点图")]` 可手动触发；
 5. 触发策略 `triggerPolicy` **按同一起点生效**：`Restart`（默认，重触发=停止该起点旧链并重跑）/ `IgnoreWhileRunning`（运行中忽略）/ `Queue`（运行中排队，当前链跑完自动再跑一轮）；
 6. 执行游标为**执行器私有**，多个执行器跑同一张图互不干扰；共享图变量（并发链合作/独立按变量划分）；
+
+## 数据/类型扩展：Vector2 与列表变量
+
+在 string/bool/int/float/Vector3 之外新增两种数据能力，**全栈打通**（变量容器 → 存档 → 跨图/房间/全局 → 子图参数 → 节点）：
+
+- **Vector2**：变量 Get/Set（`变量操作/获取|设置/Vector2`）、子图参数（`子图/参数输入|输出/二维向量`）、常量（`值/二维向量`）、转换（`取值/转换/二维向量(两个浮点)`、`三维向量(二维向量)`、`二维向量(三维向量)`）、数学（`数学运算/二维向量运算`、`二维向量缩放`）。
+- **列表变量（List）**：五种元素类型（字符串/整数/浮点/Vector2/Vector3），在图资产或 VariableBundleObject 的 Inspector 里定义初始列表；
+  - Get/Set 节点：`变量操作/获取|设置/字符串列表` 等（source 同普通变量）；
+  - 子图参数：`子图/参数输入|输出/字符串列表` 等；
+  - 操作节点（`列表/…`）：`添加`（追加元素）、`移除`（按值移除）、`取元素`（索引取值，越界警告）、`数量`、`是否包含`；
+  - **引用语义**：Get 列表节点返回的是变量容器里的列表**引用**，`列表/添加`、`列表/移除` 直接改引用即写回变量（无需再 Set）；列表为 null（未定义）时操作节点警告并跳过；
+  - 存档：Vector2 与列表都进 `VariableBundleData`（旧存档缺字段 → 导入时安全跳过，不破坏旧档）。
+- 新增类型全部可作子图参数传递、可存房间/全局持久变量（`PersistentVariableManager` 已订阅对应事件通道）。
 
 ## 组件动作节点（ComponentActionNode）
 

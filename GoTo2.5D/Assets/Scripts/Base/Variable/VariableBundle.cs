@@ -13,6 +13,12 @@ public class VariableBundle
     [SerializeField] private VariableContainer<int> intContainer = new VariableContainer<int>();
     [SerializeField] private VariableContainer<float> floatContainer = new VariableContainer<float>();
     [SerializeField] private VariableContainer<Vector3> vector3Container = new VariableContainer<Vector3>();
+    [SerializeField] private VariableContainer<Vector2> vector2Container = new VariableContainer<Vector2>();
+    [SerializeField] private VariableContainer<List<string>> stringListContainer = new VariableContainer<List<string>>();
+    [SerializeField] private VariableContainer<List<int>> intListContainer = new VariableContainer<List<int>>();
+    [SerializeField] private VariableContainer<List<float>> floatListContainer = new VariableContainer<List<float>>();
+    [SerializeField] private VariableContainer<List<Vector2>> vector2ListContainer = new VariableContainer<List<Vector2>>();
+    [SerializeField] private VariableContainer<List<Vector3>> vector3ListContainer = new VariableContainer<List<Vector3>>();
 
     /// <summary>
     /// 获取变量值
@@ -46,6 +52,30 @@ public class VariableBundle
         if (type == typeof(Vector3))
         {
             return (T)(object)vector3Container.Get(key, (Vector3)(object)defaultValue);
+        }
+        if (type == typeof(Vector2))
+        {
+            return (T)(object)vector2Container.Get(key, (Vector2)(object)defaultValue);
+        }
+        if (type == typeof(List<string>))
+        {
+            return (T)(object)stringListContainer.Get(key, defaultValue as List<string>);
+        }
+        if (type == typeof(List<int>))
+        {
+            return (T)(object)intListContainer.Get(key, defaultValue as List<int>);
+        }
+        if (type == typeof(List<float>))
+        {
+            return (T)(object)floatListContainer.Get(key, defaultValue as List<float>);
+        }
+        if (type == typeof(List<Vector2>))
+        {
+            return (T)(object)vector2ListContainer.Get(key, defaultValue as List<Vector2>);
+        }
+        if (type == typeof(List<Vector3>))
+        {
+            return (T)(object)vector3ListContainer.Get(key, defaultValue as List<Vector3>);
         }
 
         throw new NotSupportedException($"不支持的类型: {type}");
@@ -89,6 +119,36 @@ public class VariableBundle
             vector3Container.Set(key, (Vector3)(object)value);
             return;
         }
+        if (type == typeof(Vector2))
+        {
+            vector2Container.Set(key, (Vector2)(object)value);
+            return;
+        }
+        if (type == typeof(List<string>))
+        {
+            stringListContainer.Set(key, value as List<string>);
+            return;
+        }
+        if (type == typeof(List<int>))
+        {
+            intListContainer.Set(key, value as List<int>);
+            return;
+        }
+        if (type == typeof(List<float>))
+        {
+            floatListContainer.Set(key, value as List<float>);
+            return;
+        }
+        if (type == typeof(List<Vector2>))
+        {
+            vector2ListContainer.Set(key, value as List<Vector2>);
+            return;
+        }
+        if (type == typeof(List<Vector3>))
+        {
+            vector3ListContainer.Set(key, value as List<Vector3>);
+            return;
+        }
 
         throw new NotSupportedException($"不支持的类型: {type}");
     }
@@ -122,6 +182,30 @@ public class VariableBundle
         {
             return vector3Container.Has(key);
         }
+        if (type == typeof(Vector2))
+        {
+            return vector2Container.Has(key);
+        }
+        if (type == typeof(List<string>))
+        {
+            return stringListContainer.Has(key);
+        }
+        if (type == typeof(List<int>))
+        {
+            return intListContainer.Has(key);
+        }
+        if (type == typeof(List<float>))
+        {
+            return floatListContainer.Has(key);
+        }
+        if (type == typeof(List<Vector2>))
+        {
+            return vector2ListContainer.Has(key);
+        }
+        if (type == typeof(List<Vector3>))
+        {
+            return vector3ListContainer.Has(key);
+        }
 
         throw new NotSupportedException($"不支持的类型: {type}");
     }
@@ -136,6 +220,12 @@ public class VariableBundle
         intContainer.Rebuild();
         floatContainer.Rebuild();
         vector3Container.Rebuild();
+        vector2Container.Rebuild();
+        stringListContainer.Rebuild();
+        intListContainer.Rebuild();
+        floatListContainer.Rebuild();
+        vector2ListContainer.Rebuild();
+        vector3ListContainer.Rebuild();
     }
 
     /// <summary>
@@ -149,6 +239,12 @@ public class VariableBundle
         intContainer.ImportFrom(data.ints);
         floatContainer.ImportFrom(data.floats);
         vector3Container.ImportFrom(data.vector3s);
+        vector2Container.ImportFrom(data.vector2s);
+        stringListContainer.ImportFrom(data.stringLists);
+        intListContainer.ImportFrom(data.intLists);
+        floatListContainer.ImportFrom(data.floatLists);
+        vector2ListContainer.ImportFrom(data.vector2Lists);
+        vector3ListContainer.ImportFrom(data.vector3Lists);
     }
 
     /// <summary>
@@ -162,7 +258,13 @@ public class VariableBundle
             bools = boolContainer.Export(),
             ints = intContainer.Export(),
             floats = floatContainer.Export(),
-            vector3s = vector3Container.Export()
+            vector3s = vector3Container.Export(),
+            vector2s = vector2Container.Export(),
+            stringLists = stringListContainer.Export(),
+            intLists = intListContainer.Export(),
+            floatLists = floatListContainer.Export(),
+            vector2Lists = vector2ListContainer.Export(),
+            vector3Lists = vector3ListContainer.Export()
         };
     }
 
@@ -221,6 +323,60 @@ public class VariableBundle
             }
             return false;
         }
+        if (type == typeof(Vector2))
+        {
+            if (vector2Container.TryResolve(name, guid, out Vector2 v2, out actualName, out actualGuid))
+            {
+                value = (T)(object)v2;
+                return true;
+            }
+            return false;
+        }
+        if (type == typeof(List<string>))
+        {
+            if (stringListContainer.TryResolve(name, guid, out List<string> sl, out actualName, out actualGuid))
+            {
+                value = (T)(object)sl;
+                return true;
+            }
+            return false;
+        }
+        if (type == typeof(List<int>))
+        {
+            if (intListContainer.TryResolve(name, guid, out List<int> il, out actualName, out actualGuid))
+            {
+                value = (T)(object)il;
+                return true;
+            }
+            return false;
+        }
+        if (type == typeof(List<float>))
+        {
+            if (floatListContainer.TryResolve(name, guid, out List<float> fl, out actualName, out actualGuid))
+            {
+                value = (T)(object)fl;
+                return true;
+            }
+            return false;
+        }
+        if (type == typeof(List<Vector2>))
+        {
+            if (vector2ListContainer.TryResolve(name, guid, out List<Vector2> v2l, out actualName, out actualGuid))
+            {
+                value = (T)(object)v2l;
+                return true;
+            }
+            return false;
+        }
+        if (type == typeof(List<Vector3>))
+        {
+            if (vector3ListContainer.TryResolve(name, guid, out List<Vector3> v3l, out actualName, out actualGuid))
+            {
+                value = (T)(object)v3l;
+                return true;
+            }
+            return false;
+        }
         return false;
     }
 
@@ -238,6 +394,12 @@ public class VariableBundle
         if (type == typeof(int)) return intContainer.TryResolveAndSet(name, guid, (int)(object)value, out actualName, out actualGuid);
         if (type == typeof(float)) return floatContainer.TryResolveAndSet(name, guid, (float)(object)value, out actualName, out actualGuid);
         if (type == typeof(Vector3)) return vector3Container.TryResolveAndSet(name, guid, (Vector3)(object)value, out actualName, out actualGuid);
+        if (type == typeof(Vector2)) return vector2Container.TryResolveAndSet(name, guid, (Vector2)(object)value, out actualName, out actualGuid);
+        if (type == typeof(List<string>)) return stringListContainer.TryResolveAndSet(name, guid, value as List<string>, out actualName, out actualGuid);
+        if (type == typeof(List<int>)) return intListContainer.TryResolveAndSet(name, guid, value as List<int>, out actualName, out actualGuid);
+        if (type == typeof(List<float>)) return floatListContainer.TryResolveAndSet(name, guid, value as List<float>, out actualName, out actualGuid);
+        if (type == typeof(List<Vector2>)) return vector2ListContainer.TryResolveAndSet(name, guid, value as List<Vector2>, out actualName, out actualGuid);
+        if (type == typeof(List<Vector3>)) return vector3ListContainer.TryResolveAndSet(name, guid, value as List<Vector3>, out actualName, out actualGuid);
         return false;
     }
 
@@ -250,6 +412,12 @@ public class VariableBundle
         AddNames(intContainer.GetList(), names);
         AddNames(floatContainer.GetList(), names);
         AddNames(vector3Container.GetList(), names);
+        AddNames(vector2Container.GetList(), names);
+        AddNames(stringListContainer.GetList(), names);
+        AddNames(intListContainer.GetList(), names);
+        AddNames(floatListContainer.GetList(), names);
+        AddNames(vector2ListContainer.GetList(), names);
+        AddNames(vector3ListContainer.GetList(), names);
         return names;
     }
 

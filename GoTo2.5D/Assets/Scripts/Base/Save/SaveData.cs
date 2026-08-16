@@ -24,6 +24,12 @@ public class VariableBundleData
     public List<VariableEntryData<int>> ints;
     public List<VariableEntryData<float>> floats;
     public List<VariableEntryData<Vector3>> vector3s;
+    public List<VariableEntryData<Vector2>> vector2s;
+    public List<VariableEntryData<List<string>>> stringLists;
+    public List<VariableEntryData<List<int>>> intLists;
+    public List<VariableEntryData<List<float>>> floatLists;
+    public List<VariableEntryData<List<Vector2>>> vector2Lists;
+    public List<VariableEntryData<List<Vector3>>> vector3Lists;
 }
 
 /// <summary>
