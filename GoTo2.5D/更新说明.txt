@@ -1,3 +1,14 @@
+新增流程控制节点：循环 + 并行 + 跳转 + 计时器
+
+- 计数循环 ForLoopNode（流程/计数循环）：startIndex + count 输入，index 输出每轮更新，body 子链（EndNode 收尾）每轮执行，结束后沿 next
+- 条件循环 WhileLoopNode（流程/条件循环）：condition 输入（可接比较/逻辑/变量），body 子链循环执行；maxIterations 防死循环（默认 1000，超限警告退出）
+- 遍历列表 ForEachLoopNode<T> + 5 具体类型（流程/遍历列表/字符串|整数|浮点|Vector2|Vector3）：list 输入（接获取列表变量/参数输入），item 输出当前元素，body 子链逐元素执行；遍历中勿改列表
+- 并行 ParallelNode（流程/并行）：4 条固定分支 branchA–D（各自 EndNode 收尾），在宿主（执行器/状态机）协程上真并行启动，全部完成后沿 next；未连接分支跳过
+- 跳转 JumpToEntryNode（流程/跳转到入口）：entryId 输入，执行目标入口链后当前链结束（GetConnectedNode 返回 null）；入口不存在报错并结束
+- 计时器 TimerNode（流程/计时器）：interval + times（0=无限，默认 1）输入，tick 子链每间隔执行，次数到后沿 next
+- 机制：循环/并行/计时器在 GetFlow 内复用 GraphChainRunner.RunChain 驱动子链；Execute 时捕获 NodeExecuteContext.Current 作为宿主，保证子链 Attached 目标解析正确
+- 已知边界（文档注明）：并发跑同一图时 loop index/宿主字段互相覆盖；While 靠 maxIterations 兜底；并行最多 4 分支
+
 新增统一图调用参数：子图参数与外部参数合一（父图随时可变子图）
 
 - BaseNodeGraph：externalParams 升级为统一「图调用参数」存储 invocationParams（SetInvocationParam / GetInvocationParam<T> / TryGetInvocationParam / ClearInvocationParam(s)），旧 SetExternalParam 等保留为 [Obsolete] 兼容别名；新增 GetOutputValue<T>(paramName) 外部读取返回值

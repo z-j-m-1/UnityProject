@@ -18,6 +18,7 @@ xNode/
     ├── LogicNodes/        # 逻辑（And / Or / No）+ 比较（Compare）
     ├── MathNodes/         # 数学运算（四则运算 / 比较 / 二维向量运算与缩放）
     ├── ListNodes/         # 列表操作（添加 / 移除 / 取元素 / 数量 / 是否包含）
+    ├── FlowControlNodes/  # 流程控制（计数/条件/遍历循环、并行、跳转入口、计时器）
     ├── OrderNodes/        # 流程（Print / Wait / 等待条件）
     ├── StringNodes/       # 字符串运算（运算 / 比较 / 长度）
     ├── ValueNodes/        # 取值：Constants/（常量 Bool/Int/Float/String/Vector2/Vector3）+ Conversion/（类型转换 + 浮点合成向量 + 向量互转）
@@ -68,6 +69,7 @@ xNode/
 | 字符串 | `StringOpNode` / `StringCompareNode` / `StringLengthNode` / `StringSubstringNode` / `StringReplaceNode` | 拼接/大小写/去空格、比较、长度、截取、替换 |
 | 转换 | `IntToFloatNode` / `FloatToIntNode` / `IntToStringNode` / `FloatToStringNode` / `StringToIntNode` / `StringToFloatNode` | int↔float↔string 互转 |
 | 流程 | `PrintNode` / `WaitNode` / `WaitUntilNode` | 日志输出 / 等待指定秒数 / 等待条件成立（可接比较·逻辑·变量节点，支持超时） |
+| 流程控制 | `ForLoopNode` / `WhileLoopNode` / `ForEachLoopNode`（5 类型） / `ParallelNode` / `JumpToEntryNode` / `TimerNode` | 计数循环 / 条件循环 / 遍历列表 / 并行分支（最多 4 条）/ 跳转到入口（执行后当前链结束）/ 计时器（间隔 tick，0=无限） |
 
 ## 执行流程（GraphExecutor）
 
