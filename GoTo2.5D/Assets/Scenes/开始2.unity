@@ -915,8 +915,9 @@ MonoBehaviour:
   executeInterval: 1
   executeCount: 0
   executionMode: 0
-  entryIdentifier: 
+  entryIdentifier: "OK\u6309\u94AE"
   triggerPolicy: 0
+  entryEventSubscribe: 2
 --- !u!1 &637250325
 GameObject:
   m_ObjectHideFlags: 0
@@ -1513,7 +1514,8 @@ GameObject:
   - component: {fileID: 1075732640}
   - component: {fileID: 1075732642}
   - component: {fileID: 1075732644}
-  - component: {fileID: 1075732645}
+  - component: {fileID: 1075732646}
+  - component: {fileID: 1075732647}
   m_Layer: 5
   m_Name: ShowNameText
   m_TagString: Untagged
@@ -1694,7 +1696,20 @@ MonoBehaviour:
   initDatabase: 1
   previewUpdatesPerSecond: 60
   previewTimeScale: 1
---- !u!114 &1075732645
+--- !u!114 &1075732646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1075732638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38162124cf83f2548b6a23ae69f477a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventId: "\u65CB\u8F6C\u7EBF"
+--- !u!114 &1075732647
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1713,6 +1728,7 @@ MonoBehaviour:
   executionMode: 1
   entryIdentifier: "\u65CB\u8F6C\u7EBF"
   triggerPolicy: 0
+  entryEventSubscribe: 0
 --- !u!1 &1094618106
 GameObject:
   m_ObjectHideFlags: 0
@@ -2193,6 +2209,7 @@ MonoBehaviour:
   executionMode: 1
   entryIdentifier: "OK\u6309\u94AE"
   triggerPolicy: 0
+  entryEventSubscribe: 0
 --- !u!1 &1606611916
 GameObject:
   m_ObjectHideFlags: 0

@@ -14,6 +14,11 @@ public class NoLogicNode : DataNode
     public bool result;
     public override object GetValue(NodePort port)
     {
-        return !condition;
+        if (port.fieldName == nameof(result))
+        {
+            result = !GetInputValue<bool>(nameof(condition), condition);
+            return result;
+        }
+        return null;
     }
 }

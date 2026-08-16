@@ -12,6 +12,8 @@ public class PrintNode : FlowNode
 
     public override void Execute()
     {
-        Debug.Log(printMessage);
+        // 取输入端口值（已连线时用上游数据，未连线用字段默认值）
+        string msg = GetInputValue<string>(nameof(printMessage), printMessage);
+        Debug.Log(msg);
     }
 }

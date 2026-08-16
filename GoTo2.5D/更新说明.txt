@@ -1,3 +1,11 @@
+修复：PrintNode / NoLogicNode 读原始字段未取输入端口连线值
+
+- PrintNode.Execute 原为 Debug.Log(printMessage)（直接读字段），接线后仍只输出默认值"打印信息"；改为 GetInputValue<string>(nameof(printMessage), printMessage)，已连线取上游数据、未连线用字段默认值
+- 审计全部带 [Input] 的节点：NoLogicNode.GetValue 原为 !condition（同类问题），改为 !GetInputValue<bool>(nameof(condition), condition)
+- 其余节点（逻辑/分支/字符串/转换/数学/UI/通讯等）均确认已正确使用 GetInputValue，无同类问题
+
+修复：子图参数节点端口方向（对齐标准"函数边界"语义）
+
 修复：子图参数节点端口方向（对齐标准"函数边界"语义）
 
 - 参数输入节点改为**输出端口**（取值源）：子图内部连它的输出取参数值，未注入时返回节点字段默认值
