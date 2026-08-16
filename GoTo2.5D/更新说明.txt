@@ -1,3 +1,11 @@
+修复：触发器入口标识下拉仅在已命中时才显示
+
+- DrawEventIdPicker 重构：入口下拉**始终可见**（未命中时首项为「（选择入口标识…）」占位，选中真实入口才回填 eventId，不覆盖手填值）
+- 未命中警告保留并区分两种情况：eventId 为空（引导从下拉选择）/ 非空未匹配（提示重新选择或修正输入）
+- 数据源维持「场景中的 GraphExecutor 及其节点图」：发射器只应指向场景中实际存在的图入口
+
+触发器入口标识下拉选择器（GraphEventEmitter / CollisionEventEmitter）
+
 触发器入口标识下拉选择器（GraphEventEmitter / CollisionEventEmitter）
 
 - 新增 GraphEventEntryOptionPicker 静态帮助类：扫描场景中 GraphExecutor 使用的节点图及入口，生成入口标识下拉选项（按图去重，文案带图名·节点名）

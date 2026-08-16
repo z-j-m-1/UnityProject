@@ -49,7 +49,8 @@ public static class GraphEventEntryOptionPicker
     }
 
     /// <summary>
-    /// 绘制 eventId 选择器：命中下拉选中 / 未命中警告 / 空场景提示，下方始终保留手动字段（eventId 也可能给非入口监听器使用）
+    /// 绘制 eventId 选择器：始终显示入口下拉（命中→定位选中；未命中→占位首项可选、不覆盖手填值），
+    /// 空场景仅给提示；下方始终保留手动字段（eventId 也可能给非入口监听器使用）
     /// </summary>
     public static void DrawEventIdPicker(SerializedProperty eventIdProp, List<EntryOption> options)
     {
@@ -74,6 +75,7 @@ public static class GraphEventEntryOptionPicker
 
             if (selectedIndex >= 0)
             {
+                // 已命中：下拉直接定位当前入口，选其他项即回填
                 int newIndex = EditorGUILayout.Popup("入口标识", selectedIndex, labels);
                 if (newIndex != selectedIndex)
                 {
@@ -82,10 +84,24 @@ public static class GraphEventEntryOptionPicker
             }
             else
             {
+                // 未命中：下拉始终可见（首项为占位，不写入），选真实入口才回填；警告保留
+                string[] pickLabels = new string[labels.Length + 1];
+                pickLabels[0] = "（选择入口标识…）";
+                for (int i = 0; i < labels.Length; i++)
+                {
+                    pickLabels[i + 1] = labels[i];
+                }
+
+                int newIndex = EditorGUILayout.Popup("入口标识", 0, pickLabels);
+                if (newIndex > 0)
+                {
+                    eventIdProp.stringValue = options[newIndex - 1].identifier;
+                }
+
                 EditorGUILayout.HelpBox(
                     string.IsNullOrEmpty(current)
-                        ? "当前 eventId 为空，请在下方输入，或点击「刷新入口列表」后从下拉选择入口标识"
-                        : $"当前 eventId '{current}' 未匹配到场景中任一入口节点标识",
+                        ? "当前 eventId 为空，请从上方下拉选择入口标识，或在下方手动输入"
+                        : $"当前 eventId '{current}' 未匹配到场景中任一入口节点标识，请从上方下拉重新选择或修正输入",
                     MessageType.Warning);
             }
         }
