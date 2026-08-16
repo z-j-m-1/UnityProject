@@ -388,7 +388,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0b4a3a1b29d15b449942585d0b05e430, type: 3}
-  m_Name: "\u901A\u7528\u8282\u70B9\u56FE"
+  m_Name: "\u7236\u56FE"
   m_EditorClassIdentifier: 
   nodes:
   - {fileID: 8730430274632667667}

@@ -37,28 +37,3 @@ public abstract class SubGraphInputNode<T> : SubGraphInputNodeBase
         return null;
     }
 }
-
-[CreateNodeMenu("子图/参数输入/字符串")]
-public class SubGraphInputStringNode : SubGraphInputNode<string>
-{
-}
-
-[CreateNodeMenu("子图/参数输入/布尔")]
-public class SubGraphInputBoolNode : SubGraphInputNode<bool>
-{
-}
-
-[CreateNodeMenu("子图/参数输入/整数")]
-public class SubGraphInputIntNode : SubGraphInputNode<int>
-{
-}
-
-[CreateNodeMenu("子图/参数输入/浮点")]
-public class SubGraphInputFloatNode : SubGraphInputNode<float>
-{
-}
-
-[CreateNodeMenu("子图/参数输入/三维向量")]
-public class SubGraphInputVector3Node : SubGraphInputNode<Vector3>
-{
-}

@@ -36,28 +36,3 @@ public abstract class SubGraphOutputNode<T> : SubGraphOutputNodeBase
         return null;
     }
 }
-
-[CreateNodeMenu("子图/参数输出/字符串")]
-public class SubGraphOutputStringNode : SubGraphOutputNode<string>
-{
-}
-
-[CreateNodeMenu("子图/参数输出/布尔")]
-public class SubGraphOutputBoolNode : SubGraphOutputNode<bool>
-{
-}
-
-[CreateNodeMenu("子图/参数输出/整数")]
-public class SubGraphOutputIntNode : SubGraphOutputNode<int>
-{
-}
-
-[CreateNodeMenu("子图/参数输出/浮点")]
-public class SubGraphOutputFloatNode : SubGraphOutputNode<float>
-{
-}
-
-[CreateNodeMenu("子图/参数输出/三维向量")]
-public class SubGraphOutputVector3Node : SubGraphOutputNode<Vector3>
-{
-}
