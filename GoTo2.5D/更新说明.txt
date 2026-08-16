@@ -1,3 +1,10 @@
+新增节点系统详档：逐节点清单（自动生成）+ 脚本参考/机制速查
+
+- NodeDocGenerator（Editor/，菜单 Tools/节点系统/生成节点参考文档）：反射扫描全部 [CreateNodeMenu] 节点 → 生成《节点清单.md》（菜单/类/基类/摘要/端口/字段默认值/颜色，162 节点全覆盖，按菜单分类分节）
+- 手写《节点系统参考.md》：Part A 脚本参考（图资产/执行/参数/事件/工具/节点基类族/编辑器工具，逐脚本职责+关键 API）+ Part B 机制速查（链执行/触发策略/统一参数/子图/状态机/变量存档/外部Input/目标解析）+ 常见组合示例
+- README 顶部新增「文档索引」：README（概览）↔ 节点系统参考.md（脚本+机制）↔ 节点清单.md（逐节点）↔ GraphExecutor.README.md
+- 说明：《节点清单.md》初始版由源文件解析生成；在 Unity 里点一次菜单可规范化（运行时默认值更精确）
+
 新增表现层节点：动画参数 + 插值补间 + Cinemachine 相机控制
 
 - 重构 ComponentActionNodeBase：目标解析（targetGameObject 输入端口 > Attached/ByName/Direct + ResolveTarget()）上移进非泛型基类，新增 protected ResolveTargetObject()；ComponentActionNode&lt;T&gt; 与插值节点共用同一套解析
