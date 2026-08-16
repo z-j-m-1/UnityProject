@@ -100,6 +100,12 @@ xNode/
 
 - **触发器入口标识下拉**：`GraphEventEmitter` / `CollisionEventEmitter` 的 Inspector 会扫描场景中所有执行器使用的节点图及其入口，提供 eventId 下拉（避免手填拼错）；选中后回填入口标识符，未命中显示警告，仍可手动输入。复用：自定义触发器编辑器调用 `GraphEventEntryOptionPicker.CollectEntryOptions()` + `DrawEventIdPicker()`。
 
+## 编辑器工具
+
+- **节点浏览器**：`Tools/节点系统/节点浏览器`，或节点图空白处右键 →「打开节点浏览器…」。支持**搜索**（按菜单路径/类名）、**最近使用**（自动记录最近创建的 12 种节点）、**收藏**（★ 标记，EditorPrefs 持久化）。节点图空白处右键菜单顶部也会显示「★ 收藏」「最近使用」快捷项与浏览器入口；
+- **变量引用下拉**：Get/Set 变量节点的节点体里，「变量名」提供**图中已定义变量**下拉（`BaseNodeGraph.GetAllVariableNames()` 扫描 VariableBundle 全类型去重），未命中保留手动输入；
+- 已有：入口下拉、触发器 eventId 下拉、日志级别菜单、多链运行高亮、变量 GUID 自动回填。
+
 ## 扩展模式
 
 新节点 = 继承基类 + `[CreateNodeMenu]` 特性：

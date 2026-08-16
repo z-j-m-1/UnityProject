@@ -103,6 +103,12 @@ public class BaseNodeGraph : NodeGraph, ISerializationCallbackReceiver
         return variables.Export();
     }
 
+    /// <summary>收集图中已定义的全部变量名（跨类型，去重；Get/Set 节点编辑器下拉用）</summary>
+    public System.Collections.Generic.List<string> GetAllVariableNames()
+    {
+        return variables.GetAllVariableNames();
+    }
+
     /// <summary>
     /// 名字优先 + GUID 兜底获取变量（得到实际名字与 GUID）
     /// </summary>

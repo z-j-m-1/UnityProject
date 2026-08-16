@@ -240,4 +240,27 @@ public class VariableBundle
         if (type == typeof(Vector3)) return vector3Container.TryResolveAndSet(name, guid, (Vector3)(object)value, out actualName, out actualGuid);
         return false;
     }
+
+    /// <summary>编辑器/调试用：收集图中已定义的全部变量名（跨类型，去重，按容器顺序）</summary>
+    public List<string> GetAllVariableNames()
+    {
+        var names = new List<string>();
+        AddNames(stringContainer.GetList(), names);
+        AddNames(boolContainer.GetList(), names);
+        AddNames(intContainer.GetList(), names);
+        AddNames(floatContainer.GetList(), names);
+        AddNames(vector3Container.GetList(), names);
+        return names;
+    }
+
+    private static void AddNames<T>(List<Variable<T>> vars, List<string> names)
+    {
+        foreach (Variable<T> v in vars)
+        {
+            if (v != null && !string.IsNullOrEmpty(v.Name) && !names.Contains(v.Name))
+            {
+                names.Add(v.Name);
+            }
+        }
+    }
 }
