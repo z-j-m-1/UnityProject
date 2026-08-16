@@ -28,9 +28,19 @@ public abstract class ComponentActionNode<T> : FlowNode where T : Component
     [Header("目标引用（Direct 时用）")]
     public GameObject targetObject;
 
+    [Header("目标（输入端口，未接线时用上方目标模式）")]
+    [Input(ShowBackingValue.Never)]
+    [System.NonSerialized]
+    public GameObject targetGameObject;
+
     public override void Execute()
     {
-        GameObject obj = ResolveTarget();
+        // 输入端口优先：已连线的 GameObject（来自「取值/获取物体」节点）> 目标模式解析
+        GameObject obj = GetInputValue<GameObject>(nameof(targetGameObject), null);
+        if (obj == null)
+        {
+            obj = ResolveTarget();
+        }
         if (obj == null)
         {
             NodeLog.Warning($"{GetType().Name}: 未解析到目标物体（{target}）");

@@ -13,10 +13,10 @@ public static class GraphChainRunner
     /// </summary>
     /// <param name="graph">所在图（用于日志）</param>
     /// <param name="start">起点节点</param>
-    /// <param name="host">宿主执行器：子图链传父执行器（null 则节点上下文为空），保证目标解析一致</param>
+    /// <param name="host">宿主 MonoBehaviour（执行器 / 状态机等）：子图链传父宿主（null 则节点上下文为空），保证目标解析一致</param>
     /// <param name="onCurrentNode">每步执行前回调（运行高亮用）</param>
     /// <param name="maxLoop">链长上限（防死循环）</param>
-    public static IEnumerator RunChain(BaseNodeGraph graph, BaseNode start, GraphExecutor host, Action<BaseNode> onCurrentNode, int maxLoop = 100)
+    public static IEnumerator RunChain(BaseNodeGraph graph, BaseNode start, MonoBehaviour host, Action<BaseNode> onCurrentNode, int maxLoop = 100)
     {
         BaseNode node = start;
         int counter = 0;

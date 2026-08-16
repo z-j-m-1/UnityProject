@@ -8,6 +8,8 @@
 xNode/
 ├── BaseNodeGraph.cs       # 图资产（变量包 + 图GUID + TryGetVariable/TrySetVariable）
 ├── GraphExecutor.cs       # 挂在场景物体上执行图
+├── GraphStateMachine.cs   # 挂在场景物体上的图状态机容器（状态=子图）
+├── SceneObjectFinder.cs   # 全场景物体按名字缓存查找（GetGameObjectNode All 来源用）
 └── Nodes/
     ├── BaseNode/          # BaseNode / DataNode / FlowNode / StartNode / EndNode / EntryNode
     ├── BranchNodes/       # 分支（Branch / MultiBranch / StringCondition）
@@ -16,6 +18,8 @@ xNode/
     ├── OrderNodes/        # 流程（Print / Wait / 等待条件）
     ├── StringNodes/       # 字符串运算（运算 / 比较 / 长度）
     ├── ValueNodes/        # 取值：Constants/（常量 Bool/Int/String/Vector3）+ Conversion/（类型转换 + 三浮点合成三维向量）
+    ├── ObjectNodes/       # 物体引用（获取物体：Self/All 来源）
+    ├── StateMachineNodes/ # 状态机（切换状态节点）
     ├── TransformNodes/    # 物体变换（Move / Rote / Scale / SetPosition / SetRotation，继承 ComponentActionNode）
     ├── AudioNodes/        # 音频（Play / Stop，继承 ComponentActionNode）
     ├── AnimationNodes/    # 动画（Play，继承 ComponentActionNode）
@@ -70,10 +74,32 @@ xNode/
 统一"目标解析 + 组件获取"的泛型基类 `ComponentActionNode<T>`：
 
 - 目标三模式：`Attached`（图绑定物体）/ `ByName`（子物体名查找）/ `Direct`（直接拖引用）；
+- 基类带 **GameObject 输入端口**（`targetGameObject`，非序列化，不显示值框）：**已连线优先取输入值**，取到 null 或未连线才回退上述目标模式 → 旧图（只配目标模式）零影响；新图可接「取值/获取物体」节点动态指定目标；
 - 自动 `GetComponent<T>`，找不到给出警告；
 - 子类只需实现 `Apply(T component)` 做具体动作；
 - 加新操作（缩放 / 音频 / 动画等）= 继承基类 + 一个 `Apply`；
 - "图绑定物体" = **当前执行器对象**（多执行器跑同一张图各自解析自己的目标，不共享）。
+
+## 物体引用（GetGameObjectNode + SceneObjectFinder）
+
+菜单 **取值/获取物体**，输出 `GameObject` 数据端口，可接线到任意 `ComponentActionNode` 的 GameObject 输入端口（或经子图 GameObject 参数传入子图）：
+
+- **来源**：`Self`（图绑定物体自身 / 子物体，`transform.Find` 层级查找）/ `All`（全场景按名字查找，含 inactive）；
+- **对象名称**为 `string` 输入端口（可接线，未接线用字段值）；
+- 输出字段非序列化（运行时求值，规避场景引用写进图资产 / 跨场景重载失效）；
+- `All` 用 `SceneObjectFinder` 缓存字典：惰性构建「名字 → 物体」索引，查找 O(1)；场景加载/卸载、运行时启动、编辑器 Hierarchy 变更自动失效；未命中重扫一次兜底；重名只取第一个并警告一次。
+
+## 图状态机（GraphStateMachine）
+
+把"状态 = 一张子图"的状态机挂在场景物体上（复用 GraphChainRunner + 子图机制，不依赖 GraphExecutor）：
+
+- **状态列表** `List<GraphState>`：`stateName` + 状态子图 + `entryIdentifier`（入口标识，空 = 子图默认起点）+ `loop`（链跑完是否循环重跑）；
+- **切换**：`TransitionTo(stateName)`（C# / UnityEvent 调用，或图内用菜单 **状态机/切换** 节点）；
+- 切换语义：**停当前链 + 起新链**；链执行时宿主 = 状态机自身 → 子图/操作节点的 Attached 目标 = 状态机物体；
+- **事件驱动（可选）**：`subscribeEntries` 开启后订阅当前状态子图的入口事件，命中即从该入口重跑当前状态链；
+- `initialState` 非空时 `Start` 自动进入。
+
+「状态机/切换」节点：`machineName`（空 = 图绑定物体上查找）/ `targetState` 均为可接线的 string 输入端口。
 
 ## 日志级别
 
@@ -112,6 +138,7 @@ xNode/
 
 - **子图准备**：子图 = 普通 `BaseNodeGraph`；用「子图/参数输入」「子图/参数输出」节点声明出入口参数（**参数名 = 子图变量名**，图中唯一）；入口用 StartNode 或 EntryNode，EndNode 收尾；
 - **参数端口**：`SubGraphNode` 选好子图后**自动生成与参数节点一一对应的输入/输出端口**（端口名 = 参数名），连线即传参。执行时：父图连线值 → 子图变量 → 跑子图链 → 输出节点输入求值 → 输出端口；
+- **GameObject 参数**：「子图/参数输入/物体」「子图/参数输出/物体」与 5 种基础类型参数并列；**不走变量系统**（GameObject 不入 VariableBundle 序列化）——输入节点由父图执行前直接写入字段，输出节点由父图求值读回，端口同步/嵌套/循环校验逻辑完全复用；
 - **子图内部接法**：**参数输入节点 = 取值源**（输出端口，连到需要参数的地方，未注入时用节点字段默认值）；**参数输出节点 = 返回值槽**（输入端口，把结果连进来，链跑完后父图读回）；
 - **执行语义**：同步阻塞（父链等子图跑完，与 Wait 节点一致）；目标解析沿用父执行器（Attached 目标 = 父执行器物体）；嵌套深度上限 8（运行时拦截），编辑器做循环引用与参数重名校验；
 - **注意**：同一子图被多条链并发调用时**变量共享**（要隔离就复制子图资产）；`resetVariablesOnCall` 可让每次调用重置子图变量；参数改名会断开对应端口连线。

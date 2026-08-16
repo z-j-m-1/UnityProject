@@ -1,3 +1,13 @@
+新增 GameObject 引用支持 + 图状态机容器
+
+- GetGameObjectNode（菜单「取值/获取物体」）：GameObjectSource 枚举 Self（图绑定物体/子物体，transform.Find）/ All（全场景按名字，含 inactive）；对象名称为可接线 string 输入端口；输出字段非序列化（运行时求值，规避场景引用写进图资产）
+- SceneObjectFinder 缓存字典：惰性构建「名字 → 物体」O(1) 查表；场景加载/卸载、运行时启动、编辑器 Hierarchy 变更自动失效；未命中重扫一次兜底；重名取第一个并警告一次
+- ComponentActionNode&lt;T&gt; 基类新增 [Input][NonSerialized] GameObject targetGameObject 端口：已连线优先取 GetInputValue，null/未连线回退既有 ResolveTarget() → 旧图（仅目标模式）零破坏；一处改动全部子类（变换/音频/动画）生效
+- 子图 GameObject 参数：SubGraphInputGameObjectNode / SubGraphOutputGameObjectNode（非泛型，同名单文件）；绕过 VariableBundle（无 GameObject 容器）直接写字段/求值读回；SyncParameterPorts 自动识别（ParamType=GameObject），端口同步零改动
+- GraphStateMachine（MonoBehaviour）：状态 = 子图（stateName + 子图 + 入口标识 + loop）；TransitionTo 停旧链起新链（复用 GraphChainRunner），host=状态机自身（Attached 目标 = 状态机物体）；subscribeEntries 可选订阅当前状态子图入口事件；initialState 自动进入
+- GraphStateTransitionNode（菜单「状态机/切换」）：machineName（空 = 图绑定物体上查找）/ targetState 均为可接线 string 端口
+- NodeExecuteContext.Current 类型放宽 GraphExecutor → MonoBehaviour（执行器/状态机都可作链宿主）；GraphChainRunner host 参数同步放宽
+
 修复：PrintNode / NoLogicNode 读原始字段未取输入端口连线值
 
 - PrintNode.Execute 原为 Debug.Log(printMessage)（直接读字段），接线后仍只输出默认值"打印信息"；改为 GetInputValue<string>(nameof(printMessage), printMessage)，已连线取上游数据、未连线用字段默认值

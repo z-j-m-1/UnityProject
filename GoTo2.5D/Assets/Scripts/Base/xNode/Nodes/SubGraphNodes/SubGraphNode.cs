@@ -114,12 +114,37 @@ public class SubGraphNode : FlowNode
             if (!port.IsConnected) continue;
             string varName = port.fieldName;
             System.Type t = port.ValueType;
+
+            // GameObject 不走变量系统（不入 VariableBundle 序列化）：直接写入输入节点字段
+            if (t == typeof(GameObject))
+            {
+                SubGraphInputGameObjectNode inputNode = FindInputGameObjectNode(varName);
+                if (inputNode != null)
+                {
+                    inputNode.value = GetInputValue<GameObject>(varName, null);
+                }
+                continue;
+            }
+
             if (t == typeof(string)) subGraph.Set(varName, GetInputValue<string>(varName, null));
             else if (t == typeof(bool)) subGraph.Set(varName, GetInputValue<bool>(varName, false));
             else if (t == typeof(int)) subGraph.Set(varName, GetInputValue<int>(varName, 0));
             else if (t == typeof(float)) subGraph.Set(varName, GetInputValue<float>(varName, 0f));
             else if (t == typeof(Vector3)) subGraph.Set(varName, GetInputValue<Vector3>(varName, Vector3.zero));
         }
+    }
+
+    private SubGraphInputGameObjectNode FindInputGameObjectNode(string parameterName)
+    {
+        if (subGraph == null) return null;
+        foreach (XNode.Node node in subGraph.nodes)
+        {
+            if (node is SubGraphInputGameObjectNode input && input.parameterName == parameterName)
+            {
+                return input;
+            }
+        }
+        return null;
     }
 
     private void ReadBackOutputs()
