@@ -840,7 +840,6 @@ GameObject:
   - component: {fileID: 493839554}
   - component: {fileID: 493839558}
   - component: {fileID: 493839560}
-  - component: {fileID: 493839559}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -943,18 +942,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ebb1956aad84ac49b6bec09f49dc9ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &493839559
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 493839553}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ebb1956aad84ac49b6bec09f49dc9ec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &493839560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -971,6 +958,8 @@ MonoBehaviour:
   autoExecute: 1
   executeInterval: 1
   executeCount: 0
+  executionMode: 0
+  entryIdentifier: 
 --- !u!1 &637250325
 GameObject:
   m_ObjectHideFlags: 0
@@ -2068,6 +2057,7 @@ GameObject:
   - component: {fileID: 1381811688}
   - component: {fileID: 1381811686}
   - component: {fileID: 1381811689}
+  - component: {fileID: 1381811690}
   m_Layer: 5
   m_Name: OK_Button
   m_TagString: Untagged
@@ -2151,6 +2141,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1381811690}
+        m_TargetAssemblyTypeName: GraphExecutor, Assembly-CSharp
+        m_MethodName: Execute
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!222 &1381811688
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2189,6 +2191,24 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 2
+--- !u!114 &1381811690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1381811684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 730c965614e074f45905af436eb3de70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeGraph: {fileID: 11400000, guid: 843069c6f02af9649aee6f3d2eabaf50, type: 2}
+  autoExecute: 0
+  executeInterval: 0
+  executeCount: 1
+  executionMode: 1
+  entryIdentifier: "OK\u6309\u94AE"
 --- !u!1 &1606611916
 GameObject:
   m_ObjectHideFlags: 0
