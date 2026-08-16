@@ -107,50 +107,14 @@ public class SubGraphNode : FlowNode
         return graph.startNode;
     }
 
+    /// <summary>父图连线值注入子图统一调用参数存储（图内「参数/输入」节点读取）</summary>
     private void InjectInputs()
     {
         foreach (NodePort port in DynamicInputs)
         {
             if (!port.IsConnected) continue;
-            string varName = port.fieldName;
-            System.Type t = port.ValueType;
-
-            // GameObject 不走变量系统（不入 VariableBundle 序列化）：直接写入输入节点字段
-            if (t == typeof(GameObject))
-            {
-                SubGraphInputGameObjectNode inputNode = FindInputGameObjectNode(varName);
-                if (inputNode != null)
-                {
-                    inputNode.value = GetInputValue<GameObject>(varName, null);
-                }
-                continue;
-            }
-
-            if (t == typeof(string)) subGraph.Set(varName, GetInputValue<string>(varName, null));
-            else if (t == typeof(bool)) subGraph.Set(varName, GetInputValue<bool>(varName, false));
-            else if (t == typeof(int)) subGraph.Set(varName, GetInputValue<int>(varName, 0));
-            else if (t == typeof(float)) subGraph.Set(varName, GetInputValue<float>(varName, 0f));
-            else if (t == typeof(Vector3)) subGraph.Set(varName, GetInputValue<Vector3>(varName, Vector3.zero));
-            else if (t == typeof(Vector2)) subGraph.Set(varName, GetInputValue<Vector2>(varName, Vector2.zero));
-            else if (t == typeof(List<string>)) subGraph.Set(varName, GetInputValue<List<string>>(varName, null));
-            else if (t == typeof(List<int>)) subGraph.Set(varName, GetInputValue<List<int>>(varName, null));
-            else if (t == typeof(List<float>)) subGraph.Set(varName, GetInputValue<List<float>>(varName, null));
-            else if (t == typeof(List<Vector2>)) subGraph.Set(varName, GetInputValue<List<Vector2>>(varName, null));
-            else if (t == typeof(List<Vector3>)) subGraph.Set(varName, GetInputValue<List<Vector3>>(varName, null));
+            subGraph.SetInvocationParam(port.fieldName, port.GetInputValue());
         }
-    }
-
-    private SubGraphInputGameObjectNode FindInputGameObjectNode(string parameterName)
-    {
-        if (subGraph == null) return null;
-        foreach (XNode.Node node in subGraph.nodes)
-        {
-            if (node is SubGraphInputGameObjectNode input && input.parameterName == parameterName)
-            {
-                return input;
-            }
-        }
-        return null;
     }
 
     private void ReadBackOutputs()

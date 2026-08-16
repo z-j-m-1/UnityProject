@@ -145,52 +145,81 @@ public class BaseNodeGraph : NodeGraph, ISerializationCallbackReceiver
         attachedObject = null;
 
         variables.Rebuild();
-        externalParams.Clear();
+        invocationParams.Clear();
     }
 
-    // ============ 外部参数（瞬态：外部代码触发图时注入，不序列化、不进存档） ============
+    // ============ 图调用参数（瞬态：子图节点 / 外部代码 / 事件 / 状态机任一调用方触发图时注入；不序列化、不进存档） ============
 
-    [NonSerialized] private Dictionary<string, object> externalParams = new Dictionary<string, object>();
+    [NonSerialized] private Dictionary<string, object> invocationParams = new Dictionary<string, object>();
 
-    /// <summary>设置外部参数（同名覆盖；由执行器/事件触发时注入）</summary>
-    public void SetExternalParam(string name, object value)
+    /// <summary>设置调用参数（同名覆盖；由调用方在触发图时注入）</summary>
+    public void SetInvocationParam(string name, object value)
     {
         if (string.IsNullOrEmpty(name)) return;
-        externalParams[name] = value;
+        invocationParams[name] = value;
     }
 
-    /// <summary>读取外部参数；不存在或类型不匹配返回 fallback</summary>
-    public T GetExternalParam<T>(string name, T fallback = default)
+    /// <summary>读取调用参数；不存在或类型不匹配返回 fallback</summary>
+    public T GetInvocationParam<T>(string name, T fallback = default)
     {
-        if (!string.IsNullOrEmpty(name) && externalParams.TryGetValue(name, out object value) && value is T typed)
+        if (!string.IsNullOrEmpty(name) && invocationParams.TryGetValue(name, out object value) && value is T typed)
         {
             return typed;
         }
         return fallback;
     }
 
-    /// <summary>读取外部参数（不转型）；不存在返回 false</summary>
-    public bool TryGetExternalParam(string name, out object value)
+    /// <summary>读取调用参数（不转型）；不存在返回 false</summary>
+    public bool TryGetInvocationParam(string name, out object value)
     {
         if (!string.IsNullOrEmpty(name))
         {
-            return externalParams.TryGetValue(name, out value);
+            return invocationParams.TryGetValue(name, out value);
         }
         value = null;
         return false;
     }
 
-    /// <summary>移除指定外部参数</summary>
-    public void ClearExternalParam(string name)
+    /// <summary>移除指定调用参数</summary>
+    public void ClearInvocationParam(string name)
     {
         if (!string.IsNullOrEmpty(name))
         {
-            externalParams.Remove(name);
+            invocationParams.Remove(name);
         }
     }
 
-    /// <summary>清空全部外部参数</summary>
-    public void ClearExternalParams() => externalParams.Clear();
+    /// <summary>清空全部调用参数</summary>
+    public void ClearInvocationParams() => invocationParams.Clear();
+
+    // ============ 调用参数兼容别名（旧命名：SetExternalParam 等，已废弃） ============
+
+    [System.Obsolete("请使用 SetInvocationParam")]
+    public void SetExternalParam(string name, object value) => SetInvocationParam(name, value);
+    [System.Obsolete("请使用 GetInvocationParam")]
+    public T GetExternalParam<T>(string name, T fallback = default) => GetInvocationParam(name, fallback);
+    [System.Obsolete("请使用 TryGetInvocationParam")]
+    public bool TryGetExternalParam(string name, out object value) => TryGetInvocationParam(name, out value);
+    [System.Obsolete("请使用 ClearInvocationParam")]
+    public void ClearExternalParam(string name) => ClearInvocationParam(name);
+    [System.Obsolete("请使用 ClearInvocationParams")]
+    public void ClearExternalParams() => ClearInvocationParams();
+
+    /// <summary>读取图输出参数（图内「参数/输出」节点当前求值；外部代码执行后读取返回值用）</summary>
+    public T GetOutputValue<T>(string paramName, T fallback = default)
+    {
+        if (string.IsNullOrEmpty(paramName) || nodes == null) return fallback;
+        foreach (XNode.Node node in nodes)
+        {
+            if (node is SubGraphOutputNodeBase output && output.parameterName == paramName)
+            {
+                object v = output.EvaluateValue();
+                if (v is T typed) return typed;
+                return fallback;
+            }
+        }
+        return fallback;
+    }
 
     // ============ 入口节点 ============
 

@@ -68,7 +68,10 @@ public class GraphStateMachine : MonoBehaviour
     }
 
     /// <summary>切换到指定状态（停止当前链，启动新状态链）</summary>
-    public void TransitionTo(string stateName)
+    public void TransitionTo(string stateName) => TransitionTo(stateName, null);
+
+    /// <summary>切换到指定状态，可携带调用参数（注入状态子图统一调用参数存储后执行）</summary>
+    public void TransitionTo(string stateName, GraphParams args)
     {
         if (string.IsNullOrEmpty(stateName)) return;
 
@@ -77,6 +80,16 @@ public class GraphStateMachine : MonoBehaviour
         {
             NodeLog.Warning($"GraphStateMachine '{name}': 找不到状态 '{stateName}'（或子图为空）");
             return;
+        }
+
+        if (args != null && args.Count > 0)
+        {
+            next.graph.ClearInvocationParams();
+            foreach (var kv in args.Data)
+            {
+                next.graph.SetInvocationParam(kv.Key, kv.Value);
+            }
+            NodeLog.Info($"GraphStateMachine '{name}': 已注入状态 '{stateName}' 调用参数 {args.Count} 个");
         }
 
         StopChain();

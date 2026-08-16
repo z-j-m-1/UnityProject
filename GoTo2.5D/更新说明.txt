@@ -1,3 +1,14 @@
+新增统一图调用参数：子图参数与外部参数合一（父图随时可变子图）
+
+- BaseNodeGraph：externalParams 升级为统一「图调用参数」存储 invocationParams（SetInvocationParam / GetInvocationParam<T> / TryGetInvocationParam / ClearInvocationParam(s)），旧 SetExternalParam 等保留为 [Obsolete] 兼容别名；新增 GetOutputValue<T>(paramName) 外部读取返回值
+- 输入节点统一：SubGraphInputNode<T>.GetValue 改为统一调用参数优先（子图节点/外部代码/事件/状态机任一注入），未注入回退图变量→节点字段（兼容旧资产）；SubGraphInputGameObjectNode 同；菜单「子图/参数输入」→「参数/输入」，「子图/参数输出」→「参数/输出」
+- SubGraphNode.InjectInputs 简化：全部类型（含 GameObject）统一 `subGraph.SetInvocationParam(fieldName, port.GetInputValue())`，类型分发与 FindInputGameObjectNode 删除
+- 删除 ExternalParamNode 家族（ParamNodes/ 8 文件 + ExternalParamNodeBodyEditor）；节点体编辑器能力（paramName 下拉 + 运行时注入值显示）迁移到新的 SubGraphInputNodeBodyEditor
+- GraphExecutor：注入改用 SetInvocationParam/ClearInvocationParams；新增 GetOutput<T>；ClearExternalParams 保留兼容别名
+- GraphStateMachine：新增 TransitionTo(stateName, GraphParams)（注入状态子图调用参数后执行）
+- 修复非序列化端口在节点体不可见：新增 VisiblePortsNodeEditor 基类（默认绘制 + 补画 [NonSerialized] 字段端口），注册到 ComponentActionNodeBase / GetGameObjectNode / SpawnObjectNode / DestroyObjectNode / 4 个物理节点
+- 行为变化：子图参数不再进子图变量（图内读参数统一用「参数/输入」节点）；resetVariablesOnCall 不再清参数
+
 新增外部传参：C# 触发图时可携带参数包，图内参数节点读取
 
 - GraphParams 参数包（xNode/GraphParams.cs）：Set<T>(name, value) / Get<T> / Data 遍历，纯运行期

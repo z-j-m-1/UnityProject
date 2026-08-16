@@ -29,7 +29,12 @@ public abstract class SubGraphInputNode<T> : SubGraphInputNodeBase
         {
             if (graph is BaseNodeGraph g && !string.IsNullOrEmpty(parameterName))
             {
-                // 父图注入后即子图变量当前值；未注入时返回节点默认值
+                // 统一调用参数优先（子图节点 / 外部代码 / 事件 / 状态机任一调用方注入）；
+                // 未注入时回退图变量 → 节点字段默认值（兼容旧子图资产）
+                if (g.TryGetInvocationParam(parameterName, out object v))
+                {
+                    return v;
+                }
                 return g.Get(parameterName, value);
             }
             return value;

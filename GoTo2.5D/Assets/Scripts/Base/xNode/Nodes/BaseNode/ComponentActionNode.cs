@@ -12,12 +12,17 @@ public enum ComponentTarget
     Direct
 }
 
+/// <summary>组件动作节点的非泛型基类（供自定义编辑器按类型定位）</summary>
+public abstract class ComponentActionNodeBase : FlowNode
+{
+}
+
 /// <summary>
 /// 组件动作节点基类 - 统一"目标解析 + 组件获取"，子类只实现 Apply 做具体动作
 /// 例：移动/旋转/缩放（Transform）、播放（AudioSource）、状态（Animator）等
 /// </summary>
 /// <typeparam name="T">目标组件类型</typeparam>
-public abstract class ComponentActionNode<T> : FlowNode where T : Component
+public abstract class ComponentActionNode<T> : ComponentActionNodeBase where T : Component
 {
     [Header("目标")]
     public ComponentTarget target = ComponentTarget.Attached;

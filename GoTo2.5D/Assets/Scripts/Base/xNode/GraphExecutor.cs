@@ -123,8 +123,18 @@ public class GraphExecutor : MonoBehaviour
         ExecuteFrom(entry, args);
     }
 
-    /// <summary>清空图内所有外部参数</summary>
-    public void ClearExternalParams() => nodeGraph?.ClearExternalParams();
+    /// <summary>清空图内所有调用参数</summary>
+    public void ClearInvocationParams() => nodeGraph?.ClearInvocationParams();
+
+    /// <summary>（兼容别名）清空图内所有调用参数</summary>
+    [System.Obsolete("请使用 ClearInvocationParams")]
+    public void ClearExternalParams() => ClearInvocationParams();
+
+    /// <summary>读取图输出参数（图内「参数/输出」节点当前求值；外部代码执行后读返回值用）</summary>
+    public T GetOutput<T>(string paramName, T fallback = default)
+    {
+        return nodeGraph != null ? nodeGraph.GetOutputValue(paramName, fallback) : fallback;
+    }
 
     /// <summary>从指定节点开始执行一条链（null = 按配置起点）；不同起点并发执行，同一起点按触发策略处理</summary>
     public void ExecuteFrom(BaseNode start) => ExecuteFrom(start, null);
@@ -134,12 +144,12 @@ public class GraphExecutor : MonoBehaviour
     {
         if (args != null && args.Count > 0 && nodeGraph != null)
         {
-            nodeGraph.ClearExternalParams();
+            nodeGraph.ClearInvocationParams();
             foreach (var kv in args.Data)
             {
-                nodeGraph.SetExternalParam(kv.Key, kv.Value);
+                nodeGraph.SetInvocationParam(kv.Key, kv.Value);
             }
-            NodeLog.Info($"GraphExecutor '{gameObject.name}': 已注入外部参数 {args.Count} 个");
+            NodeLog.Info($"GraphExecutor '{gameObject.name}': 已注入调用参数 {args.Count} 个");
         }
 
         if (start == null)

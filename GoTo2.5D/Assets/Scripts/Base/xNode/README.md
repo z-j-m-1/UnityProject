@@ -29,7 +29,7 @@ xNode/
     ├── SpawnNodes/        # 生成/销毁（SpawnObjectNode / DestroyObjectNode）
     ├── PhysicsNodes/      # 物理查询（3D/2D 射线检测、球形/圆形检测）
     ├── RigidbodyNodes/    # 刚体控制（施加力/设置速度/角速度，3D+2D，继承 ComponentActionNode）
-    ├── ParamNodes/        # 外部参数读取（参数/输入：字符串/布尔/整数/浮点/二维向量/三维向量/物体）
+    ├── SubGraphNodes/     # 子图执行（SubGraphNode）+ 统一参数节点（参数/输入、参数/输出）
     ├── CommunicationNodes/# 通讯（GraphCommunicator + 事件 + 执行图 + 存档点）
     ├── UICommunicatorNodes# UI 通讯（ComUIGetTextNode / ComUISetTextNode）
     ├── VariableNodes/     # 变量操作：Get/（获取）+ Set/（设置），source 枚举选操作对象；含 Vector2 与列表（List）变量节点
@@ -106,11 +106,13 @@ executor.ExecuteFromEntry("OnInput", p);   // 直调
 GraphEvent.Trigger(e => { e.eventId = "OnInput"; e.data = p; });
 ```
 
-- **图内读取**：`参数/输入/字符串|布尔|整数|浮点|二维向量|三维向量|物体` 节点，`paramName` 与传入键一致，未命中/类型不符返回节点上的 `fallback` 默认值；
-- **瞬态语义**：参数存于图资产的非序列化存储（不进存档、不进 VariableBundle、不进编辑器下拉）；每次**带参**触发先清空上一批再注入（替换语义）；`GraphExecutor.ClearExternalParams()` 可主动清空；
+- **图内读取**：`参数/输入/字符串|布尔|整数|浮点|二维向量|三维向量|物体|…列表` 节点（即统一参数输入节点，原子图参数节点家族），`paramName` 与传入键一致，未命中/类型不符返回节点字段默认值；
+- **瞬态语义**：参数存于图资产的**统一调用参数存储**（非序列化，不进存档、不进 VariableBundle、不进编辑器下拉）；每次**带参**触发先清空上一批再注入（替换语义）；`GraphExecutor.ClearInvocationParams()` 可主动清空；
 - **触发 API**：`ExecuteFromEntry(entryId, args)`（标识符/GUID）；`ExecuteFrom(start, args)`；`GraphEvent.data` 载荷；`GraphEventEmitter` 仍是无参触发；
 - **面板可视化编辑**：任何外部 MonoBehaviour 声明 `public GraphParamList xxx;` 即可在 Inspector 里增删/改参数（名称 + 类型下拉 + 按类型显示的值字段，`GraphParamEntryDrawer` 绘制）；运行时 `xxx.Build()` 出 `GraphParams`。开箱即用的 `GraphParamEmitter`（挂场景物体）：Inspector 编辑参数包 + eventId，按钮/UnityEvent 拖 `Emit()` 即**带参**触发事件；
-- 与子图参数的区别：子图参数走 SubGraphNode 动态端口 + 子图变量；外部参数是"最后一次带参触发注入的那批"，适合逐帧/事件式输入驱动。
+- **统一**：图内没有独立的"子图参数"与"外部参数"——`参数/输入`、`参数/输出` 是**唯一**的参数节点（`SubGraphInputNode`/`SubGraphOutputNode` 家族），所有调用方（子图节点 / 外部代码 / 事件 / 状态机）都注入同一份图调用参数存储：**同一张图既被子图节点调、也被外部直接调，参数节点完全通用（父图随时可变子图）**；
+- **返回值外部读回**：外部代码执行后 `graph.GetOutputValue<T>(paramName)`（或 `executor.GetOutput<T>(paramName)`）读取图内「参数/输出」节点求值；
+- **状态机带参**：`GraphStateMachine.TransitionTo(stateName, GraphParams)`；
 
 ## 组件动作节点（ComponentActionNode）
 
@@ -137,7 +139,7 @@ GraphEvent.Trigger(e => { e.eventId = "OnInput"; e.data = p; });
 把"状态 = 一张子图"的状态机挂在场景物体上（复用 GraphChainRunner + 子图机制，不依赖 GraphExecutor）：
 
 - **状态列表** `List<GraphState>`：`stateName` + 状态子图 + `entryIdentifier`（入口标识，空 = 子图默认起点）+ `loop`（链跑完是否循环重跑）；
-- **切换**：`TransitionTo(stateName)`（C# / UnityEvent 调用，或图内用菜单 **状态机/切换** 节点）；
+- **切换**：`TransitionTo(stateName)`（C# / UnityEvent 调用，或图内用菜单 **状态机/切换** 节点）；`TransitionTo(stateName, GraphParams)` 可携带调用参数注入状态子图；
 - 切换语义：**停当前链 + 起新链**；链执行时宿主 = 状态机自身 → 子图/操作节点的 Attached 目标 = 状态机物体；
 - **事件驱动（可选）**：`subscribeEntries` 开启后订阅当前状态子图的入口事件，命中即从该入口重跑当前状态链；
 - `initialState` 非空时 `Start` 自动进入。
@@ -179,12 +181,12 @@ GraphEvent.Trigger(e => { e.eventId = "OnInput"; e.data = p; });
 
 把一段逻辑封装成另一张节点图，在父图里当一个节点调用（菜单 **子图/执行**）：
 
-- **子图准备**：子图 = 普通 `BaseNodeGraph`；用「子图/参数输入」「子图/参数输出」节点声明出入口参数（**参数名 = 子图变量名**，图中唯一）；入口用 StartNode 或 EntryNode，EndNode 收尾；
-- **参数端口**：`SubGraphNode` 选好子图后**自动生成与参数节点一一对应的输入/输出端口**（端口名 = 参数名），连线即传参。执行时：父图连线值 → 子图变量 → 跑子图链 → 输出节点输入求值 → 输出端口；
-- **GameObject 参数**：「子图/参数输入/物体」「子图/参数输出/物体」与 5 种基础类型参数并列；**不走变量系统**（GameObject 不入 VariableBundle 序列化）——输入节点由父图执行前直接写入字段，输出节点由父图求值读回，端口同步/嵌套/循环校验逻辑完全复用；
+- **子图准备**：子图 = 普通 `BaseNodeGraph`；用「参数/输入」「参数/输出」节点声明出入口参数（**参数名 = 调用参数键**，图中唯一）；入口用 StartNode 或 EntryNode，EndNode 收尾；
+- **参数端口**：`SubGraphNode` 选好子图后**自动生成与参数节点一一对应的输入/输出端口**（端口名 = 参数名），连线即传参。执行时：父图连线值 → **子图统一调用参数存储** → 跑子图链 → 输出节点输入求值 → 输出端口；
+- **GameObject 参数**：「参数/输入/物体」「参数/输出/物体」与各基础类型/列表参数并列；**不走变量系统**（GameObject 不入 VariableBundle 序列化）——统一走调用参数存储注入/求值回读，端口同步/嵌套/循环校验逻辑完全复用；
 - **子图内部接法**：**参数输入节点 = 取值源**（输出端口，连到需要参数的地方，未注入时用节点字段默认值）；**参数输出节点 = 返回值槽**（输入端口，把结果连进来，链跑完后父图读回）；
 - **执行语义**：同步阻塞（父链等子图跑完，与 Wait 节点一致）；目标解析沿用父执行器（Attached 目标 = 父执行器物体）；嵌套深度上限 8（运行时拦截），编辑器做循环引用与参数重名校验；
-- **注意**：同一子图被多条链并发调用时**变量共享**（要隔离就复制子图资产）；`resetVariablesOnCall` 可让每次调用重置子图变量；参数改名会断开对应端口连线。
+- **注意**：同一子图被多条链并发调用时**调用参数/变量共享**（要隔离就复制子图资产）；`resetVariablesOnCall` 重置子图变量（调用参数每次调用重新注入，不受影响）；参数改名会断开对应端口连线。
 
 ## 扩展模式
 
