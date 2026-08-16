@@ -1,3 +1,9 @@
+新增条件等待（两层设计）
+
+- ConditionWaitNode 基类：OnWaitStart（准备）+ CheckCondition（条件）+ timeout（超时，0=不限）
+- WaitUntilNode（流程/等待条件）：等待 condition 输入端口为 true，可由比较/逻辑/变量节点组合，零代码
+- 系统级条件（对话选项/动画完成等）后续继承 ConditionWaitNode 实现 CheckCondition 即可
+
 新增执行触发策略 + 修复多执行器共享游标
 
 - GraphExecutor 新增 triggerPolicy：Restart（默认，重触发=停止并重跑）/ IgnoreWhileRunning（运行中忽略）/ Queue（运行中排队，跑完自动再跑）

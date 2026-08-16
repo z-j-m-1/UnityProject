@@ -13,7 +13,7 @@ xNode/
     ├── BranchNodes/       # 分支（Branch / MultiBranch / StringCondition）
     ├── LogicNodes/        # 逻辑（And / Or / No）+ 比较（Compare）
     ├── MathNodes/         # 数学运算（四则运算 / 比较）
-    ├── OrderNodes/        # 流程（Print / Wait）
+    ├── OrderNodes/        # 流程（Print / Wait / 等待条件）
     ├── ValueNodes/        # 常量值（Bool / Int / String）
     ├── TransformNodes/    # 物体变换（Move / Rote）
     ├── CommunicationNodes/# 通讯（GraphCommunicator + 事件 + 执行图 + 存档点）
@@ -45,7 +45,7 @@ xNode/
 | 存档点 | `ComSaveGameNode` | 把预备存档提交为正式存档 |
 | 分支/逻辑/值/变换 | `BranchNode`、`AndLogicNode`、`BoolValueNode`、`MoveObjectNode` 等 | 流程控制、常量、物体运动 |
 | 数学运算 | `MathOpIntNode` / `MathOpFloatNode` / `CompareIntNode` / `CompareFloatNode` | 四则运算（加/减/乘/除）、比较（等于/大于/小于等，输出 bool） |
-| 流程 | `PrintNode` / `WaitNode` | 日志输出 / 暂停执行链指定秒数（协程，不阻塞进程） |
+| 流程 | `PrintNode` / `WaitNode` / `WaitUntilNode` | 日志输出 / 等待指定秒数 / 等待条件成立（可接比较·逻辑·变量节点，支持超时） |
 
 ## 执行流程（GraphExecutor）
 
