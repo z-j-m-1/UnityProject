@@ -4,10 +4,12 @@ using XNode;
 using XNodeEditor;
 
 /// <summary>
-/// Get/Set 变量节点 + 入口节点的节点体编辑器：
-/// 在节点图视图中隐藏 variableGuid / guid（避免误触），检查器里仍正常显示
+/// 所有 BaseNode 的默认节点体编辑器：
+/// 复刻 xNode 默认 OnBodyGUI + 运行时高亮亮边。
+/// 覆盖没有专属编辑器的节点（分支/逻辑/数学/字符串/取值/变换/UI 等）。
 /// </summary>
-public abstract class VariableNodeBodyEditor : NodeEditor
+[CustomNodeEditor(typeof(BaseNode))]
+public class BaseNodeBodyEditor : NodeEditor
 {
     public override void OnBodyGUI()
     {
@@ -15,7 +17,7 @@ public abstract class VariableNodeBodyEditor : NodeEditor
         bool highlighted = NodeRunHighlight.BeginIfActive(baseNode);
 
         serializedObject.Update();
-        string[] excludes = { "m_Script", "graph", "position", "ports", "variableGuid", "guid" };
+        string[] excludes = { "m_Script", "graph", "position", "ports" };
         SerializedProperty iterator = serializedObject.GetIterator();
         bool enterChildren = true;
         while (iterator.NextVisible(enterChildren))
@@ -36,23 +38,5 @@ public abstract class VariableNodeBodyEditor : NodeEditor
             NodeRunHighlight.EndHighlight();
         }
     }
-}
-
-/// <summary>获取变量节点：节点体隐藏 variableGuid</summary>
-[CustomNodeEditor(typeof(GetVariableNodeBase))]
-public class GetVariableNodeBodyEditor : VariableNodeBodyEditor
-{
-}
-
-/// <summary>设置变量节点：节点体隐藏 variableGuid</summary>
-[CustomNodeEditor(typeof(SetVariableNodeBase))]
-public class SetVariableNodeBodyEditor : VariableNodeBodyEditor
-{
-}
-
-/// <summary>入口节点：节点体隐藏 guid</summary>
-[CustomNodeEditor(typeof(EntryNode))]
-public class EntryNodeBodyEditor : VariableNodeBodyEditor
-{
 }
 #endif

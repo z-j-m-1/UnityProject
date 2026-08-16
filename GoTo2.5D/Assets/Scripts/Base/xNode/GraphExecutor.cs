@@ -33,6 +33,12 @@ public class GraphExecutor : MonoBehaviour
     private int currentExecuteCount = 0;
     private bool queueTriggered;
 
+    /// <summary>当前正在执行的节点（供编辑器运行高亮；未执行时为 null）</summary>
+    [System.NonSerialized] private BaseNode currentNode;
+
+    /// <summary>当前正在执行的节点（编辑器运行高亮用）</summary>
+    public BaseNode RunningNode => currentNode;
+
     void Awake()
     {
         if (nodeGraph == null)
@@ -65,6 +71,7 @@ public class GraphExecutor : MonoBehaviour
         {
             StopCoroutine(executeCoroutine);
             executeCoroutine = null;
+            currentNode = null;
         }
     }
 
@@ -96,6 +103,7 @@ public class GraphExecutor : MonoBehaviour
                 {
                     StopCoroutine(executeCoroutine);
                     executeCoroutine = null;
+                    currentNode = null;
                 }
                 break;
         }
@@ -133,6 +141,7 @@ public class GraphExecutor : MonoBehaviour
         {
             Debug.LogWarning("节点图为空");
             executeCoroutine = null;
+            currentNode = null;
             yield break;
         }
 
@@ -145,6 +154,7 @@ public class GraphExecutor : MonoBehaviour
                 Debug.LogWarning("没有StartNode");
             }
             executeCoroutine = null;
+            currentNode = null;
             yield break;
         }
 
@@ -162,6 +172,7 @@ public class GraphExecutor : MonoBehaviour
 
             while (node != null && counter < maxLoop)
             {
+                currentNode = node;
                 node.Execute();
 
                 // 节点可返回协程流程（等待/等待条件等），执行器 yield 暂停链直到完成
@@ -185,6 +196,7 @@ public class GraphExecutor : MonoBehaviour
             {
                 NodeLog.Info($"节点图 '{gameObject.name}' 已执行 {executeCount} 次，自动停止");
                 executeCoroutine = null;
+                currentNode = null;
 
                 // 排队触发：当前跑完后自动再跑一轮
                 if (queueTriggered)
