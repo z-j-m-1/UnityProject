@@ -10,15 +10,26 @@ public enum GraphExecutionMode
     Entry
 }
 
-/// <summary>图执行触发策略：执行中再次被触发时的行为</summary>
+/// <summary>图执行触发策略：同一起点（startNode / 入口节点）再次被触发时的行为</summary>
 public enum GraphExecutionTriggerPolicy
 {
-    Restart,               // 停止当前并整条链重跑（默认）
+    Restart,               // 停止当前链并整条重跑（默认）
     IgnoreWhileRunning,    // 运行中忽略重复触发
-    Queue                  // 运行中排队，当前跑完后自动再跑一轮
+    Queue                  // 运行中排队，当前链跑完后自动再跑一轮
 }
 
-// 通用节点图执行器 - 挂载到GameObject上使用
+/// <summary>入口事件订阅模式</summary>
+public enum EntryEventSubscribeMode
+{
+    Off,             // 不订阅事件
+    CurrentEntry,    // 只订阅自己入口（entryIdentifier）的事件
+    AllEntries       // 订阅图内所有入口的事件（并发执行，互不打断）
+}
+
+/// <summary>
+/// 通用节点图执行器 - 挂载到 GameObject 上使用
+/// 支持多链并发：每次事件 / 触发可独立启动一条链，互不打断；共享图变量（合作/独立按变量划分）
+/// </summary>
 public class GraphExecutor : MonoBehaviour
 {
     [SerializeField] private BaseNodeGraph nodeGraph;
@@ -28,19 +39,21 @@ public class GraphExecutor : MonoBehaviour
     [SerializeField] private GraphExecutionMode executionMode = GraphExecutionMode.Default;
     [SerializeField] private string entryIdentifier;
     [SerializeField] private GraphExecutionTriggerPolicy triggerPolicy = GraphExecutionTriggerPolicy.Restart;
-    [SerializeField] private bool subscribeEntryEvent;
+    [SerializeField] private EntryEventSubscribeMode entryEventSubscribe = EntryEventSubscribeMode.Off;
 
-    private Coroutine executeCoroutine;
-    private int currentExecuteCount = 0;
-    private bool queueTriggered;
-    private BaseNode pendingStartOverride;
+    /// <summary>单条执行链的运行状态（每条链独立）</summary>
+    private class RunState
+    {
+        public Coroutine coroutine;
+        public BaseNode currentNode;
+        public int executeCount;
+        public bool queued;
+    }
+
+    /// <summary>运行中的链：起点节点 → 状态（支持并发多条）</summary>
+    private readonly Dictionary<BaseNode, RunState> runs = new Dictionary<BaseNode, RunState>();
+
     private System.Action<GraphEvent> entryEventHandler;
-
-    /// <summary>当前正在执行的节点（供编辑器运行高亮；未执行时为 null）</summary>
-    [System.NonSerialized] private BaseNode currentNode;
-
-    /// <summary>当前正在执行的节点（编辑器运行高亮用）</summary>
-    public BaseNode RunningNode => currentNode;
 
     void Awake()
     {
@@ -53,6 +66,7 @@ public class GraphExecutor : MonoBehaviour
         nodeGraph.SetAttachedObject(gameObject);
         GraphCommunicator.Instance.RegisterGraphExecutor(this.gameObject);
     }
+
     void Start()
     {
         if (nodeGraph == null)
@@ -66,7 +80,7 @@ public class GraphExecutor : MonoBehaviour
             Execute();
         }
 
-        if (subscribeEntryEvent)
+        if (entryEventSubscribe != EntryEventSubscribeMode.Off)
         {
             SubscribeEntryEvent();
         }
@@ -74,12 +88,11 @@ public class GraphExecutor : MonoBehaviour
 
     void OnDestroy()
     {
-        if (executeCoroutine != null)
+        foreach (RunState run in runs.Values)
         {
-            StopCoroutine(executeCoroutine);
-            executeCoroutine = null;
-            currentNode = null;
+            if (run.coroutine != null) StopCoroutine(run.coroutine);
         }
+        runs.Clear();
 
         if (entryEventHandler != null)
         {
@@ -88,72 +101,61 @@ public class GraphExecutor : MonoBehaviour
         }
     }
 
-    // 执行节点图（启动协程，默认起点）
+    // ============ 执行入口 ============
+
+    /// <summary>按配置的默认/入口起点执行（启动一条新链；同起点按触发策略处理）</summary>
     public void Execute() => ExecuteFrom(null);
 
-    /// <summary>从指定节点开始执行（null = 按配置的默认/入口起点）；触发策略同样生效</summary>
-    public void ExecuteFrom(BaseNode startOverride)
+    /// <summary>从指定节点开始执行一条链（null = 按配置起点）；不同起点并发执行，同一起点按触发策略处理</summary>
+    public void ExecuteFrom(BaseNode start)
     {
-        switch (triggerPolicy)
+        if (start == null)
         {
-            case GraphExecutionTriggerPolicy.IgnoreWhileRunning:
-                if (executeCoroutine != null)
+            start = GetStartNode();
+            if (start == null)
+            {
+                if (executionMode == GraphExecutionMode.Default)
                 {
-                    NodeLog.Info($"GraphExecutor '{gameObject.name}': 正在执行中，忽略本次触发");
-                    return;
+                    Debug.LogWarning("没有StartNode");
                 }
-                break;
-
-            case GraphExecutionTriggerPolicy.Queue:
-                if (executeCoroutine != null)
-                {
-                    queueTriggered = true;
-                    NodeLog.Info($"GraphExecutor '{gameObject.name}': 正在执行中，已排队一次触发");
-                    return;
-                }
-                break;
-
-            case GraphExecutionTriggerPolicy.Restart:
-            default:
-                if (executeCoroutine != null)
-                {
-                    StopCoroutine(executeCoroutine);
-                    executeCoroutine = null;
-                    currentNode = null;
-                }
-                break;
+                return;
+            }
         }
 
-        queueTriggered = false;
-        pendingStartOverride = startOverride;
-        executeCoroutine = StartCoroutine(ExecuteCoroutine());
-    }
-
-    /// <summary>订阅入口事件：入口模式 + subscribeEntryEvent 开启时，事件触发从该入口执行</summary>
-    private void SubscribeEntryEvent()
-    {
-        if (executionMode != GraphExecutionMode.Entry || string.IsNullOrEmpty(entryIdentifier)) return;
-
-        entryEventHandler = OnGraphEvent;
-        GraphEvent.Subscribe(entryEventHandler);
-        NodeLog.Info($"GraphExecutor '{gameObject.name}': 已订阅入口事件 '{entryIdentifier}'");
-    }
-
-    private void OnGraphEvent(GraphEvent evt)
-    {
-        if (evt.eventId != entryIdentifier) return;
-
-        EntryNode entry = nodeGraph != null ? nodeGraph.GetEntryNode(entryIdentifier) : null;
-        if (entry == null)
+        if (runs.TryGetValue(start, out RunState run))
         {
-            NodeLog.Warning($"GraphExecutor '{gameObject.name}': 入口事件 '{entryIdentifier}' 未找到对应入口节点");
-            return;
+            switch (triggerPolicy)
+            {
+                case GraphExecutionTriggerPolicy.IgnoreWhileRunning:
+                    NodeLog.Info($"GraphExecutor '{gameObject.name}': 起点 '{start.name}' 正在执行中，忽略本次触发");
+                    return;
+
+                case GraphExecutionTriggerPolicy.Queue:
+                    run.queued = true;
+                    NodeLog.Info($"GraphExecutor '{gameObject.name}': 起点 '{start.name}' 正在执行中，已排队一次触发");
+                    return;
+
+                case GraphExecutionTriggerPolicy.Restart:
+                default:
+                    StopCoroutine(run.coroutine);
+                    runs.Remove(start);
+                    run = null;
+                    break;
+            }
         }
-        ExecuteFrom(entry);
+
+        if (run == null)
+        {
+            run = new RunState();
+            runs[start] = run;
+        }
+        run.queued = false;
+        run.executeCount = 0;
+        run.coroutine = StartCoroutine(ExecuteChain(start, run));
     }
 
     /// <summary>
-    /// 解析执行起点：默认执行返回 startNode；入口执行按标识符/GUID 查找入口节点
+    /// 解析执行起点（默认执行 = startNode；入口执行 = 按标识符/GUID 找入口节点）
     /// 入口未找到时 LogError 并返回 null（不执行、不回退 startNode）
     /// </summary>
     private BaseNode GetStartNode()
@@ -174,46 +176,21 @@ public class GraphExecutor : MonoBehaviour
         return nodeGraph.startNode;
     }
 
-    // 执行协程
-    private IEnumerator ExecuteCoroutine()
+    // ============ 单条链的协程 ============
+
+    private IEnumerator ExecuteChain(BaseNode start, RunState run)
     {
-        if (nodeGraph == null)
-        {
-            Debug.LogWarning("节点图为空");
-            executeCoroutine = null;
-            currentNode = null;
-            yield break;
-        }
-
-        // 解析执行起点：指定起点（事件等）优先，否则按配置（默认 = startNode；入口 = 标识符/GUID）
-        BaseNode startNode = pendingStartOverride != null ? pendingStartOverride : GetStartNode();
-        pendingStartOverride = null;
-        if (startNode == null)
-        {
-            if (executionMode == GraphExecutionMode.Default)
-            {
-                Debug.LogWarning("没有StartNode");
-            }
-            executeCoroutine = null;
-            currentNode = null;
-            yield break;
-        }
-
-        // 重置执行次数
-        currentExecuteCount = 0;
-
         while (true)
         {
             yield return new WaitForSeconds(executeInterval);
 
-            // 执行节点链（游标为执行器私有：多个执行器跑同一张图互不干扰）
-            BaseNode node = startNode;
+            BaseNode node = start;
             int maxLoop = 100;
             int counter = 0;
 
             while (node != null && counter < maxLoop)
             {
-                currentNode = node;
+                run.currentNode = node;
 
                 // 执行上下文：让节点能解析到"当前执行器"的目标物体
                 NodeExecuteContext.Current = this;
@@ -238,24 +215,80 @@ public class GraphExecutor : MonoBehaviour
             }
 
             if (counter >= maxLoop)
+            {
                 Debug.LogWarning("执行达到最大循环次数");
+            }
 
-            currentExecuteCount++;
+            run.executeCount++;
+            run.currentNode = null;
 
             // 检查是否达到执行次数限制
-            if (executeCount > 0 && currentExecuteCount >= executeCount)
+            if (executeCount > 0 && run.executeCount >= executeCount)
             {
-                NodeLog.Info($"节点图 '{gameObject.name}' 已执行 {executeCount} 次，自动停止");
-                executeCoroutine = null;
-                currentNode = null;
+                NodeLog.Info($"图 '{gameObject.name}' 起点 '{start.name}' 已执行 {executeCount} 次，自动停止");
+                runs.Remove(start);
 
-                // 排队触发：当前跑完后自动再跑一轮
-                if (queueTriggered)
+                if (run.queued)
                 {
-                    queueTriggered = false;
-                    Execute();
+                    ExecuteFrom(start);
                 }
                 yield break;
+            }
+        }
+    }
+
+    // ============ 入口事件订阅 ============
+
+    private void SubscribeEntryEvent()
+    {
+        if (entryEventSubscribe == EntryEventSubscribeMode.Off) return;
+
+        if (entryEventSubscribe == EntryEventSubscribeMode.CurrentEntry
+            && (executionMode != GraphExecutionMode.Entry || string.IsNullOrEmpty(entryIdentifier)))
+        {
+            return;
+        }
+
+        entryEventHandler = OnGraphEvent;
+        GraphEvent.Subscribe(entryEventHandler);
+        NodeLog.Info($"GraphExecutor '{gameObject.name}': 已订阅入口事件（{entryEventSubscribe}）");
+    }
+
+    private void OnGraphEvent(GraphEvent evt)
+    {
+        EntryNode entry;
+        if (entryEventSubscribe == EntryEventSubscribeMode.CurrentEntry)
+        {
+            if (evt.eventId != entryIdentifier) return;
+            entry = nodeGraph != null ? nodeGraph.GetEntryNode(entryIdentifier) : null;
+        }
+        else
+        {
+            // AllEntries：按事件标识解析对应入口
+            entry = nodeGraph != null ? nodeGraph.GetEntryNode(evt.eventId) : null;
+        }
+
+        if (entry == null)
+        {
+            NodeLog.Warning($"GraphExecutor '{gameObject.name}': 事件 '{evt.eventId}' 未找到对应入口节点");
+            return;
+        }
+        ExecuteFrom(entry);
+    }
+
+    // ============ 运行状态（编辑器高亮等） ============
+
+    /// <summary>所有运行中链的当前执行节点（编辑器运行高亮用，多链可多个）</summary>
+    public IEnumerable<BaseNode> RunningNodes
+    {
+        get
+        {
+            foreach (RunState run in runs.Values)
+            {
+                if (run.currentNode != null)
+                {
+                    yield return run.currentNode;
+                }
             }
         }
     }
@@ -264,7 +297,8 @@ public class GraphExecutor : MonoBehaviour
     {
         return nodeGraph;
     }
-        [ContextMenu("执行节点图")]
+
+    [ContextMenu("执行节点图")]
     public void ExecuteFromContextMenu()
     {
         if (nodeGraph != null)

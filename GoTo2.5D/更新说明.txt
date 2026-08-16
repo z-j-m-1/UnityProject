@@ -1,3 +1,14 @@
+执行器多链并发 + 入口事件订阅模式（GraphExecutor 重构）
+
+- GraphExecutor 重写为多链并发模型：每次事件/触发启动一条独立协程（互不打断），每条链独立游标（当前节点/执行轮数/排队标记）
+- 触发策略按同一起点生效（不同入口互不影响）：Restart（停旧链重跑）/ IgnoreWhileRunning（忽略）/ Queue（当前链跑完再补跑一轮）
+- 入口事件订阅 bool 升级为 EntryEventSubscribeMode 枚举：Off / CurrentEntry（只订阅自己入口）/ AllEntries（按事件标识解析对应入口并发执行）
+- RunningNode 改为 RunningNodes（多链同时高亮），NodeRunHighlight 同步支持
+- 共享图变量保留：并发链需要合作共用变量，需要独立各建变量
+- 新增 GraphExecutor.README.md：枚举 / 触发策略 / 并发模型 / 配置示例专项说明；xNode/README 执行流程同步更新
+
+事件触发节点（复用入口节点 + GraphEvent 事件总线）
+
 事件触发节点（复用入口节点 + GraphEvent 事件总线）
 
 - 新增 GraphEvent（ParameterizedEvent）：字符串 eventId 事件总线，任意触发源统一调用

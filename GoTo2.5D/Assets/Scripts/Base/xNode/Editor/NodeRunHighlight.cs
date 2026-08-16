@@ -36,10 +36,14 @@ public static class NodeRunHighlight
             {
                 foreach (var kvp in comm.GetAllExecutors())
                 {
-                    BaseNode node = kvp.Value != null ? kvp.Value.RunningNode : null;
-                    if (node != null)
+                    GraphExecutor executor = kvp.Value;
+                    if (executor == null) continue;
+                    foreach (BaseNode node in executor.RunningNodes)
                     {
-                        ActiveNodes.Add(node);
+                        if (node != null)
+                        {
+                            ActiveNodes.Add(node);
+                        }
                     }
                 }
             }
