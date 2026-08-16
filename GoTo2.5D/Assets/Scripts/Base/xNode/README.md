@@ -98,6 +98,8 @@ xNode/
 
 通讯 / 持久变量节点通过 `ParameterizedEvent` 泛型事件与 `GraphCommunicator`、`PersistentVariableManager` 交互（事件类集中在 `CommunicationNodes/`：`ComSetAndGetVariableEvent`、`PersistentVariableEvent`）；`GraphCommunicator` 启动时自动读档。
 
+- **触发器入口标识下拉**：`GraphEventEmitter` / `CollisionEventEmitter` 的 Inspector 会扫描场景中所有执行器使用的节点图及其入口，提供 eventId 下拉（避免手填拼错）；选中后回填入口标识符，未命中显示警告，仍可手动输入。复用：自定义触发器编辑器调用 `GraphEventEntryOptionPicker.CollectEntryOptions()` + `DrawEventIdPicker()`。
+
 ## 扩展模式
 
 新节点 = 继承基类 + `[CreateNodeMenu]` 特性：

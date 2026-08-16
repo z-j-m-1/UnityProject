@@ -1,3 +1,12 @@
+触发器入口标识下拉选择器（GraphEventEmitter / CollisionEventEmitter）
+
+- 新增 GraphEventEntryOptionPicker 静态帮助类：扫描场景中 GraphExecutor 使用的节点图及入口，生成入口标识下拉选项（按图去重，文案带图名·节点名）
+- GraphEventEmitter / CollisionEventEmitter 新增自定义 Inspector：eventId 命中入口 → 下拉选中；未命中 → 警告；始终保留手动输入（eventId 也可给非入口监听器用）
+- 场景切换 / 层级变更 / 资源变更自动刷新列表，另提供「刷新入口列表」按钮兜底
+- 复用方式：其他触发器 CustomEditor 调 GraphEventEntryOptionPicker.CollectEntryOptions() + DrawEventIdPicker() 即可
+
+执行器多链并发 + 入口事件订阅模式（GraphExecutor 重构）
+
 执行器多链并发 + 入口事件订阅模式（GraphExecutor 重构）
 
 - GraphExecutor 重写为多链并发模型：每次事件/触发启动一条独立协程（互不打断），每条链独立游标（当前节点/执行轮数/排队标记）
