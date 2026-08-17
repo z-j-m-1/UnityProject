@@ -109,11 +109,3 @@ InitTestScene*.unity*
 /Assets/Resources/
 /Assets/TextMesh Pro/
 /Assets/Editor Default Resources/
-
-# ===== 用户自定义（2026-08）=====
-# ⚠️ 忽略所有 .meta 文件（按用户要求）
-# 注意：.meta 文件包含 Unity 资产 GUID，不入库意味着换机器/协作者拉取后
-#      Unity 会重新生成 GUID，可能破坏场景/预制体引用。已跟踪的 .meta 不受影响。
-# 如需恢复：删除下面这行并 `git add -f` 重新提交全部 .meta 即可。
-*.meta
-*.meta.meta
