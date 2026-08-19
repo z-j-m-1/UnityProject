@@ -8,7 +8,7 @@ using XNode;
 /// maxIterations 防死循环（条件可由循环体改的变量驱动，也可能永远为 true）。
 /// </summary>
 [CreateNodeMenu("流程/条件循环")]
-[NodeTint("#44CC88")]
+[NodeTint("#050505")]
 public class WhileLoopNode : FlowNode
 {
     [Header("循环条件（可接比较/逻辑/变量节点）")]
