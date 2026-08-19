@@ -19,6 +19,10 @@ namespace UnityEditor.UI
             serializedObject.Update();
             EditorGUILayout.Space();
             EditorGUILayout.PropertyField(serializedObject.FindProperty("m_OnLongPress"), new GUIContent("On Long Press"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_OnPointerDown"), new GUIContent("On Pointer Down"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_OnPointerUp"), new GUIContent("On Pointer Up"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_OnPointerEnter"), new GUIContent("On Pointer Enter"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_OnPointerExit"), new GUIContent("On Pointer Exit"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("m_LongPressDuration"), new GUIContent("Long Press Duration"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("m_RepeatInterval"), new GUIContent("Repeat Interval"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("m_SuppressClickAfterLongPress"), new GUIContent("Suppress Click After Long Press"));

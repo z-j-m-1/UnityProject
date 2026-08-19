@@ -7,11 +7,12 @@ namespace UnityEngine.UI
 {
     /// <summary>
     /// 带长按功能的按钮：继承 UnityEngine.UI.Button（保留 onClick 与选中/按下视觉状态），
-    /// 额外提供 onLongPress 长按事件（Inspector 面板可配置，仿 Button.onClick 格式）。
+    /// 额外提供 onLongPress 长按事件（Inspector 面板可配置，仿 Button.onClick 格式），
+    /// 以及指针按下/抬起/进入/离开事件（onPointerDown/Up/Enter/Exit）。
     /// 用法：把物体上的 Button 组件换成本脚本（继承自 Button，字段兼容）。
     /// </summary>
     [AddComponentMenu("UI/Long Press Button", 31)]
-    public class LongPressButton : Button
+    public class LongPressButton : Button, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
     {
         [Serializable]
         /// <summary>
@@ -35,6 +36,19 @@ namespace UnityEngine.UI
         /// <summary>长按触发后是否抑制本次点击（onClick）</summary>
         [SerializeField]
         private bool m_SuppressClickAfterLongPress = true;
+
+        // 指针事件（uGUI Button 基类未提供，需自建并 override Selectable 的虚方法触发）
+        [SerializeField]
+        private UnityEvent m_OnPointerDown = new UnityEvent();
+
+        [SerializeField]
+        private UnityEvent m_OnPointerUp = new UnityEvent();
+
+        [SerializeField]
+        private UnityEvent m_OnPointerEnter = new UnityEvent();
+
+        [SerializeField]
+        private UnityEvent m_OnPointerExit = new UnityEvent();
 
         private bool m_Pressing;
         private float m_PressStartTime;
@@ -75,9 +89,44 @@ namespace UnityEngine.UI
             set { m_SuppressClickAfterLongPress = value; }
         }
 
+        /// <summary>指针按下事件（按下即触发，不区分左右键）</summary>
+        public UnityEvent onPointerDown
+        {
+            get { return m_OnPointerDown; }
+            set { m_OnPointerDown = value; }
+        }
+
+        /// <summary>指针抬起事件（抬起即触发，不区分左右键）</summary>
+        public UnityEvent onPointerUp
+        {
+            get { return m_OnPointerUp; }
+            set { m_OnPointerUp = value; }
+        }
+
+        /// <summary>指针进入事件（进入矩形区域即触发）</summary>
+        public UnityEvent onPointerEnter
+        {
+            get { return m_OnPointerEnter; }
+            set { m_OnPointerEnter = value; }
+        }
+
+        /// <summary>指针离开事件（离开矩形区域即触发）</summary>
+        public UnityEvent onPointerExit
+        {
+            get { return m_OnPointerExit; }
+            set { m_OnPointerExit = value; }
+        }
+
+        public override void OnPointerEnter(PointerEventData eventData)
+        {
+            base.OnPointerEnter(eventData);
+            m_OnPointerEnter.Invoke();
+        }
+
         public override void OnPointerDown(PointerEventData eventData)
         {
             base.OnPointerDown(eventData);
+            m_OnPointerDown.Invoke();
             m_Pressing = true;
             m_LongPressFired = false;
             m_PressStartTime = Time.unscaledTime;
@@ -88,12 +137,14 @@ namespace UnityEngine.UI
         {
             base.OnPointerUp(eventData);
             m_Pressing = false;
+            m_OnPointerUp.Invoke();
         }
 
         public override void OnPointerExit(PointerEventData eventData)
         {
             base.OnPointerExit(eventData);
             m_Pressing = false;
+            m_OnPointerExit.Invoke();
         }
 
         public override void OnPointerClick(PointerEventData eventData)
