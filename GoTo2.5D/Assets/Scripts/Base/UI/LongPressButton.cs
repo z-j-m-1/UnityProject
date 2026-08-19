@@ -20,6 +20,7 @@ namespace UnityEngine.UI
         public class LongPressEvent : UnityEvent { }
 
         // Event delegates triggered on long press.
+        [FormerlySerializedAs("onLongClick")]
         [SerializeField]
         private LongPressEvent m_OnLongPress = new LongPressEvent();
 
