@@ -191,6 +191,15 @@ public class GraphExecutor : MonoBehaviour
             effectivePolicy = entry.triggerPolicy;
         }
 
+        // 执行间隔/次数：入口可覆盖（overrideExecutePolicy），否则跟随执行器面板
+        float effectiveInterval = executeInterval;
+        int effectiveCount = executeCount;
+        if (start is EntryNode entry2 && entry2.overrideExecutePolicy)
+        {
+            effectiveInterval = entry2.executeInterval;
+            effectiveCount = entry2.executeCount;
+        }
+
         if (runs.TryGetValue(start, out RunState run))
         {
             switch (effectivePolicy)
@@ -220,7 +229,7 @@ public class GraphExecutor : MonoBehaviour
         }
         run.queued = false;
         run.executeCount = 0;
-        run.coroutine = StartCoroutine(ExecuteChain(start, run));
+        run.coroutine = StartCoroutine(ExecuteChain(start, run, effectiveInterval, effectiveCount));
     }
 
     /// <summary>
@@ -247,11 +256,11 @@ public class GraphExecutor : MonoBehaviour
 
     // ============ 单条链的协程 ============
 
-    private IEnumerator ExecuteChain(BaseNode start, RunState run)
+    private IEnumerator ExecuteChain(BaseNode start, RunState run, float interval, int count)
     {
         while (true)
         {
-            yield return new WaitForSeconds(executeInterval);
+            yield return new WaitForSeconds(interval);
 
             // 共享链执行器：走链 + yield 流程（含"当前节点"回调与循环上限保护）
             yield return GraphChainRunner.RunChain(nodeGraph, start, this, n => run.currentNode = n);
@@ -260,9 +269,9 @@ public class GraphExecutor : MonoBehaviour
             run.currentNode = null;
 
             // 检查是否达到执行次数限制
-            if (executeCount > 0 && run.executeCount >= executeCount)
+            if (count > 0 && run.executeCount >= count)
             {
-                NodeLog.Info($"图 '{gameObject.name}' 起点 '{start.name}' 已执行 {executeCount} 次，自动停止");
+                NodeLog.Info($"图 '{gameObject.name}' 起点 '{start.name}' 已执行 {count} 次，自动停止");
                 runs.Remove(start);
 
                 if (run.queued)

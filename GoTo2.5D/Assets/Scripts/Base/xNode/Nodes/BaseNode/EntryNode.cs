@@ -21,6 +21,13 @@ public class EntryNode : BaseNode, ISerializationCallbackReceiver
     [Header("入口触发策略")]
     public GraphExecutionTriggerPolicy triggerPolicy = GraphExecutionTriggerPolicy.Restart;
 
+    [Header("执行策略覆盖（勾选后本入口用下方间隔/次数，否则跟随执行器）")]
+    public bool overrideExecutePolicy = false;
+
+    [Header("入口执行间隔（秒）与执行次数（0 = 无限）")]
+    public float executeInterval = 1.0f;
+    public int executeCount = 0;
+
     [Output(backingValue = ShowBackingValue.Never, connectionType = ConnectionType.Override)]
     public BaseNode next;
 
