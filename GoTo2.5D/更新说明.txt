@@ -7,6 +7,12 @@
 - 菜单：Tools/房间/自动补齐（当前场景 / Build Settings 所有场景）；新建场景自动补齐管理器（EditorSceneManager.newSceneCreated 钩子）
 - 说明：新建场景自动生成 4 个管理器 + RoomIdentity；房间变量资产由菜单补齐或运行期自愈
 
+GraphParamEmitter 作为图初始参数源（GraphExecutor 启动自动注入）
+
+- GraphExecutor.Awake 新增 PrimeInvocationParamsFromEmitter()：读取宿主物体（含子物体）上的 GraphParamEmitter 参数，注入为图调用参数的初始值
+- 语义：图启动即带配置的默认参数；之后带参触发（ExecuteFromEntry/事件/状态机）按替换语义覆盖，不带参触发保留初始值
+- 零额外配置：同一物体放一个 GraphParamEmitter 填好参数即生效
+
 新增节点系统详档：逐节点清单（自动生成）+ 脚本参考/机制速查
 
 - NodeDocGenerator（Editor/，菜单 Tools/节点系统/生成节点参考文档）：反射扫描全部 [CreateNodeMenu] 节点 → 生成《节点清单.md》（菜单/类/基类/摘要/端口/字段默认值/颜色，162 节点全覆盖，按菜单分类分节）

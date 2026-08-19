@@ -64,7 +64,27 @@ public class GraphExecutor : MonoBehaviour
         }
 
         nodeGraph.SetAttachedObject(gameObject);
+        PrimeInvocationParamsFromEmitter();
         GraphCommunicator.Instance.RegisterGraphExecutor(this.gameObject);
+    }
+
+    /// <summary>
+    /// 若图宿主物体（含子物体）上配置了 GraphParamEmitter，把其参数作为图调用参数的初始值注入。
+    /// 之后带参触发（ExecuteFromEntry / 事件 / 状态机）会按替换语义覆盖；不带参触发保留初始值。
+    /// </summary>
+    private void PrimeInvocationParamsFromEmitter()
+    {
+        GraphParamEmitter emitter = GetComponentInChildren<GraphParamEmitter>(true);
+        if (emitter == null || emitter.parameters == null || nodeGraph == null) return;
+
+        GraphParams args = emitter.parameters.Build();
+        if (args == null || args.Count == 0) return;
+
+        foreach (var kv in args.Data)
+        {
+            nodeGraph.SetInvocationParam(kv.Key, kv.Value);
+        }
+        NodeLog.Info($"GraphExecutor '{gameObject.name}': 已从 GraphParamEmitter 注入初始参数 {args.Count} 个");
     }
 
     void Start()

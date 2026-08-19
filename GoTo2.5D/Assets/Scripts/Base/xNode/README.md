@@ -123,6 +123,7 @@ GraphEvent.Trigger(e => { e.eventId = "OnInput"; e.data = p; });
 - **瞬态语义**：参数存于图资产的**统一调用参数存储**（非序列化，不进存档、不进 VariableBundle、不进编辑器下拉）；每次**带参**触发先清空上一批再注入（替换语义）；`GraphExecutor.ClearInvocationParams()` 可主动清空；
 - **触发 API**：`ExecuteFromEntry(entryId, args)`（标识符/GUID）；`ExecuteFrom(start, args)`；`GraphEvent.data` 载荷；`GraphEventEmitter` 仍是无参触发；
 - **面板可视化编辑**：任何外部 MonoBehaviour 声明 `public GraphParamList xxx;` 即可在 Inspector 里增删/改参数（名称 + 类型下拉 + 按类型显示的值字段，`GraphParamEntryDrawer` 绘制）；运行时 `xxx.Build()` 出 `GraphParams`。开箱即用的 `GraphParamEmitter`（挂场景物体）：Inspector 编辑参数包 + eventId，按钮/UnityEvent 拖 `Emit()` 即**带参**触发事件；
+- **初始参数**：把 `GraphParamEmitter` 放在执行器同一物体（或其子物体）上，其参数会在 `GraphExecutor.Awake` 自动注入为图调用参数的**初始值**——图启动时「参数/输入」节点即可读到配置值；之后带参触发（`ExecuteFromEntry`/事件/状态机）按替换语义覆盖，不带参触发保留初始值；
 - **统一**：图内没有独立的"子图参数"与"外部参数"——`参数/输入`、`参数/输出` 是**唯一**的参数节点（`SubGraphInputNode`/`SubGraphOutputNode` 家族），所有调用方（子图节点 / 外部代码 / 事件 / 状态机）都注入同一份图调用参数存储：**同一张图既被子图节点调、也被外部直接调，参数节点完全通用（父图随时可变子图）**；
 - **返回值外部读回**：外部代码执行后 `graph.GetOutputValue<T>(paramName)`（或 `executor.GetOutput<T>(paramName)`）读取图内「参数/输出」节点求值；
 - **状态机带参**：`GraphStateMachine.TransitionTo(stateName, GraphParams)`；
