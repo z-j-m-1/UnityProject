@@ -1,46 +1,65 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// RoomIdentity 编辑器补齐工具（仅编辑模式可用，播放中菜单置灰）：
-/// 为场景自动创建 RoomIdentity 根物体（生成稳定 roomId）并回填房间变量资产引用，
-/// 让场景改名后房间变量加载 / 存档匹配不受影响。
+/// 场景自动补齐工具（仅编辑模式，播放中菜单置灰）：
+/// 1. 通用 provisioner：扫描所有带 [SceneAutoCreate] 特性的组件，为场景创建与脚本同名的根物体并挂载组件（已存在跳过）；
+/// 2. RoomIdentity 特例：确保房间场景有 RoomIdentity（生成稳定 roomId）并回填房间变量资产引用。
+/// 新建场景时自动执行通用 provisioner（EditorSceneManager.newSceneCreated）。
+/// 菜单：Tools/房间/自动补齐（当前场景 / Build Settings 所有场景）
 /// </summary>
-public static class RoomIdentityEditorTools
+public static class SceneProvisionTools
 {
     private const string RoomVariableFolder = "PersistentVariables/Room/";
     private const string RoomVariableAssetFolder = "Assets/Resources/" + RoomVariableFolder;
 
-    [MenuItem("Tools/房间/RoomIdentity 补齐（当前场景）", false, 10)]
+    private static readonly List<Type> cachedAutoCreateTypes = new List<Type>();
+    private static bool registered;
+
+    [InitializeOnLoadMethod]
+    private static void RegisterAutoProvisionHook()
+    {
+        if (registered) return;
+        registered = true;
+        EditorSceneManager.newSceneCreated += (scene, setup, mode) =>
+        {
+            int n = ProvisionScene(scene);
+            if (n > 0) EditorSceneManager.MarkSceneDirty(scene);
+        };
+    }
+
+    // ============ 菜单 ============
+
+    [MenuItem("Tools/房间/自动补齐（当前场景）", false, 10)]
     private static void EnsureCurrentScene()
     {
         Scene scene = SceneManager.GetActiveScene();
         if (!scene.IsValid() || string.IsNullOrEmpty(scene.path))
         {
-            Debug.LogWarning("RoomIdentity 补齐：当前场景未保存（临时场景），请先保存场景再执行");
+            Debug.LogWarning("自动补齐：当前场景未保存（临时场景），请先保存场景再执行");
             return;
         }
 
-        if (EnsureRoomIdentityInScene(scene, out string log))
+        int managers = ProvisionScene(scene);
+        bool changed = EnsureRoomIdentityInScene(scene, out string log);
+        if (changed || managers > 0)
         {
-            EditorSceneManager.SaveScene(scene);
-            Debug.Log(log + $"\n场景 '{scene.name}' 已保存。");
+            EditorSceneManager.MarkSceneDirty(scene);
         }
-        else
-        {
-            Debug.Log(log);
-        }
+        Debug.Log(log + $"\n场景 '{scene.name}'：已补齐管理器 {managers} 个。");
     }
 
-    [MenuItem("Tools/房间/RoomIdentity 补齐（Build Settings 所有场景）", false, 11)]
+    [MenuItem("Tools/房间/自动补齐（Build Settings 所有场景）", false, 11)]
     private static void EnsureAllBuildScenes()
     {
-        // 有效场景：启用、有路径、且文件实际存在（Build Settings 可能残留已删除的默认 SampleScene 等失效条目）
         string[] validPaths = EditorBuildSettings.scenes
             .Where(s => s.enabled && !string.IsNullOrEmpty(s.path) && File.Exists(s.path))
             .Select(s => s.path)
@@ -53,12 +72,12 @@ public static class RoomIdentityEditorTools
 
         if (missingPaths.Length > 0)
         {
-            Debug.LogWarning("RoomIdentity 补齐：以下 Build Settings 场景文件不存在，已跳过（可在 Build Settings 中移除失效条目）：\n" + string.Join("\n", missingPaths));
+            Debug.LogWarning("自动补齐：以下 Build Settings 场景文件不存在，已跳过（可在 Build Settings 中移除失效条目）：\n" + string.Join("\n", missingPaths));
         }
 
         if (validPaths.Length == 0)
         {
-            Debug.LogWarning("RoomIdentity 补齐：Build Settings 中没有可处理的场景");
+            Debug.LogWarning("自动补齐：Build Settings 中没有可处理的场景");
             return;
         }
 
@@ -67,29 +86,78 @@ public static class RoomIdentityEditorTools
             try
             {
                 Scene scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
-                if (EnsureRoomIdentityInScene(scene, out string log))
+                int managers = ProvisionScene(scene);
+                bool changed = EnsureRoomIdentityInScene(scene, out string log);
+                if (changed || managers > 0)
                 {
                     EditorSceneManager.SaveScene(scene);
-                    Debug.Log(log + $"\n场景 '{scene.name}' 已保存。");
                 }
-                else
-                {
-                    Debug.Log(log);
-                }
+                Debug.Log(log + $"\n场景 '{scene.name}'：已补齐管理器 {managers} 个。");
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"RoomIdentity 补齐：处理场景 '{path}' 失败，已跳过（{e.Message}）");
+                Debug.LogError($"自动补齐：处理场景 '{path}' 失败，已跳过（{e.Message}）");
             }
         }
     }
 
-    [MenuItem("Tools/房间/RoomIdentity 补齐（当前场景）", true)]
-    [MenuItem("Tools/房间/RoomIdentity 补齐（Build Settings 所有场景）", true)]
+    [MenuItem("Tools/房间/自动补齐（当前场景）", true)]
+    [MenuItem("Tools/房间/自动补齐（Build Settings 所有场景）", true)]
     private static bool ValidateNotPlaying()
     {
         return !Application.isPlaying;
     }
+
+    // ============ 通用 provisioner（[SceneAutoCreate] 特性） ============
+
+    /// <summary>为场景补齐所有带 [SceneAutoCreate] 的组件（创建与脚本同名的根物体并挂载组件，已存在跳过）。返回新增数量</summary>
+    public static int ProvisionScene(Scene scene)
+    {
+        if (!scene.IsValid()) return 0;
+
+        int created = 0;
+        foreach (Type type in CollectAutoCreateTypes())
+        {
+            if (HasComponentInScene(scene, type)) continue;
+
+            GameObject go = new GameObject(type.Name);
+            SceneManager.MoveGameObjectToScene(go, scene);
+            Undo.RegisterCreatedObjectUndo(go, "自动补齐 " + type.Name);
+            Undo.AddComponent(go, type);
+            created++;
+        }
+        return created;
+    }
+
+    private static List<Type> CollectAutoCreateTypes()
+    {
+        if (cachedAutoCreateTypes.Count == 0)
+        {
+            foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                if (!asm.GetName().Name.StartsWith("Assembly-CSharp")) continue;
+                foreach (Type t in asm.GetTypes())
+                {
+                    if (!typeof(MonoBehaviour).IsAssignableFrom(t)) continue;
+                    if (t.IsDefined(typeof(SceneAutoCreateAttribute), false))
+                    {
+                        cachedAutoCreateTypes.Add(t);
+                    }
+                }
+            }
+        }
+        return cachedAutoCreateTypes;
+    }
+
+    private static bool HasComponentInScene(Scene scene, Type type)
+    {
+        foreach (GameObject root in scene.GetRootGameObjects())
+        {
+            if (root.GetComponentInChildren(type) != null) return true;
+        }
+        return false;
+    }
+    // ============ RoomIdentity + 房间变量资产 ============
 
     /// <summary>补齐单个场景：确保存在 RoomIdentity（生成 roomId）并回填变量资产引用。返回是否有改动</summary>
     private static bool EnsureRoomIdentityInScene(Scene scene, out string log)

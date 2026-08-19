@@ -1,9 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// 游戏全局变量管理器（单例）- 持久化全局变量
 /// 使用手动拖入的变量对象：优先使用当前变量对象，未填入时使用默认变量对象
 /// </summary>
+[SceneAutoCreate]
 public class GameGlobalVariableManager : PersistentVariableManager
 {
     /// <summary>默认全局变量对象（当前变量对象未填入时使用）</summary>

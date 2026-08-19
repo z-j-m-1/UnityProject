@@ -1,3 +1,12 @@
+﻿场景自动补齐：SceneAutoCreate 特性 + SceneProvisionTools
+
+- 新增 SceneAutoCreateAttribute（运行时特性）：标记需随新场景自动补齐的组件；若为全局单例需自带 Awake 去重
+- 打标：SaveSystem / GameGlobalVariableManager / RoomVariableManager / GraphCommunicator（全局单例）+ RoomIdentity（每场景组件）
+- RoomVariableManager 补 Awake 单例去重（防跨场景重复订阅 sceneLoaded）
+- RoomIdentityEditorTools 重构并更名 → SceneProvisionTools（Assets/Scripts/Base/Editor/）：通用 provisioner（扫描特性建同名根物体，已存在跳过）+ RoomIdentity/房间变量资产补齐
+- 菜单：Tools/房间/自动补齐（当前场景 / Build Settings 所有场景）；新建场景自动补齐管理器（EditorSceneManager.newSceneCreated 钩子）
+- 说明：新建场景自动生成 4 个管理器 + RoomIdentity；房间变量资产由菜单补齐或运行期自愈
+
 新增节点系统详档：逐节点清单（自动生成）+ 脚本参考/机制速查
 
 - NodeDocGenerator（Editor/，菜单 Tools/节点系统/生成节点参考文档）：反射扫描全部 [CreateNodeMenu] 节点 → 生成《节点清单.md》（菜单/类/基类/摘要/端口/字段默认值/颜色，162 节点全覆盖，按菜单分类分节）

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 /// 房间变量管理器（单例）- 持久化房间变量
 /// 每次切换场景时，根据场景名称从 Resources/PersistentVariables/Room/ 下加载对应的变量对象
 /// </summary>
+[SceneAutoCreate]
 public class RoomVariableManager : PersistentVariableManager
 {
     /// <summary>房间变量对象所在的 Resources 路径</summary>

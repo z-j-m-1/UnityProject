@@ -1,8 +1,9 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+[SceneAutoCreate]
 public class GraphCommunicator : MonoBehaviour
 {
     [SerializeField] private Dictionary<string, GraphExecutor> graphExecutors = new Dictionary<string, GraphExecutor>();

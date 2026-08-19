@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -10,6 +10,7 @@ using GameFrameX.LitJSON.Runtime;
 /// 两层存档：staging（离开房间自动写的预备文件）→ archive（真正保存 = 提交，读档只读这一层）
 /// 房间文件包含：房间局部变量 + 该房间各图变量（按图GUID）+ 物品状态（后续扩展）
 /// </summary>
+[SceneAutoCreate]
 public class SaveSystem : MonoBehaviour
 {
     private const string SaveRootFolder = "save";
