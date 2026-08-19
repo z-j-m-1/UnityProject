@@ -172,7 +172,8 @@ GraphEvent.Trigger(e => { e.eventId = "OnInput"; e.data = p; });
 - `GraphExecutor` 执行模式：`Default`（默认从 `startNode`）/ `Entry`（按标识符或 GUID 从入口节点开始执行）；
 - 入口模式下未找到对应入口 → `LogError` 且**不执行**（不回退 startNode）；
 - `BaseNodeGraph.GetEntryNode(id)` 运行时 / 编辑器都实时扫描 `nodes`，动态变更也能命中；
-- Inspector 里入口模式下提供下拉选择器；标识符改名后会自动回填修正（编辑模式）。
+- Inspector 里入口模式下提供下拉选择器；标识符改名后会自动回填修正（编辑模式）；
+- **入口独立触发策略**：每个入口可勾选「触发策略覆盖」配置自己的 `Restart` / `IgnoreWhileRunning` / `Queue`，否则跟随执行器的 `triggerPolicy`（各入口是独立起点，链状态互不影响）。
 
 ## 节点图 GUID（存档键）
 

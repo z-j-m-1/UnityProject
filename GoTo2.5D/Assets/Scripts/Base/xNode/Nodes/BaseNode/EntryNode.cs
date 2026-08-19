@@ -15,6 +15,12 @@ public class EntryNode : BaseNode, ISerializationCallbackReceiver
     [Header("入口 GUID（自动生成，改名兜底用）")]
     public string guid;
 
+    [Header("触发策略覆盖（勾选后本入口用下方策略，否则跟随执行器）")]
+    public bool overrideTriggerPolicy = false;
+
+    [Header("入口触发策略")]
+    public GraphExecutionTriggerPolicy triggerPolicy = GraphExecutionTriggerPolicy.Restart;
+
     [Output(backingValue = ShowBackingValue.Never, connectionType = ConnectionType.Override)]
     public BaseNode next;
 

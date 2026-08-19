@@ -13,6 +13,11 @@ GraphParamEmitter 作为图初始参数源（GraphExecutor 启动自动注入）
 - 语义：图启动即带配置的默认参数；之后带参触发（ExecuteFromEntry/事件/状态机）按替换语义覆盖，不带参触发保留初始值
 - 零额外配置：同一物体放一个 GraphParamEmitter 填好参数即生效
 
+LongPressButton 长按按钮 + 入口节点独立触发策略
+
+- LongPressButton（Assets/Scripts/Base/UI/，namespace UnityEngine.UI，继承 Button）：onLongPress 面板事件 + longPressDuration（默认 0.5s）+ repeatInterval（0=只触发一次）+ suppressClickAfterLongPress（长按后不触发 onClick）；Time.unscaledTime 计时；把物体上 Button 组件换成本脚本即可
+- 入口节点独立触发策略：EntryNode 新增「触发策略覆盖」overrideTriggerPolicy + triggerPolicy（Restart/IgnoreWhileRunning/Queue）；GraphExecutor.ExecuteFrom 解析有效策略（入口覆盖 > 执行器）；各入口是独立起点，链状态互不影响
+
 新增节点系统详档：逐节点清单（自动生成）+ 脚本参考/机制速查
 
 - NodeDocGenerator（Editor/，菜单 Tools/节点系统/生成节点参考文档）：反射扫描全部 [CreateNodeMenu] 节点 → 生成《节点清单.md》（菜单/类/基类/摘要/端口/字段默认值/颜色，162 节点全覆盖，按菜单分类分节）

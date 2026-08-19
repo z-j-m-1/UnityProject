@@ -185,9 +185,15 @@ public class GraphExecutor : MonoBehaviour
             }
         }
 
+        GraphExecutionTriggerPolicy effectivePolicy = triggerPolicy;
+        if (start is EntryNode entry && entry.overrideTriggerPolicy)
+        {
+            effectivePolicy = entry.triggerPolicy;
+        }
+
         if (runs.TryGetValue(start, out RunState run))
         {
-            switch (triggerPolicy)
+            switch (effectivePolicy)
             {
                 case GraphExecutionTriggerPolicy.IgnoreWhileRunning:
                     NodeLog.Info($"GraphExecutor '{gameObject.name}': 起点 '{start.name}' 正在执行中，忽略本次触发");

@@ -29,3 +29,12 @@
 - `source`：`Self`（图附加物体的自身/子物体）或 `Canvas`（UICollector 任意 UI）；
 - `uiType`：`Text` / `TextMeshPro`（`Image` 只收集、暂不支持读写）；
 - Get 节点带 `stripRichText` 选项（剔除 `<...>` 富文本标签）。
+
+## LongPressButton（长按按钮）
+
+继承 `UnityEngine.UI.Button`（保留 `onClick` 与视觉状态），额外提供长按事件。菜单 `UI/Long Press Button`。
+
+- `onLongPress`（UnityEvent）：按住超过 `longPressDuration`（默认 0.5s）触发，面板可拖（可直接接 `GraphEventEmitter.Emit()`）；
+- `repeatInterval`：`0` = 只触发一次；`>0` = 按住期间按间隔重复触发；
+- `suppressClickAfterLongPress`（默认开）：长按触发后本次松手不再触发 `onClick`（短按仍是普通点击）；
+- 用 `Time.unscaledTime` 计时（暂停时也生效）；用法：把物体上的 `Button` 组件换成本脚本即可。
