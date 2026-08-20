@@ -1,0 +1,35 @@
+{
+    "version": 1,
+    "name": "New Actions",
+    "maps": [
+        {
+            "name": "Player",
+            "id": "3c3061a2-91f2-40bd-a076-474c643d27f2",
+            "actions": [
+                {
+                    "name": "右转",
+                    "type": "Button",
+                    "id": "b7566887-ac0c-477f-8af2-18f778dcb66a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "f36fbdd8-4181-4c47-bfad-0e672803ec8b",
+                    "path": "<Keyboard>/a",
+                    "interactions": "Press(pressPoint=1,behavior=2)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "右转",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
