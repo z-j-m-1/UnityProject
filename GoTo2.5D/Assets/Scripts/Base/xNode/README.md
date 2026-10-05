@@ -38,6 +38,7 @@ xNode/
     ├── SpawnNodes/        # 生成/销毁（SpawnObjectNode / DestroyObjectNode）
     ├── PhysicsNodes/      # 物理查询（3D/2D 射线检测、球形/圆形检测）
     ├── RigidbodyNodes/    # 刚体控制（施加力/设置速度/角速度，3D+2D，继承 ComponentActionNode）
+    ├── DialogueNodes/     # 对话UI（边框/背景/人物图片 + 设置对话文本，继承 ComponentActionNode）
     ├── SubGraphNodes/     # 子图执行（SubGraphNode）+ 统一参数节点（参数/输入、参数/输出）
     ├── CommunicationNodes/# 通讯（GraphCommunicator + 事件 + 执行图 + 存档点）
     ├── UICommunicatorNodes# UI 通讯（ComUIGetTextNode / ComUISetTextNode）
@@ -75,6 +76,7 @@ xNode/
 | 动画参数 | `SetAnimatorTriggerNode` / `SetAnimatorBoolNode` / `SetAnimatorFloatNode` / `SetAnimatorIntNode` / `CrossFadeAnimatorNode` | 设置 Animator 参数（Trigger/Bool/Float/Int）、交叉淡入 |
 | 插值 | `MoveToNode` / `FadeCanvasGroupNode` | 位置插值移动、CanvasGroup 透明度渐隐渐显（逐帧，结束精确归位） |
 | 相机 | `SetVcamPriorityNode` / `SetVcamFollowNode` / `SetVcamLookAtNode` / `CinemachineImpulseNode` / `SetVcamNoiseNode` / `SetDollySpeedNode` / `TargetGroupAddMemberNode` | Cinemachine：优先级切换相机、设置跟随/注视目标、震屏、噪声振幅、轨道小车速度、目标组添加成员（依赖 Cinemachine 2.x 包） |
+| 对话UI | `SetDialogueBorderSpriteNode` / `SetDialogueBackgroundSpriteNode` / `SetDialogueCharacterSpriteNode` / `SetDialogueTextNode` | 改对话框的边框 / 背景 / 人物图片；写对话文本并可选择是否随即通知 TMPWriter 启动打字机（`startTypewriter`，默认开） |
 | 分支/逻辑/值/变换 | `BranchNode`、`AndLogicNode`、`BoolValueNode` 等 | 流程控制、常量、物体运动 |
 | 数学运算 | `MathOpIntNode` / `MathOpFloatNode` / `CompareIntNode` / `CompareFloatNode` / `RandomIntNode` / `RandomFloatNode` | 四则运算、比较、随机整数/浮点 |
 | 字符串 | `StringOpNode` / `StringCompareNode` / `StringLengthNode` / `StringSubstringNode` / `StringReplaceNode` | 拼接/大小写/去空格、比较、长度、截取、替换 |

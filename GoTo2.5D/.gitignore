@@ -105,7 +105,21 @@ InitTestScene*.unity*
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
 
+# ============================================================================
+# Assets 下只提交 Scripts 里的脚本，其余一律不入库
+# ----------------------------------------------------------------------------
+# 排除范围：Plugins / Font / 场景(.unity) / 美术（模型·贴图·材质）/
+#           SceneAssets / Project / Resources / TextMesh Pro /
+#           Editor Default Resources …
+# 这些都只保留在本地磁盘，克隆后由 Unity 自行导入或另行提供。
+# 注：下面两条规则已覆盖先前 /Assets/Resources/、/Assets/TextMesh Pro/、
+#     /Assets/Editor Default Resources/、/Assets/Font/* SDF.asset 等历史规则。
+# ============================================================================
+/Assets/*
+!/Assets/Scripts/
+
+# 明确点名排除（只保留在本地，不入库）：
+#   Font/    = TMP 字体与字体图集（单个图集 128MB，超 GitHub 100MB 硬限制）
+#   Plugins/ = DOTween / Koreographer / TMPEffects 等第三方插件
+/Assets/Font/
 /Assets/Plugins/
-/Assets/Resources/
-/Assets/TextMesh Pro/
-/Assets/Editor Default Resources/

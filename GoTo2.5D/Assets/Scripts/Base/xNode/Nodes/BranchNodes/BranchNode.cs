@@ -13,11 +13,20 @@ public class BranchNode : FlowNode
     public BaseNode falseTo;
     public override BaseNode GetConnectedNode()
     {
-        NodePort tureTo = GetOutputPort(nameof(next));
-        NodePort falseTo = GetOutputPort(nameof(falseTo));
-        return ((GetInputValue<bool>("condition", condition) ? tureTo : falseTo).GetConnection(0).node) as BaseNode;
-    }
+        NodePort truePort = GetOutputPort(nameof(next));
+        NodePort falsePort = GetOutputPort(nameof(falseTo));
 
-        
-    
+        // 按条件选中分支端口
+        bool value = GetInputValue<bool>(nameof(condition), condition);
+        NodePort selected = value ? truePort : falsePort;
+
+        // 端口缺失 / 该分支未连线：安全结束当前链（不再抛 NullReferenceException）
+        if (selected == null || !selected.IsConnected)
+        {
+            return null;
+        }
+
+        NodePort connection = selected.GetConnection(0);
+        return connection != null ? connection.node as BaseNode : null;
+    }
 }
