@@ -15,7 +15,6 @@ xNode/
 ├── BaseNodeGraph.cs       # 图资产（变量包 + 图GUID + TryGetVariable/TrySetVariable）
 ├── GraphExecutor.cs       # 挂在场景物体上执行图
 ├── GraphStateMachine.cs   # 挂在场景物体上的图状态机容器（状态=子图）
-├── SceneObjectFinder.cs   # 全场景物体按名字缓存查找（GetGameObjectNode All 来源用）
 ├── GraphParams.cs         # 外部参数包（C# 触发图时携带的命名参数）
 ├── GraphParamList.cs      # 可序列化参数列表（外部脚本 Inspector 可视化编辑）+ GraphParamEmitter.cs
 └── Nodes/
@@ -28,7 +27,7 @@ xNode/
     ├── OrderNodes/        # 流程（Print / Wait / 等待条件）
     ├── StringNodes/       # 字符串运算（运算 / 比较 / 长度）
     ├── ValueNodes/        # 取值：Constants/（常量 Bool/Int/Float/String/Vector2/Vector3）+ Conversion/（类型转换 + 浮点合成向量 + 向量互转）
-    ├── ObjectNodes/       # 物体引用（获取物体：Self/All 来源）
+    ├── ObjectNodes/       # 获取物体节点族（自身 / 名称 / 引用 / 全场景 / 父物体 / 子物体 / 根物体，均 DataNode）
     ├── StateMachineNodes/ # 状态机（切换状态节点）
     ├── TransformNodes/    # 物体变换（Move / Rote / Scale / SetPosition / SetRotation，继承 ComponentActionNode）
     ├── AudioNodes/        # 音频（Play / Stop，继承 ComponentActionNode）
@@ -38,7 +37,7 @@ xNode/
     ├── SpawnNodes/        # 生成/销毁（SpawnObjectNode / DestroyObjectNode）
     ├── PhysicsNodes/      # 物理查询（3D/2D 射线检测、球形/圆形检测）
     ├── RigidbodyNodes/    # 刚体控制（施加力/设置速度/角速度，3D+2D，继承 ComponentActionNode）
-    ├── DialogueNodes/     # 对话UI（边框/背景/人物图片 + 设置对话文本，继承 ComponentActionNode）
+    ├── DialogueNodes/     # 对话UI：设置（文本/边框/背景/人物图片/对话音效）+ 获取（边框/背景/人物图片/对话内容）
     ├── SubGraphNodes/     # 子图执行（SubGraphNode）+ 统一参数节点（参数/输入、参数/输出）
     ├── CommunicationNodes/# 通讯（GraphCommunicator + 事件 + 执行图 + 存档点）
     ├── UICommunicatorNodes# UI 通讯（ComUIGetTextNode / ComUISetTextNode）
@@ -68,7 +67,8 @@ xNode/
 | UI 通讯 | `ComUIGetTextNode` / `ComUISetTextNode` | 读/写 Text / TextMeshPro（source：自身或 Canvas） |
 | 执行图 | `ComExecutionGraphNode` | 触发另一张图执行 |
 | 存档点 | `ComSaveGameNode` | 把预备存档提交为正式存档 |
-| 变换 | `MoveObjectNode` / `RoteObjectNode` / `ScaleObjectNode` / `SetPositionNode` / `SetRotationNode` | 移动 / 旋转 / 缩放 / 设置位置 / 设置旋转（目标：图绑定物体 / 子物体名 / 直接引用 / GameObject 输入端口） |
+| 获取物体 | `GetSelfObjectNode` / `GetNamedObjectNode` / `GetReferencedObjectNode` / `GetSceneObjectNode` / `GetParentObjectNode` / `GetChildObjectNode` / `GetRootObjectNode` | 目标来源拆成独立数据节点：自身（当前执行器物体）/ 名称（自身及直接子物体）/ 引用（面板拖入）/ 全场景（所有已加载场景按名查找，含未激活）/ 父物体 / 子物体（任意物体的子物体，按索引或名称）/ 根物体，接到组件节点的「目标物体」端口 |
+| 变换 | `MoveObjectNode` / `RoteObjectNode` / `ScaleObjectNode` / `SetPositionNode` / `SetRotationNode` | 移动 / 旋转 / 缩放 / 设置位置 / 设置旋转（目标由「目标物体」输入端口指定） |
 | 刚体 | `RigidbodyAddForceNode` / `RigidbodySetVelocityNode` / `RigidbodySetAngularVelocityNode` + 2D 版 | 施加力（ForceMode）/ 设置速度 / 设置角速度（3D 与 2D 各一套） |
 | 生成/销毁 | `SpawnObjectNode` / `DestroyObjectNode` | 实例化预制体（位置/旋转可接线、可选父物体、输出生成物体）、销毁物体（可延迟） |
 | 物理 | `PhysicsRaycastNode` / `PhysicsRaycast2DNode` / `PhysicsOverlapSphereNode` / `PhysicsOverlapCircleNode` | 3D/2D 射线检测、球形/圆形范围检测；输出是否命中、命中点/法线/距离、命中物体、命中数量（索引取物体，帧缓存同帧共享） |
@@ -76,10 +76,10 @@ xNode/
 | 动画参数 | `SetAnimatorTriggerNode` / `SetAnimatorBoolNode` / `SetAnimatorFloatNode` / `SetAnimatorIntNode` / `CrossFadeAnimatorNode` | 设置 Animator 参数（Trigger/Bool/Float/Int）、交叉淡入 |
 | 插值 | `MoveToNode` / `FadeCanvasGroupNode` | 位置插值移动、CanvasGroup 透明度渐隐渐显（逐帧，结束精确归位） |
 | 相机 | `SetVcamPriorityNode` / `SetVcamFollowNode` / `SetVcamLookAtNode` / `CinemachineImpulseNode` / `SetVcamNoiseNode` / `SetDollySpeedNode` / `TargetGroupAddMemberNode` | Cinemachine：优先级切换相机、设置跟随/注视目标、震屏、噪声振幅、轨道小车速度、目标组添加成员（依赖 Cinemachine 2.x 包） |
-| 对话UI | `SetDialogueBorderSpriteNode` / `SetDialogueBackgroundSpriteNode` / `SetDialogueCharacterSpriteNode` / `SetDialogueTextNode` | 改对话框的边框 / 背景 / 人物图片；写对话文本并可选择是否随即通知 TMPWriter 启动打字机（`startTypewriter`，默认开） |
+| 对话UI | 设置：`SetDialogueTextNode` / `SetDialogueBorderSpriteNode` / `SetDialogueBackgroundSpriteNode` / `SetDialogueCharacterSpriteNode` / `SetDialogueAudioClipNode`；获取：`GetDialogueTextNode` / `GetDialogueBorderSpriteNode` / `GetDialogueBackgroundSpriteNode` / `GetDialogueCharacterSpriteNode` | 设置对话文本（`startTypewriter` 默认开，决定写完是否随即通知 TMPWriter 启动打字机）、边框/背景/人物图片、打字机对话音效；读取对话内容与三张图片 |
 | 分支/逻辑/值/变换 | `BranchNode`、`AndLogicNode`、`BoolValueNode` 等 | 流程控制、常量、物体运动 |
 | 数学运算 | `MathOpIntNode` / `MathOpFloatNode` / `CompareIntNode` / `CompareFloatNode` / `RandomIntNode` / `RandomFloatNode` | 四则运算、比较、随机整数/浮点 |
-| 字符串 | `StringOpNode` / `StringCompareNode` / `StringLengthNode` / `StringSubstringNode` / `StringReplaceNode` | 拼接/大小写/去空格、比较、长度、截取、替换 |
+| 字符串 | `StringConcatNode` / `StringOpNode` / `StringCompareNode` / `StringLengthNode` / `StringSubstringNode` / `StringReplaceNode` | 多段拼接（可选分隔符、可跳空段）、大小写/去首尾空格、比较（等于/包含/开头/结尾）、长度、截取、替换 |
 | 转换 | `IntToFloatNode` / `FloatToIntNode` / `IntToStringNode` / `FloatToStringNode` / `StringToIntNode` / `StringToFloatNode` | int↔float↔string 互转 |
 | 流程 | `PrintNode` / `WaitNode` / `WaitUntilNode` | 日志输出 / 等待指定秒数 / 等待条件成立（可接比较·逻辑·变量节点，支持超时） |
 | 流程控制 | `ForLoopNode` / `WhileLoopNode` / `ForEachLoopNode`（5 类型） / `ParallelNode` / `JumpToEntryNode` / `TimerNode` | 计数循环 / 条件循环 / 遍历列表 / 并行分支（最多 4 条）/ 跳转到入口（执行后当前链结束）/ 计时器（间隔 tick，0=无限） |
@@ -134,21 +134,35 @@ GraphEvent.Trigger(e => { e.eventId = "OnInput"; e.data = p; });
 
 统一"目标解析 + 组件获取"的泛型基类 `ComponentActionNode<T>`：
 
-- 目标三模式：`Attached`（图绑定物体）/ `ByName`（子物体名查找）/ `Direct`（直接拖引用）；
-- 基类带 **GameObject 输入端口**（`targetGameObject`，非序列化，不显示值框）：**已连线优先取输入值**，取到 null 或未连线才回退上述目标模式 → 旧图（只配目标模式）零影响；新图可接「取值/获取物体」节点动态指定目标；
+- **目标只有一个来源**：基类的 **GameObject 输入端口**（`targetGameObject`，非序列化，不显示值框）。请把「取值/获取物体(自身|名称|引用)」接上去显式指定目标；**未接线 → 警告并跳过该节点**；
 - 自动 `GetComponent<T>`，找不到给出警告；
 - 子类只需实现 `Apply(T component)` 做具体动作；
-- 加新操作（缩放 / 音频 / 动画等）= 继承基类 + 一个 `Apply`；
-- "图绑定物体" = **当前执行器对象**（多执行器跑同一张图各自解析自己的目标，不共享）。
+- 加新操作（缩放 / 音频 / 动画 / 对话音效等）= 继承基类 + 一个 `Apply`；
+- 无内置的"图绑定物体 / 按名字 / 拖引用"回退模式——已拆成下面三个获取物体节点。
 
-## 物体引用（GetGameObjectNode + SceneObjectFinder）
+## 物体引用（获取物体节点族）
 
-菜单 **取值/获取物体**，输出 `GameObject` 数据端口，可接线到任意 `ComponentActionNode` 的 GameObject 输入端口（或经子图 GameObject 参数传入子图）：
+目标来源已拆成三个独立的数据节点（`GetObjectNodeBase : DataNode` 的子类），输出 `GameObject` 端口，接到任意 `ComponentActionNode` 的「目标物体」输入端口（或经子图 GameObject 参数传入子图）：
 
-- **来源**：`Self`（图绑定物体自身 / 子物体，`transform.Find` 层级查找）/ `All`（全场景按名字查找，含 inactive）；
-- **对象名称**为 `string` 输入端口（可接线，未接线用字段值）；
-- 输出字段非序列化（运行时求值，规避场景引用写进图资产 / 跨场景重载失效）；
-- `All` 用 `SceneObjectFinder` 缓存字典：惰性构建「名字 → 物体」索引，查找 O(1)；场景加载/卸载、运行时启动、编辑器 Hierarchy 变更自动失效；未命中重扫一次兜底；重名只取第一个并警告一次。
+| 菜单 | 类 | 语义 |
+|---|---|---|
+| **取值/获取物体(自身)** | `GetSelfObjectNode` | 输出图绑定物体＝**当前执行器所在物体**（`NodeExecuteContext.Current`；非执行期回退图资产 `attachedObject`） |
+| **取值/获取物体(名称)** | `GetNamedObjectNode` | 在图绑定物体**自身及直接子物体**里按名查找；`objectName` 为 `string` 输入端口（可接线，未接线用字段值） |
+| **取值/获取物体(引用)** | `GetReferencedObjectNode` | 直接输出面板拖入的 `reference` |
+| **取值/获取物体(全场景)** | `GetSceneObjectNode` | 在**所有已加载场景**（含 DontDestroyOnLoad）里按名查找，含未激活；`objectName` 为 `string` 输入端口（可接线，未接线用字段值） |
+| **取值/获取物体(父物体)** | `GetParentObjectNode` | 输出「子物体」端口的 `Transform.parent`；子物体为空或它是根物体时警告并返回 null |
+| **取值/获取物体(子物体)** | `GetChildObjectNode` | 取**任意物体**的子物体：`mode` = `ByIndex`（索引，越界警告）/ `ByName`（名称，`recursive` 可递归整棵子树）；含未激活 |
+| **取值/获取物体(根物体)** | `GetRootObjectNode` | 输出「子物体」端口所在层级的**最顶层物体**（`Transform.root`）——等于一次调用替代串联多个「父物体」 |
+
+命名对应关系：**往上走**的输入端口叫「子物体」（父物体 / 根物体），**往下走**的叫「父物体」（子物体）。
+
+- 三者共用基类 `GetObjectNodeBase`（统一 `[Output] GameObject output` 非序列化端口 + 运行时求值 + `AttachedObject` 取值），基类**注册一次** `VisiblePortsNodeEditor` 即可覆盖全部子类；
+- 输出口非序列化（运行时求值，规避场景引用写进图资产 / 跨场景重载失效）；
+- ⚠️ 「名称」只查一层子物体（`transform.Find`），不递归；「名称等于图绑定物体自身」也算命中；
+- ⚠️ `GetReferencedObjectNode.reference` 是**序列化**字段，会写进图资产——适合常驻物体；跨场景会失效的场景对象请改接「名称」，或用「参数/输入/物体」+ `GraphParamEmitter` 注入。
+
+> 原「取值/获取物体」（`GetGameObjectNode`，`source` = `Self`/`All`）与其配套缓存类 `SceneObjectFinder.cs` 均已删除，能力由上面四个节点覆盖。
+> ⚠️ 「全场景」节点是**现场扫描、不建缓存**（O(场景物体数)，每次求值都重扫）；把它接到"每帧驱动"的组件节点上会重复扫描，那种场景请改用「名称」，或把结果写进图变量后复用。
 
 ## 图状态机（GraphStateMachine）
 

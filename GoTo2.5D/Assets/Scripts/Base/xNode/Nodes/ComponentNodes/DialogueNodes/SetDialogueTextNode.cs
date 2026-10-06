@@ -4,7 +4,7 @@ using XNode;
 /// <summary>
 /// 对话UI-设置对话文本：把文本写进 DialogueBoxController，并按 startTypewriter 决定
 /// 是否紧接着通知 TMPWriter 启动打字机（调用 DialogueBoxController.StartDialogue）。
-/// 目标解析沿用 ComponentActionNode（GameObject 输入端口 &gt; Attached/ByName/Direct）。
+/// 目标物体由「目标物体」输入端口提供（接 取值/获取物体(自身|名称|引用)）。
 /// </summary>
 [CreateNodeMenu("对话UI/设置对话文本")]
 [NodeTint("#FF99CC")]

@@ -42,17 +42,29 @@ public class MusicManager : MonoBehaviour
     // 自动创建音源
     private void CreateAudioSources()
     {
-        // 创建音乐音源
-        musicSource = gameObject.AddComponent<AudioSource>();
-        musicSource.loop = true;
-        musicSource.volume = 1;
-        musicSource.playOnAwake = false;
+        //确认是否已经存在音源组件
+        if (musicSource == null)
+        {
+            //创建子物体然后添加音源组件
+            GameObject musicSourceObj = new GameObject("MusicSource");
+            musicSourceObj.transform.SetParent(transform);
+            musicSource = musicSourceObj.AddComponent<AudioSource>();
+        }
+        //确认是否已经存在音源组件
+        if (sfxSource == null)
+        {
+            //创建子物体然后添加音源组件
+            GameObject sfxSourceObj = new GameObject("SFXSource");
+            sfxSourceObj.transform.SetParent(transform);
+            sfxSource = sfxSourceObj.AddComponent<AudioSource>();
 
-        // 创建音效音源
-        sfxSource = gameObject.AddComponent<AudioSource>();
-        sfxSource.loop = false;
-        sfxSource.volume = 1;
-        sfxSource.playOnAwake = false;
+            sfxSource.loop = false;
+            sfxSource.volume = 1;
+            sfxSource.playOnAwake = false;
+        }
+
+
+
     }
 
     // 播放背景音乐

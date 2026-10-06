@@ -63,8 +63,15 @@ public abstract class VisiblePortsNodeEditor : NodeEditor
 [CustomNodeEditor(typeof(ComponentActionNodeBase))]
 public class ComponentActionNodeBodyEditor : VisiblePortsNodeEditor { }
 
-[CustomNodeEditor(typeof(GetGameObjectNode))]
-public class GetGameObjectNodeBodyEditor : VisiblePortsNodeEditor { }
+// 获取物体节点族（自身 / 名称 / 引用）：三者共用基类的非序列化 output 端口，
+// 注册基类一次即可覆盖全部子类（xNode 沿继承链取最近的 [CustomNodeEditor]）
+[CustomNodeEditor(typeof(GetObjectNodeBase))]
+public class GetObjectNodeBodyEditor : VisiblePortsNodeEditor { }
+
+// 对话UI 取值节点族（边框 / 背景 / 人物图片、对话内容）：共用基类的非序列化
+// targetGameObject + 输出端口，同样注册基类一次
+[CustomNodeEditor(typeof(GetDialogueNodeBase))]
+public class GetDialogueNodeBodyEditor : VisiblePortsNodeEditor { }
 
 [CustomNodeEditor(typeof(SpawnObjectNode))]
 public class SpawnObjectNodeBodyEditor : VisiblePortsNodeEditor { }

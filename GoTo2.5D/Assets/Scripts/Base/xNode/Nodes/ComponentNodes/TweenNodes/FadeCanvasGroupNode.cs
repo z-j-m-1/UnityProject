@@ -4,7 +4,7 @@ using XNode;
 
 /// <summary>
 /// 插值-透明度：CanvasGroup.alpha 在 duration 秒内渐变到 targetAlpha（0=隐 1=显，逐帧插值，结束精确归位）。
-/// 目标解析复用 ComponentActionNodeBase（GameObject 输入端口 &gt; Attached/ByName/Direct）。
+/// 目标物体由「目标物体」输入端口提供（接 取值/获取物体(自身|名称|引用)）。
 /// </summary>
 [CreateNodeMenu("插值/透明度")]
 [NodeTint("#44AAFF")]
@@ -25,7 +25,7 @@ public class FadeCanvasGroupNode : ComponentActionNodeBase
         GameObject obj = ResolveTargetObject();
         if (obj == null)
         {
-            NodeLog.Warning($"{GetType().Name}: 未解析到目标物体（{target}）");
+            NodeLog.Warning($"{GetType().Name}: 未接入目标物体（请把「取值/获取物体(自身|名称|引用)」接到目标端口）");
             return;
         }
         group = obj.GetComponent<CanvasGroup>();

@@ -17,7 +17,7 @@ public class GetImageFillNode : ComponentActionNodeBase
         GameObject obj = ResolveTargetObject();
         if (obj == null)
         {
-            NodeLog.Warning($"{GetType().Name}: 未解析到目标物体（{target}）");
+            NodeLog.Warning($"{GetType().Name}: 未接入目标物体（请把「取值/获取物体(自身|名称|引用)」接到目标端口）");
             return 0f;
         }
 

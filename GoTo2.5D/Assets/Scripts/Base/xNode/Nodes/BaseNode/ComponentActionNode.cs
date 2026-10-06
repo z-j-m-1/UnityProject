@@ -1,64 +1,25 @@
 using UnityEngine;
 using XNode;
 
-/// <summary>组件目标解析方式</summary>
-public enum ComponentTarget
-{
-    /// <summary>节点图绑定的物体（默认）</summary>
-    Attached,
-    /// <summary>图绑定物体的子物体（按名称查找）</summary>
-    ByName,
-    /// <summary>直接拖引用</summary>
-    Direct
-}
-
 /// <summary>
 /// 组件动作节点的非泛型基类（供自定义编辑器按类型定位）：
-/// 统一目标解析（GameObject 输入端口 &gt; Attached/ByName/Direct），子类只关心拿到目标后做什么。
-/// 例：ComponentActionNode&lt;T&gt; 的动作节点、MoveTo/Fade 等插值节点都复用这套解析。
+/// 只提供统一的「目标物体输入端口」——目标由节点图上的获取物体节点显式指定：
+///   取值/获取物体(自身) → GetSelfObjectNode
+///   取值/获取物体(名称) → GetNamedObjectNode
+///   取值/获取物体(引用) → GetReferencedObjectNode
+/// 子类只关心拿到目标后做什么。
 /// </summary>
 public abstract class ComponentActionNodeBase : FlowNode
 {
-    [Header("目标")]
-    public ComponentTarget target = ComponentTarget.Attached;
-
-    [Header("目标名称（ByName 时用）")]
-    public string targetName;
-
-    [Header("目标引用（Direct 时用）")]
-    public GameObject targetObject;
-
-    [Header("目标（输入端口，未接线时用上方目标模式）")]
+    [Header("目标物体（接线：取值/获取物体(自身|名称|引用)）")]
     [Input(ShowBackingValue.Never)]
     [System.NonSerialized]
     public GameObject targetGameObject;
 
-    /// <summary>解析目标物体：已连线的 GameObject 输入端口优先，其次目标模式（Attached/ByName/Direct）</summary>
+    /// <summary>解析目标物体：只取已连线的 GameObject 输入端口（未接线返回 null）</summary>
     protected GameObject ResolveTargetObject()
     {
-        GameObject obj = GetInputValue<GameObject>(nameof(targetGameObject), null);
-        if (obj != null) return obj;
-        return ResolveTarget();
-    }
-
-    private GameObject ResolveTarget()
-    {
-        BaseNodeGraph nodeGraph = graph as BaseNodeGraph;
-        switch (target)
-        {
-            case ComponentTarget.Attached:
-                return nodeGraph != null ? nodeGraph.GetAttachedObject() : null;
-
-            case ComponentTarget.ByName:
-                GameObject attached = nodeGraph != null ? nodeGraph.GetAttachedObject() : null;
-                if (attached == null || string.IsNullOrEmpty(targetName)) return null;
-                Transform child = attached.transform.Find(targetName);
-                return child != null ? child.gameObject : null;
-
-            case ComponentTarget.Direct:
-                return targetObject;
-        }
-        return null;
+        return GetInputValue<GameObject>(nameof(targetGameObject), null);
     }
 }
 
@@ -74,7 +35,7 @@ public abstract class ComponentActionNode<T> : ComponentActionNodeBase where T :
         GameObject obj = ResolveTargetObject();
         if (obj == null)
         {
-            NodeLog.Warning($"{GetType().Name}: 未解析到目标物体（{target}）");
+            NodeLog.Warning($"{GetType().Name}: 未接入目标物体（请把「取值/获取物体(自身|名称|引用)」接到目标端口）");
             return;
         }
 
