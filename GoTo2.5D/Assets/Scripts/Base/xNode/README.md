@@ -31,6 +31,7 @@ xNode/
     ├── StateMachineNodes/ # 状态机（切换状态节点）
     ├── TransformNodes/    # 物体变换（Move / Rote / Scale / SetPosition / SetRotation，继承 ComponentActionNode）
     ├── AudioNodes/        # 音频（Play / Stop，继承 ComponentActionNode）
+    ├── ServiceNodes/      # 全局服务（走单例，不需要目标物体；如 MusicManager 播音乐/音效/调音量）
     ├── AnimationNodes/    # 动画（Play + 参数：触发/布尔/浮点/整数 + 交叉淡入，继承 ComponentActionNode）
     ├── TweenNodes/        # 插值（移动到 / 透明度渐隐渐显）
     ├── CinemachineNodes/  # Cinemachine 相机（优先级切换/跟随/注视/震屏/噪声/轨道/目标组）
@@ -72,16 +73,17 @@ xNode/
 | 刚体 | `RigidbodyAddForceNode` / `RigidbodySetVelocityNode` / `RigidbodySetAngularVelocityNode` + 2D 版 | 施加力（ForceMode）/ 设置速度 / 设置角速度（3D 与 2D 各一套） |
 | 生成/销毁 | `SpawnObjectNode` / `DestroyObjectNode` | 实例化预制体（位置/旋转可接线、可选父物体、输出生成物体）、销毁物体（可延迟） |
 | 物理 | `PhysicsRaycastNode` / `PhysicsRaycast2DNode` / `PhysicsOverlapSphereNode` / `PhysicsOverlapCircleNode` | 3D/2D 射线检测、球形/圆形范围检测；输出是否命中、命中点/法线/距离、命中物体、命中数量（索引取物体，帧缓存同帧共享） |
-| 音频/动画 | `PlayAudioNode` / `StopAudioNode` / `PlayAnimationNode` | 播放/停止音频（AudioSource）、播放动画（Animator.Play） |
+| 音频/动画 | `PlayAudioNode` / `StopAudioNode` / `PlayAnimationNode` | 播放/停止音频（**目标物体自带**的 AudioSource）、播放动画（Animator.Play） |
+| 音频（全局服务） | `PlaySFXNode` / `PlayMusicNode` / `StopMusicNode` / `SetMusicVolumeNode` / `SetSFXVolumeNode` | 走 `MusicManager` **单例**：音效（PlayOneShot 可叠加）/ 音乐（单轨可循环）/ 停音乐 / 音乐·音效音量（`FlowNode`，**不需要目标物体**） |
 | 动画参数 | `SetAnimatorTriggerNode` / `SetAnimatorBoolNode` / `SetAnimatorFloatNode` / `SetAnimatorIntNode` / `CrossFadeAnimatorNode` | 设置 Animator 参数（Trigger/Bool/Float/Int）、交叉淡入 |
 | 插值 | `MoveToNode` / `FadeCanvasGroupNode` | 位置插值移动、CanvasGroup 透明度渐隐渐显（逐帧，结束精确归位） |
 | 相机 | `SetVcamPriorityNode` / `SetVcamFollowNode` / `SetVcamLookAtNode` / `CinemachineImpulseNode` / `SetVcamNoiseNode` / `SetDollySpeedNode` / `TargetGroupAddMemberNode` | Cinemachine：优先级切换相机、设置跟随/注视目标、震屏、噪声振幅、轨道小车速度、目标组添加成员（依赖 Cinemachine 2.x 包） |
-| 对话UI | 设置：`SetDialogueTextNode` / `SetDialogueBorderSpriteNode` / `SetDialogueBackgroundSpriteNode` / `SetDialogueCharacterSpriteNode` / `SetDialogueAudioClipNode`；获取：`GetDialogueTextNode` / `GetDialogueBorderSpriteNode` / `GetDialogueBackgroundSpriteNode` / `GetDialogueCharacterSpriteNode` | 设置对话文本（`startTypewriter` 默认开，决定写完是否随即通知 TMPWriter 启动打字机）、边框/背景/人物图片、打字机对话音效；读取对话内容与三张图片 |
+| 对话UI | 设置：`SetDialogueTextNode` / `SetDialogueBorderSpriteNode` / `SetDialogueBackgroundSpriteNode` / `SetDialogueCharacterSpriteNode` / `SetDialogueAudioClipNode`；获取：`GetDialogueTextNode` / `GetDialogueBorderSpriteNode` / `GetDialogueBackgroundSpriteNode` / `GetDialogueCharacterSpriteNode` | 设置对话文本（`startTypewriter` 默认开；**`waitUntilTyped` 默认开** → 本节点内等打字结束，一个节点搞定但无超时保护；取消它并把输出端口 `typingFinished` 接到「流程/等待条件」→ 改由等待节点等，**白拿 `timeout` 与 `timeoutTo` 超时分支**。两者互斥）、边框/背景/人物图片、打字机对话音效；读取对话内容与三张图片 |
 | 分支/逻辑/值/变换 | `BranchNode`、`AndLogicNode`、`BoolValueNode` 等 | 流程控制、常量、物体运动 |
 | 数学运算 | `MathOpIntNode` / `MathOpFloatNode` / `CompareIntNode` / `CompareFloatNode` / `RandomIntNode` / `RandomFloatNode` | 四则运算、比较、随机整数/浮点 |
 | 字符串 | `StringConcatNode` / `StringOpNode` / `StringCompareNode` / `StringLengthNode` / `StringSubstringNode` / `StringReplaceNode` | 多段拼接（可选分隔符、可跳空段）、大小写/去首尾空格、比较（等于/包含/开头/结尾）、长度、截取、替换 |
 | 转换 | `IntToFloatNode` / `FloatToIntNode` / `IntToStringNode` / `FloatToStringNode` / `StringToIntNode` / `StringToFloatNode` | int↔float↔string 互转 |
-| 流程 | `PrintNode` / `WaitNode` / `WaitUntilNode` | 日志输出 / 等待指定秒数 / 等待条件成立（可接比较·逻辑·变量节点，支持超时） |
+| 流程 | `PrintNode` / `WaitNode` / `WaitUntilNode` | 日志输出 / 等待指定秒数 / 等待条件成立（可接比较·逻辑·变量节点；支持**超时**，且**超时可走单独分支** `timeoutTo`，不接则超时也沿 `next`） |
 | 流程控制 | `ForLoopNode` / `WhileLoopNode` / `ForEachLoopNode`（5 类型） / `ParallelNode` / `JumpToEntryNode` / `TimerNode` | 计数循环 / 条件循环 / 遍历列表 / 并行分支（最多 4 条）/ 跳转到入口（执行后当前链结束）/ 计时器（间隔 tick，0=无限） |
 
 ## 执行流程（GraphExecutor）
@@ -138,7 +140,22 @@ GraphEvent.Trigger(e => { e.eventId = "OnInput"; e.data = p; });
 - 自动 `GetComponent<T>`，找不到给出警告；
 - 子类只需实现 `Apply(T component)` 做具体动作；
 - 加新操作（缩放 / 音频 / 动画 / 对话音效等）= 继承基类 + 一个 `Apply`；
-- 无内置的"图绑定物体 / 按名字 / 拖引用"回退模式——已拆成下面三个获取物体节点。
+- 无内置的"图绑定物体 / 按名字 / 拖引用"回退模式——已拆成下面一整个获取物体节点族。
+
+## 全局服务节点（ServiceNodes）
+
+作用于**全局单例 / 静态服务**的动作节点（例：`MusicManager` 播音乐、播音效、调音量）：
+
+- **不继承** `ComponentActionNodeBase`，**直接继承 `FlowNode`** —— 它们没有"目标物体"这个概念，硬继承只会凭空多出一个必须接线、否则警告跳过的 `targetGameObject` 端口；
+- 统一放在 `Nodes/ServiceNodes/`，与 `ComponentNodes/` 并列；
+- **菜单仍按功能取前缀**（如 `音频/…`）—— `CreateNodeMenu` 是给用户按功能找的，**文件夹分类 ≠ 菜单分类**（项目本来如此：`ComponentNodes/AudioNodes/` 的菜单就是 `音频/`）；
+- **没有基类**：各服务节点调用的单例/API 各不相同，除了 `NodeLog` 几乎没有共同代码，抽个空基类只会多一层间接。
+
+> 判据：**需要"指定哪个物体"的 → `ComponentNodes/` + `ComponentActionNode<T>`；作用于全局单例 / 静态服务的 → `ServiceNodes/` + `FlowNode`。**
+
+注意音频这两个**不是重复能力**：
+- `音频/播放`（`PlayAudioNode`）＝ 播放**目标物体自带**的 `AudioSource`（适合 3D 空间音、预先配好 clip/volume/loop 的音源）；
+- `音频/播放音效`（`PlaySFXNode`）＝ 走 `MusicManager` 的**共享** SFX 音源（`PlayOneShot`，可叠加，不关心位置）。
 
 ## 物体引用（获取物体节点族）
 

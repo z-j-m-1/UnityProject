@@ -5,8 +5,10 @@ using XNode;
 [CreateNodeMenu("音频/播放")]
 public class PlayAudioNode : ComponentActionNode<AudioSource>
 {
-    protected override void Apply(AudioSource source)
+    [Input(ShowBackingValue.Unconnected, ConnectionType.Override)]
+    public AudioClip clip;
+    protected override void Apply(AudioSource component)
     {
-        source.Play();
+        MusicManager.Instance.PlaySFX(GetInputValue<AudioClip>(nameof(clip), clip));
     }
 }

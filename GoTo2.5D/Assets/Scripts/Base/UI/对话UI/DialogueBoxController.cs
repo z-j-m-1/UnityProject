@@ -81,6 +81,11 @@ public class DialogueBoxController : MonoBehaviour
         set => dialogueAudioClip = value;
     }
 
+    /// <summary>
+    /// 打字机是否正在逐字显示（供节点图判断"打字结束"）
+    /// </summary>
+    public bool IsTyping => tmpWriter != null && tmpWriter.IsWriting;
+
     #endregion
 
     void Awake()
@@ -90,12 +95,27 @@ public class DialogueBoxController : MonoBehaviour
 
         if (dialogueText == null)
             dialogueText = GetComponent<TextMeshProUGUI>();
-        if (tmpWriter == null)
-            tmpWriter = dialogueText.GetComponent<TMPWriter>();
-        if (tmpAnimator == null)
-            tmpAnimator = dialogueText.GetComponent<TMPAnimator>();
-        
-        tmpWriter.OnCharacterShown.AddListener(HandleCharacterShown);
+
+        // dialogueText 可能仍为 null（物体上没有 TextMeshProUGUI）→ 判空后再从它身上取
+        if (dialogueText != null)
+        {
+            if (tmpWriter == null)
+                tmpWriter = dialogueText.GetComponent<TMPWriter>();
+            if (tmpAnimator == null)
+                tmpAnimator = dialogueText.GetComponent<TMPAnimator>();
+        }
+
+        // 逐字音效监听：拿不到 TMPWriter 就跳过（原来这里会直接 NullReferenceException）
+        if (tmpWriter != null)
+        {
+            tmpWriter.OnCharacterShown.AddListener(HandleCharacterShown);
+        }
+        else
+        {
+            Debug.LogWarning(
+                $"{nameof(DialogueBoxController)}: '{name}' 自身与 TextMeshProUGUI 上都没有 TMPWriter，逐字音效监听已跳过",
+                this);
+        }
     }
 
     // 驱动 TMPWriter 开始显示对话内容
