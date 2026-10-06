@@ -123,3 +123,7 @@ InitTestScene*.unity*
 #   Plugins/ = DOTween / Koreographer / TMPEffects 等第三方插件
 /Assets/Font/
 /Assets/Plugins/
+
+# TMPEffects 已改为 UPM git 依赖（见 Packages/manifest.json），
+# 旧的本地副本搬到了 Assets 之外，避免与 PackageCache 中的 UPM 包重复编译（程序集重名）
+/_ExternalPlugins/

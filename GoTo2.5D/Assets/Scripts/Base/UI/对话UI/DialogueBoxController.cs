@@ -2,10 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using TMPEffects.Components;
+using TMPEffects.CharacterData;
 
-[RequireComponent(typeof(TMPWriter))]
-[RequireComponent(typeof(TMPAnimator))]
-[RequireComponent(typeof(TextMeshProUGUI))]
 public class DialogueBoxController : MonoBehaviour
 {
     [Header("UI 组件引用")]
@@ -14,8 +12,11 @@ public class DialogueBoxController : MonoBehaviour
     [SerializeField] private Image backgroundImage;
     [SerializeField] private Image characterImage;
 
-    private TMPWriter tmpWriter;
-    private TMPAnimator tmpAnimator;
+    [Header("对话音频")]
+    [SerializeField] private AudioClip dialogueAudioClip;
+
+    [SerializeField] private TMPWriter tmpWriter;
+    [SerializeField] private TMPAnimator tmpAnimator;
 
     #region 属性包装
 
@@ -71,6 +72,15 @@ public class DialogueBoxController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 对话音频剪辑
+    /// </summary>
+    public AudioClip DialogueAudioClip
+    {
+        get => dialogueAudioClip;
+        set => dialogueAudioClip = value;
+    }
+
     #endregion
 
     void Awake()
@@ -80,6 +90,12 @@ public class DialogueBoxController : MonoBehaviour
 
         if (dialogueText == null)
             dialogueText = GetComponent<TextMeshProUGUI>();
+        if (tmpWriter == null)
+            tmpWriter = dialogueText.GetComponent<TMPWriter>();
+        if (tmpAnimator == null)
+            tmpAnimator = dialogueText.GetComponent<TMPAnimator>();
+        
+        tmpWriter.OnCharacterShown.AddListener(HandleCharacterShown);
     }
 
     // 驱动 TMPWriter 开始显示对话内容
@@ -87,5 +103,18 @@ public class DialogueBoxController : MonoBehaviour
     {
         if (tmpWriter != null)
             tmpWriter.StartWriter();
+    }
+
+    /// <summary>
+    /// 处理每个字符显示时的事件
+    /// </summary>
+    /// <param name="writer"></param>
+    /// <param name="charData"></param>
+    void HandleCharacterShown(TMPWriter writer, CharData charData)
+    {
+        if (dialogueAudioClip != null)
+        {
+            MusicManager.Instance.PlaySFX(dialogueAudioClip);
+        }
     }
 }

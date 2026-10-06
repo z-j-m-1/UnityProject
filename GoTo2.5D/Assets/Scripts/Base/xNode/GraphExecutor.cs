@@ -39,7 +39,7 @@ public class GraphExecutor : MonoBehaviour
     [SerializeField] private GraphExecutionMode executionMode = GraphExecutionMode.Default;
     [SerializeField] private string entryIdentifier;
     [SerializeField] private GraphExecutionTriggerPolicy triggerPolicy = GraphExecutionTriggerPolicy.Restart;
-    [SerializeField] private EntryEventSubscribeMode entryEventSubscribe = EntryEventSubscribeMode.Off;
+    [SerializeField] private EntryEventSubscribeMode entryEventSubscribe = EntryEventSubscribeMode.AllEntries;
 
     /// <summary>单条执行链的运行状态（每条链独立）</summary>
     private class RunState

@@ -20,6 +20,7 @@ public class GraphParamEmitter : MonoBehaviour
         {
             e.eventId = eventId;
             e.data = parameters != null ? parameters.Build() : null;
+            Debug.Log($"GraphParamEmitter.Emit: eventId={eventId}, data={e.data?.Count ?? 0} params");
         });
     }
 }

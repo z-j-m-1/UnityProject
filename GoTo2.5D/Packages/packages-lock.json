@@ -30,6 +30,15 @@
       "dependencies": {},
       "hash": "d6effd70f5574369e3415c423ef3e621ea309564"
     },
+    "com.luca3317.tmpeffects": {
+      "version": "https://github.com/Luca3317/TMPEffects.git?path=/Package#0.3.1",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.textmeshpro": "3.0.6"
+      },
+      "hash": "a7733a3c0a4c4b6b4d977a1c5d706fd28207a9fd"
+    },
     "com.unity.2d.animation": {
       "version": "9.2.0",
       "depth": 1,

@@ -15,7 +15,7 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody rb;
     private Vector2 moveInput;
-    private bool isGrounded;
+    [SerializeField] private bool isGrounded;
     private bool jumpRequested;
 
     private void Awake()
