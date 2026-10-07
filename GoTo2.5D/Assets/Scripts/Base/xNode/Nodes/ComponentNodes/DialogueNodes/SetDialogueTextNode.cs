@@ -11,7 +11,7 @@ using XNode;
 ///   ② waitUntilTyped = false：链立即继续，把「打字已结束」输出端口接到「流程/等待条件」，
 ///      由等待节点去等 —— 白拿 timeout 与 timeoutTo 超时分支（例：打字卡住就跳过）。
 ///
-/// 目标物体由「目标物体」输入端口提供（接 取值/获取物体(自身|名称|引用)）。
+/// 目标物体由「目标物体」输入端口提供（接 取值/获取物体）。
 ///
 /// ⚠️ shouldWait / dialogueBox 是节点实例状态：同一张图被多条链并发跑过本节点时会互相覆盖
 ///    （与 ForLoopNode.index、MoveToNode.targetTransform 等共享节点状态的性质相同）。

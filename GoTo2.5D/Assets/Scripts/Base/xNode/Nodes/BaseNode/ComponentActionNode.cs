@@ -3,15 +3,13 @@ using XNode;
 
 /// <summary>
 /// 组件动作节点的非泛型基类（供自定义编辑器按类型定位）：
-/// 只提供统一的「目标物体输入端口」——目标由节点图上的获取物体节点显式指定：
-///   取值/获取物体(自身) → GetSelfObjectNode
-///   取值/获取物体(名称) → GetNamedObjectNode
-///   取值/获取物体(引用) → GetReferencedObjectNode
+/// 只提供统一的「目标物体输入端口」——目标由节点图上的获取物体节点显式指定
+///（取值/获取物体：自身 / 名称 / 全场景 / 父物体 / 子物体 / 根物体）。
 /// 子类只关心拿到目标后做什么。
 /// </summary>
 public abstract class ComponentActionNodeBase : FlowNode
 {
-    [Header("目标物体（接线：取值/获取物体(自身|名称|引用)）")]
+    [Header("目标物体（接线：取值/获取物体）")]
     [Input(ShowBackingValue.Never)]
     [System.NonSerialized]
     public GameObject targetGameObject;
@@ -35,7 +33,7 @@ public abstract class ComponentActionNode<T> : ComponentActionNodeBase where T :
         GameObject obj = ResolveTargetObject();
         if (obj == null)
         {
-            NodeLog.Warning($"{GetType().Name}: 未接入目标物体（请把「取值/获取物体(自身|名称|引用)」接到目标端口）");
+            NodeLog.Warning($"{GetType().Name}: 未接入目标物体（请把「取值/获取物体」接到目标端口）");
             return;
         }
 

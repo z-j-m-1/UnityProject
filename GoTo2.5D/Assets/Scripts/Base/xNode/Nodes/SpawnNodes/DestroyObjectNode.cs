@@ -2,20 +2,17 @@ using UnityEngine;
 using XNode;
 
 /// <summary>
-/// 生成-销毁物体：目标 = GameObject 输入端口（优先）> 直接引用字段。
+/// 生成-销毁物体：目标 = GameObject 输入端口（接 取值/获取物体 系列节点）。
 /// 可延迟销毁（0 = 立即）。
 /// </summary>
 [CreateNodeMenu("生成/销毁物体")]
 [NodeTint("#88CC44")]
 public class DestroyObjectNode : FlowNode
 {
-    [Header("目标物体（优先接输入端口，未接线用下方直接引用）")]
+    [Header("目标物体（接线：任一「取值/获取物体」节点）")]
     [Input(ShowBackingValue.Never)]
     [System.NonSerialized]
     public GameObject target;
-
-    [Header("目标引用（输入端口未接线时使用）")]
-    public GameObject targetObject;
 
     [Header("延迟秒数（0 = 立即销毁）")]
     [Input(ShowBackingValue.Unconnected, ConnectionType.Override)]
@@ -26,11 +23,7 @@ public class DestroyObjectNode : FlowNode
         GameObject obj = GetInputValue<GameObject>(nameof(target), null);
         if (obj == null)
         {
-            obj = targetObject;
-        }
-        if (obj == null)
-        {
-            NodeLog.Warning($"{GetType().Name}: 未指定目标物体");
+            NodeLog.Warning($"{GetType().Name}: 未接入目标物体（请把任一「取值/获取物体」节点接到目标端口）");
             return;
         }
 

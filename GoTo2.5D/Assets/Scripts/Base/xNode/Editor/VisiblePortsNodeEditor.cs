@@ -10,6 +10,10 @@ using XNodeEditor;
 /// 节点体编辑器基类：与 xNode 默认 OnBodyGUI 相同，额外补画 [NonSerialized] 字段的端口
 /// （Unity 序列化迭代器不含非序列化字段，默认编辑器会漏掉 GameObject 等非序列化端口）。
 /// 子类可覆写 OnDrawProperty / OnBodyFooter 定制。
+///
+/// ⚠️ **不再需要为每个节点族单独注册**：默认编辑器 <see cref="BaseNodeBodyEditor"/>
+/// （注册在 BaseNode 上）已继承本类，所有节点都会自动补画非序列化端口。
+/// 只有需要**定制绘制**（改画法、加下拉、隐藏字段）时才需要注册——例如 SubGraphInputNodeBodyEditor。
 /// </summary>
 public abstract class VisiblePortsNodeEditor : NodeEditor
 {
@@ -59,35 +63,4 @@ public abstract class VisiblePortsNodeEditor : NodeEditor
     /// <summary>节点体末尾（运行时信息等）</summary>
     protected virtual void OnBodyFooter() { }
 }
-
-[CustomNodeEditor(typeof(ComponentActionNodeBase))]
-public class ComponentActionNodeBodyEditor : VisiblePortsNodeEditor { }
-
-// 获取物体节点族（自身 / 名称 / 引用）：三者共用基类的非序列化 output 端口，
-// 注册基类一次即可覆盖全部子类（xNode 沿继承链取最近的 [CustomNodeEditor]）
-[CustomNodeEditor(typeof(GetObjectNodeBase))]
-public class GetObjectNodeBodyEditor : VisiblePortsNodeEditor { }
-
-// 对话UI 取值节点族（边框 / 背景 / 人物图片、对话内容）：共用基类的非序列化
-// targetGameObject + 输出端口，同样注册基类一次
-[CustomNodeEditor(typeof(GetDialogueNodeBase))]
-public class GetDialogueNodeBodyEditor : VisiblePortsNodeEditor { }
-
-[CustomNodeEditor(typeof(SpawnObjectNode))]
-public class SpawnObjectNodeBodyEditor : VisiblePortsNodeEditor { }
-
-[CustomNodeEditor(typeof(DestroyObjectNode))]
-public class DestroyObjectNodeBodyEditor : VisiblePortsNodeEditor { }
-
-[CustomNodeEditor(typeof(PhysicsRaycastNode))]
-public class PhysicsRaycastNodeBodyEditor : VisiblePortsNodeEditor { }
-
-[CustomNodeEditor(typeof(PhysicsRaycast2DNode))]
-public class PhysicsRaycast2DNodeBodyEditor : VisiblePortsNodeEditor { }
-
-[CustomNodeEditor(typeof(PhysicsOverlapSphereNode))]
-public class PhysicsOverlapSphereNodeBodyEditor : VisiblePortsNodeEditor { }
-
-[CustomNodeEditor(typeof(PhysicsOverlapCircleNode))]
-public class PhysicsOverlapCircleNodeBodyEditor : VisiblePortsNodeEditor { }
 #endif
