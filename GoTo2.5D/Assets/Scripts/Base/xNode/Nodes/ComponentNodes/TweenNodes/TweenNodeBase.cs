@@ -25,6 +25,16 @@ public abstract class TweenNodeBase : ComponentActionNodeBase
     [Header("插值曲线（横轴 0~1 进度，纵轴 0~1 混合系数；默认线性）")]
     public AnimationCurve curve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
 
+    [Header("曲线来源：勾选后用「曲线输入」端口传入的曲线（可接「值/曲线」或子图「参数/输入/曲线」）")]
+    public bool useCurveFromInput = false;
+
+    [Input(ShowBackingValue.Never)]
+    [System.NonSerialized]
+    public AnimationCurve curveFromInput;
+
+    /// <summary>本次插值实际使用的曲线（GetFlow 开始时解析一次）</summary>
+    private AnimationCurve activeCurve;
+
     /// <summary>目标是否解析成功（Execute 时设置）</summary>
     protected bool TargetReady { get; private set; }
 
@@ -39,6 +49,9 @@ public abstract class TweenNodeBase : ComponentActionNodeBase
     {
         if (!TargetReady) yield break;
         if (!CaptureStart()) yield break;
+
+        // 曲线只解析一次：勾了「曲线来源」就用端口传入的，否则用节点内嵌的
+        activeCurve = useCurveFromInput ? GetInputValue<AnimationCurve>(nameof(curveFromInput), null) : curve;
 
         float dur = Mathf.Max(0f, GetInputValue<float>(nameof(duration), duration));
 
@@ -60,8 +73,10 @@ public abstract class TweenNodeBase : ComponentActionNodeBase
     /// <summary>曲线求值：线性进度 k(0~1) → 混合系数</summary>
     protected float Evaluate(float k)
     {
-        if (curve == null || curve.length == 0) return k;
-        return curve.Evaluate(k);
+        // activeCurve 在 GetFlow 开始时解析；万一还没解析（外部调用）就用内嵌曲线兜底
+        AnimationCurve c = activeCurve != null ? activeCurve : (useCurveFromInput ? null : curve);
+        if (c == null || c.length == 0) return k;
+        return c.Evaluate(k);
     }
 
     /// <summary>按混合系数取插值结果；系数 >= 1 时直接返回终点（保证"结束精确归位"）</summary>

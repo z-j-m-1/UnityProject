@@ -84,11 +84,15 @@ public class BaseNodeGraphEditor : NodeGraphEditor
     // ============ 拖拽场景物体 → 生成「取值/获取物体(全场景)」节点 ============
 
     /// <summary>
-    /// 把**场景物体**从 Hierarchy 拖进图编辑器：为每个物体生成一个
-    /// 「取值/获取物体(全场景)」节点，`objectName` = 物体名。
+    /// 图编辑器的拖放处理（两种）：
+    ///   ① **拖入 .cs 脚本** → 建一个类型已填好的「组件/添加·移除」节点；
+    ///   ② **拖入场景物体**（Hierarchy）→ 为每个物体生成一个「取值/获取物体(全场景)」节点，`objectName` = 物体名。
     ///
     /// 由 xNode 的 NodeEditorAction 在 DragPerform 时调用（见 NodeGraphEditor.OnDropObjects）。
-    /// 只认场景物体；拖入的资源（预制体 / 脚本等）直接跳过，不抢其它拖放逻辑。
+    /// 其它资源（预制体等）不处理，不抢别的拖放逻辑。
+    ///
+    /// 注：拖脚本能"建节点并填好类型名"，但节点**存的仍是字符串** ——
+    /// <c>MonoScript</c> 是 UnityEditor 类型，运行期节点不能持有它（打包会编译不过）。
     /// </summary>
     public override void OnDropObjects(UnityEngine.Object[] objects)
     {
@@ -101,6 +105,10 @@ public class BaseNodeGraphEditor : NodeGraphEditor
         int created = 0;
         foreach (UnityEngine.Object o in objects)
         {
+            // ① 拖入 .cs 脚本 → 直接建好「组件/添加·移除」节点并填上类型
+            if (TryHandleScriptDrop(o, ref pos, ref created)) continue;
+
+            // ② 拖入场景物体 → 建「取值/获取物体(全场景)」节点
             GameObject go = ResolveSceneGameObject(o);
             if (go == null) continue;
 
@@ -123,6 +131,34 @@ public class BaseNodeGraphEditor : NodeGraphEditor
         EditorUtility.SetDirty(target);   // 节点是图资产的子资产，确保图资产被标记为已修改
         if (NodeEditorPreferences.GetSettings().autoSave) AssetDatabase.SaveAssets();
         NodeEditorWindow.RepaintAll();
+    }
+
+    /// <summary>
+    /// 拖入的是 .cs 脚本时：建一个「组件/添加·移除」节点并把类型全名填好。
+    /// 返回 true = 已接管本次拖放（**包括**"是脚本但不是组件脚本"的情况，避免它再落到场景物体分支）。
+    /// </summary>
+    private bool TryHandleScriptDrop(UnityEngine.Object o, ref Vector2 pos, ref int created)
+    {
+        MonoScript script = o as MonoScript;
+        if (script == null) return false;
+
+        Type scriptType = script.GetClass();
+        if (scriptType == null || !typeof(Component).IsAssignableFrom(scriptType))
+        {
+            return true;   // 是脚本但不是组件（例如纯工具类 / 节点脚本），忽略
+        }
+
+        XNode.Node node = CreateNode(typeof(ModifyComponentNode), pos);
+        ModifyComponentNode modify = node as ModifyComponentNode;
+        if (modify == null) return true;
+
+        Undo.RecordObject(modify, "Drop Script");
+        modify.componentTypeName = scriptType.FullName;
+        EditorUtility.SetDirty(modify);
+
+        created++;
+        pos += new Vector2(0f, 130f);   // 多选拖拽时竖向错开
+        return true;
     }
 
     /// <summary>把拖入对象解析成场景里的 GameObject（兼容拖 Component / Transform）；资源返回 null</summary>

@@ -11,7 +11,10 @@ public enum GraphParamType
     Float,
     Vector2,
     Vector3,
-    GameObject
+    GameObject,
+    /// <summary>插值曲线（AnimationCurve）：可在面板上直接编辑；可接插值节点或子图曲线参数。
+    /// ★ 新类型一律**追加在末尾**，保证已有资产里序列化的枚举值不变。</summary>
+    AnimationCurve
 }
 
 /// <summary>
@@ -27,6 +30,27 @@ public class GraphParamValue
     [HideInInspector] public Vector2 vector2Value;
     [HideInInspector] public Vector3 vector3Value;
     [HideInInspector] public GameObject objectValue;
+    [HideInInspector] public AnimationCurve curveValue;
+
+    /// <summary>
+    /// 类型 → 对应字段名。绘制器（GraphParamEntryDrawer）与运行时共用这一处映射，
+    /// 避免两边各写一遍而漂移（与 TypedValue.FieldNameOf 同一套路）。
+    /// </summary>
+    public static string FieldNameOf(GraphParamType type)
+    {
+        switch (type)
+        {
+            case GraphParamType.String: return nameof(stringValue);
+            case GraphParamType.Bool: return nameof(boolValue);
+            case GraphParamType.Int: return nameof(intValue);
+            case GraphParamType.Float: return nameof(floatValue);
+            case GraphParamType.Vector2: return nameof(vector2Value);
+            case GraphParamType.Vector3: return nameof(vector3Value);
+            case GraphParamType.GameObject: return nameof(objectValue);
+            case GraphParamType.AnimationCurve: return nameof(curveValue);
+            default: return nameof(floatValue);
+        }
+    }
 }
 
 /// <summary>命名参数项：名称 + 类型 + 值（外部脚本 Inspector 可编辑）</summary>
@@ -53,6 +77,7 @@ public class GraphParamEntry
             case GraphParamType.Vector2: return value.vector2Value;
             case GraphParamType.Vector3: return value.vector3Value;
             case GraphParamType.GameObject: return value.objectValue;
+            case GraphParamType.AnimationCurve: return value.curveValue;
             default: return null;
         }
     }
