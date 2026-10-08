@@ -8,7 +8,7 @@ using XNode;
 /// - 生成后的物体写到 spawned 输出端口（非序列化），可接后续操作节点 / 销毁节点。
 /// </summary>
 [CreateNodeMenu("生成/生成物体")]
-[NodeTint("#88CC44")]
+[NodeTint("#000000")]
 public class SpawnObjectNode : FlowNode
 {
     [Header("预制体（从项目拖入）")]

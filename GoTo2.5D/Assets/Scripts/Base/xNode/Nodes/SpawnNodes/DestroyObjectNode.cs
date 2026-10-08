@@ -6,7 +6,7 @@ using XNode;
 /// 可延迟销毁（0 = 立即）。
 /// </summary>
 [CreateNodeMenu("生成/销毁物体")]
-[NodeTint("#88CC44")]
+[NodeTint("#060c00")]
 public class DestroyObjectNode : FlowNode
 {
     [Header("目标物体（接线：任一「取值/获取物体」节点）")]

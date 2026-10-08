@@ -10,6 +10,11 @@ using XNode;
 /// 起始值：
 ///   · 默认读**当前有效值** —— 先看 PropertyBlock 上的覆盖（<c>HasFloat</c> 判定），没有才读材质资产的值；
 ///   · 勾选 <c>overrideStart</c> 则用 <c>startValue</c>（可直接填，也可接线）—— 串接多段插值时用得上。
+///
+/// ⚠️ 因为默认读"当前值"，**同一个节点连跑两次时，第二次的起始值就是第一次的结束值**：
+///    目标值又没变 → from == to → 看起来"什么都没发生"。这是"从当前位置插到目标"的正常语义（不是 bug）。
+///    要每次都从固定值重新播放：勾上 <c>overrideStart</c> 并填 <c>startValue</c>（例如 0）。
+///    另外：即使 from == to，本节点**仍会照常走完 duration**，所以流程不会提前继续。
 /// </summary>
 [CreateNodeMenu("材质/浮点插值")]
 [NodeTint("#000000")]
@@ -88,6 +93,16 @@ public class TweenMaterialFloatNode : TweenNodeBase
         else
         {
             from = shared != null ? shared.GetFloat(prop) : 0f;
+        }
+
+        if (Mathf.Approximately(from, to))
+        {
+            // 最常见的困惑：同一个节点连跑两次 —— 第二次的起始值就是第一次的结束值，
+            // 目标值又没变 → 自然"看起来什么都没发生"。
+            NodeLog.Warning(
+                $"{GetType().Name}: 起始值与目标值相同（都是 {from}），本次插值不会产生任何可见变化。" +
+                "常见原因：上一次插值已经把这个属性停在了目标值上。" +
+                "若想每次都从固定值重新播放，请勾选 overrideStart 并把 startValue 填上（例如 0）。");
         }
 
         return true;
