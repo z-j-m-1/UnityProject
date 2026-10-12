@@ -15,6 +15,9 @@ public class DialogueBoxController : MonoBehaviour
     [Header("对话音频")]
     [SerializeField] private AudioClip dialogueAudioClip;
 
+    [Header("对话语音（整句播放一次；为空则不发声）")]
+    [SerializeField] private AudioClip voiceClip;
+
     [SerializeField] private TMPWriter tmpWriter;
     [SerializeField] private TMPAnimator tmpAnimator;
 
@@ -82,6 +85,16 @@ public class DialogueBoxController : MonoBehaviour
     }
 
     /// <summary>
+    /// 对话语音剪辑（整句播放一次，区别于 <see cref="DialogueAudioClip"/> 的逐字音效）。
+    /// 为空则不发声。
+    /// </summary>
+    public AudioClip VoiceClip
+    {
+        get => voiceClip;
+        set => voiceClip = value;
+    }
+
+    /// <summary>
     /// 打字机是否正在逐字显示（供节点图判断"打字结束"）
     /// </summary>
     public bool IsTyping => tmpWriter != null && tmpWriter.IsWriting;
@@ -123,6 +136,60 @@ public class DialogueBoxController : MonoBehaviour
     {
         if (tmpWriter != null)
             tmpWriter.StartWriter();
+    }
+
+    // 语音播放请求帧：-1 = 没有待观察的播放请求（供 IsVoicePlaying 做"头一帧"容错）
+    private int voiceRequestFrame = -1;
+
+    /// <summary>
+    /// 播放当前对话语音。**没有语音片段就不发声**（直接返回，不报错、也不会去创建音频管理对象）。
+    /// 播放会先停掉上一条语音（见 MusicManager.PlayVoice）。
+    /// </summary>
+    public void PlayVoice()
+    {
+        if (voiceClip == null) return;
+        MusicManager.Instance.PlayVoice(voiceClip);
+        voiceRequestFrame = Time.frameCount;
+    }
+
+    /// <summary>
+    /// 语音是否（仍）在播放。**带一帧容错**：<c>AudioSource.Play()</c> 之后 <c>isPlaying</c>
+    /// 有可能会晚一帧才置位 —— 不兜这一帧的话，"等语音播完"会刚开播就判定已结束，等待形同虚设。
+    /// 超过一帧仍未置位就承认它确实没在播（所以不会卡死）。
+    /// </summary>
+    public bool IsVoicePlaying
+    {
+        get
+        {
+            if (MusicManager.HasInstance && MusicManager.Instance.IsVoicePlaying) return true;
+
+            return voiceRequestFrame >= 0 && Time.frameCount - voiceRequestFrame <= 1;
+        }
+    }
+
+    /// <summary>
+    /// 停止当前语音（例如玩家跳过这句对话）。
+    /// 没创建过音频管理器就**不会**创建它 —— 停语音不该有"凭空建一个管理器"的副作用。
+    /// </summary>
+    public void StopVoice()
+    {
+        voiceRequestFrame = -1;
+
+        if (!MusicManager.HasInstance) return;
+        MusicManager.Instance.StopVoice();
+    }
+
+    /// <summary>
+    /// 跳过本句打字：立刻把整段文字显示完（<c>TMPWriter.SkipWriter</c>），并按需停掉语音。
+    /// 给"点击跳过"按钮 / 节点用。
+    /// </summary>
+    public void SkipDialogue(bool stopVoice = true)
+    {
+        if (tmpWriter != null)
+            tmpWriter.SkipWriter();
+
+        if (stopVoice)
+            StopVoice();
     }
 
     /// <summary>

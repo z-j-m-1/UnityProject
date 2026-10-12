@@ -29,13 +29,20 @@ public abstract class SubGraphInputNode<T> : SubGraphInputNodeBase
         {
             if (graph is BaseNodeGraph g && !string.IsNullOrEmpty(parameterName))
             {
-                // 统一调用参数优先（子图节点 / 外部代码 / 事件 / 状态机任一调用方注入）；
-                // 未注入时回退图变量 → 节点字段默认值（兼容旧子图资产）
+                // 统一调用参数优先（子图节点 / 外部代码 / 事件 / 状态机任一调用方注入）
                 if (g.TryGetInvocationParam(parameterName, out object v))
                 {
                     return v;
                 }
-                return g.Get(parameterName, value);
+
+                // 未注入时回退图变量 → 节点字段默认值（兼容旧子图资产）。
+                // ⚠️ 只有变量系统支持的类型才能查：AnimationCurve、GameObject 等不在 VariableBundle 里，
+                //    直接调 Get<T> 会抛 NotSupportedException（编辑器悬停画端口提示时就会崩）。
+                //    这类类型请照「参数/输入/物体」写成独立节点；这里兜一层是为了将来不再踩同一个坑。
+                if (VariableBundle.Supports<T>())
+                {
+                    return g.Get(parameterName, value);
+                }
             }
             return value;
         }

@@ -21,6 +21,24 @@ public class VariableBundle
     [SerializeField] private VariableContainer<List<Vector3>> vector3ListContainer = new VariableContainer<List<Vector3>>();
 
     /// <summary>
+    /// 该类型是否被本集合支持（不支持的类型调 Get/Set 会抛 NotSupportedException）。
+    /// 供"**回退图变量之前先判断**"用 —— 例如子图参数节点要支持 AnimationCurve / GameObject
+    /// 这类不在变量系统里的类型，不判断就直接调 <c>Get&lt;T&gt;</c> 会抛异常
+    /// （连编辑器悬停画端口提示都会崩）。
+    /// ★ 将来新增变量类型时，**这里与上面的容器字段、Get/Set 的类型分支要一起改**。
+    /// </summary>
+    public static bool Supports(Type type)
+    {
+        return type == typeof(string) || type == typeof(bool) || type == typeof(int) || type == typeof(float)
+            || type == typeof(Vector3) || type == typeof(Vector2)
+            || type == typeof(List<string>) || type == typeof(List<int>) || type == typeof(List<float>)
+            || type == typeof(List<Vector2>) || type == typeof(List<Vector3>);
+    }
+
+    /// <summary>该类型是否被本集合支持（泛型重载）</summary>
+    public static bool Supports<T>() => Supports(typeof(T));
+
+    /// <summary>
     /// 获取变量值
     /// </summary>
     public T Get<T>(string key, T defaultValue = default)

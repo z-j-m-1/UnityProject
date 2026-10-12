@@ -286,4 +286,28 @@ public class BaseNodeGraph : NodeGraph, ISerializationCallbackReceiver
 
         return node;
     }
+
+    /// <summary>
+    /// 覆盖 xNode 的移除逻辑。原实现是：
+    /// <code>
+    /// node.ClearConnections();
+    /// nodes.Remove(node);
+    /// if (Application.isPlaying) Destroy(node);   // ← 问题在这里
+    /// </code>
+    /// 图资产（.asset）里的节点是**子资产**，而 Unity 拒绝用 <c>Object.Destroy</c> 销毁资产：
+    /// <c>Destroying assets is not permitted to avoid data loss.</c>
+    /// 所以**在运行模式下删节点就会刷这条红字**（编辑模式下走不到这句，所以平时没事）。
+    ///
+    /// 这里刻意**不再调用 base**（即不再 Destroy）：真正删除子资产的是编辑器侧的
+    /// <c>NodeGraphEditor.RemoveNode</c> → <c>Undo.DestroyObjectImmediate(node)</c>，它用的是正确 API；
+    /// 本方法只需要维护 nodes 列表。
+    /// （本项目的图都是资产，节点必然是子资产，所以"不 Destroy"是正确行为。）
+    /// </summary>
+    public override void RemoveNode(Node node)
+    {
+        if (node == null) return;
+
+        node.ClearConnections();
+        nodes.Remove(node);
+    }
 }

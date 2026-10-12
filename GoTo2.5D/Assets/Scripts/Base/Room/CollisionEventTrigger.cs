@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-[RequireComponent(typeof(Collider))]
 public class CollisionEventTrigger : MonoBehaviour
 {
     [Header("触发时机")]
@@ -17,6 +16,7 @@ public class CollisionEventTrigger : MonoBehaviour
     public UnityEvent onStay;
     public UnityEvent onExit;
 
+    // ==================== 3D 碰撞 ====================
     private void OnCollisionEnter(Collision other)
     {
         if (triggerOnEnter && IsValid(other.gameObject)) onEnter?.Invoke();
@@ -32,6 +32,55 @@ public class CollisionEventTrigger : MonoBehaviour
         if (triggerOnExit && IsValid(other.gameObject)) onExit?.Invoke();
     }
 
+    // ==================== 3D 触发 ====================
+    private void OnTriggerEnter(Collider other)
+    {
+        if (triggerOnEnter && IsValid(other.gameObject)) onEnter?.Invoke();
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (triggerOnStay && IsValid(other.gameObject)) onStay?.Invoke();
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (triggerOnExit && IsValid(other.gameObject)) onExit?.Invoke();
+    }
+
+    // ==================== 2D 碰撞 ====================
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (triggerOnEnter && IsValid(other.gameObject)) onEnter?.Invoke();
+    }
+
+    private void OnCollisionStay2D(Collision2D other)
+    {
+        if (triggerOnStay && IsValid(other.gameObject)) onStay?.Invoke();
+    }
+
+    private void OnCollisionExit2D(Collision2D other)
+    {
+        if (triggerOnExit && IsValid(other.gameObject)) onExit?.Invoke();
+    }
+
+    // ==================== 2D 触发 ====================
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (triggerOnEnter && IsValid(other.gameObject)) onEnter?.Invoke();
+    }
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        if (triggerOnStay && IsValid(other.gameObject)) onStay?.Invoke();
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (triggerOnExit && IsValid(other.gameObject)) onExit?.Invoke();
+    }
+
+    // ==================== 通用 ====================
     private bool IsValid(GameObject obj)
     {
         return string.IsNullOrEmpty(targetTag) || obj.CompareTag(targetTag);
